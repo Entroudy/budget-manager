@@ -1,0 +1,88 @@
+<template>
+  <div v-if="showing" class="fixed inset-0 z-50 h-full">
+    <div
+      class="fixed inset-0 z-50 flex h-full items-center justify-center bg-black bg-opacity-75 md:fixed md:h-auto md:p-6"
+      @click.self="preventOutsideClick">
+      <div
+        class="flex h-full max-h-full w-full flex-col bg-white dark:bg-brand-darkGray shadow md:h-auto md:rounded-xl"
+        :class="[maxWidth, textColor]">
+        <div class="flex flex-col p-4 md:p-6 h-auto">
+          <div class="flex items-center justify-between space-x-3">
+            <div class="flex items-center space-x-3">
+              <slot v-if="$slots.icon" name="icon" />
+              <h3 v-if="$slots.title" class="text-lg font-bold uppercase text-gray-800 dark:text-white flex">
+                <slot name="title" />
+              </h3>
+            </div>
+            <button v-if="showClose" class="btn-icon flex cursor-pointer" aria-label="close" role="button"
+              @click.prevent="close">
+              <i class="fas fa-times text-2xl text-gray-800 dark:text-white" />
+            </button>
+          </div>
+          <div v-if="$slots.body" class="mt-5 flex-grow">
+            <slot name="body" />
+          </div>
+          <div v-if="$slots.action" class="w-full" :class="[$slots.action ? 'mt-5' : '']">
+            <slot name="action" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'BaseModal',
+  components: {
+
+  },
+  props: {
+    showing: {
+      required: true,
+      type: Boolean
+    },
+    showClose: {
+      type: Boolean,
+      default: true
+    },
+    preventBackgroundClose: {
+      type: Boolean,
+      default: false
+    },
+    maxWidth: {
+      type: String,
+      default: 'md:max-w-lg'
+    },
+    textColor: {
+      type: String,
+      default: 'text-black'
+    }
+  },
+  emits: ['close'],
+  mounted: function () {
+    if (this.showClose) {
+      document.addEventListener('keydown', (e) => {
+        if (e.keyCode == 27) {
+          this.close()
+        }
+      })
+    }
+  },
+  beforeUnmount: function () {
+    this.close()
+  },
+  methods: {
+    close() {
+      this.$emit('close')
+    },
+    preventOutsideClick() {
+      if (!this.preventBackgroundClose) {
+        this.close()
+      }
+    }
+  }
+})
+</script>

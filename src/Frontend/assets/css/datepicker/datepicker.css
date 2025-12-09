@@ -1,0 +1,21 @@
+.dp__theme_dark {
+  --dp-background-color: #ffffff;
+  --dp-text-color: #374151;
+  --dp-hover-color: #442D1C;
+  --dp-hover-text-color: #ffffff;
+  --dp-hover-icon-color: #ffffff;
+  --dp-primary-color: #442D1C;
+  --dp-primary-text-color: #ffffff;
+  --dp-secondary-color: #9ca3af;
+  --dp-border-color: #e5e7eb;
+  --dp-menu-border-color: #d1d5db;
+  --dp-border-color-hover: #442D1C;
+  --dp-disabled-color: #d1d5db;
+  --dp-scroll-bar-background: #f3f4f6;
+  --dp-scroll-bar-color: #9ca3af;
+  --dp-success-color: #442D1C;
+  --dp-success-color-disabled: #e5e7eb;
+  --dp-icon-color: #6b7280;
+  --dp-danger-color: #ef4444;
+  --dp-highlight-color: rgba(68, 45, 28, 0.1);
+}
