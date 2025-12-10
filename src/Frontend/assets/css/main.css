@@ -157,11 +157,7 @@ img {
 /* set container page bg as sidebar and use color -> #293142 */
 
 .btn {
-  @apply px-6 py-3.5 text-sm font-semibold shadow-sm rounded-full;
-}
-
-.btn.btn-lg {
-  @apply px-7 py-4 text-base;
+  @apply px-6 py-3.5 text-sm font-semibold shadow-sm rounded-lg;
 }
 
 .btn.btn-md {
@@ -170,10 +166,6 @@ img {
 
 .btn.btn-sm {
   @apply px-4 py-2.5 text-xs;
-}
-
-.btn.btn-xs {
-  @apply px-2 py-1 text-xs cursor-pointer;
 }
 
 .w-fill {

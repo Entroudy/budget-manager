@@ -7,7 +7,7 @@
             aria-hidden="true" />
           <div class="relative flex items-start space-x-8">
             <div class="relative">
-              <div class="absolute top-2.5 left-1.5  h-3 w-3 items-center justify-center rounded-full"
+              <div class="absolute top-2.5 left-1.5  h-3 w-3 items-center justify-center rounded-lg"
                 :class="[historyColor(item.historyType)]">
               </div>
             </div>

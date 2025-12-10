@@ -1,29 +1,72 @@
 <template>
   <div class="rounded-lg bg-white dark:bg-brand-darkGray shadow-xl dark:text-white px-4 py-4 md:px-8 md:py-6">
-    <!-- Date Filter Section -->
-    <div class="mb-6 flex items-center justify-between">
-      <div class="flex items-center space-x-4">
-        <h2 class="text-2xl font-bold">{{ $t('spendings') }}</h2>
-        <div class="flex items-center space-x-2">
-          <label class="text-sm font-medium">{{ $t('filter_by_date') }}:</label>
+    <!-- Filters Section -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <button class="btn btn-md bg-primary text-white capitalize-block" @click="openCreateModal">
+          {{ $t('create') }}
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- User Filter -->
+        <div>
+          <label class="text-sm font-medium mb-1 block">{{ $t('user') }}:</label>
+          <select
+            v-model="filters.userId"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600"
+            @change="applyFilters"
+          >
+            <option value="">{{ $t('all_users') }}</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">
+              {{ user.nickName || user.lastName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- From Date Filter -->
+        <div>
+          <label class="text-sm font-medium mb-1 block">{{ $t('from_date') }}:</label>
           <input
             type="date"
-            v-model="selectedDate"
-            class="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600"
-            @change="refreshSpendings"
+            v-model="filters.fromDate"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600"
+            @change="applyFilters"
           />
-          <button
-            @click="clearDateFilter"
-            class="btn btn-sm bg-gray-500 text-white"
-            v-if="selectedDate"
-          >
-            {{ $t('clear') }}
-          </button>
+        </div>
+
+        <!-- To Date Filter -->
+        <div>
+          <label class="text-sm font-medium mb-1 block">{{ $t('to_date') }}:</label>
+          <input
+            type="date"
+            v-model="filters.toDate"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600"
+            @change="applyFilters"
+          />
+        </div>
+
+        <!-- Color Filter -->
+        <div>
+          <label class="text-sm font-medium mb-1 block">{{ $t('color') }}:</label>
+          <input
+            type="color"
+            v-model="filters.color"
+            class="w-full h-10 px-1 py-1 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600"
+            @change="applyFilters"
+          />
         </div>
       </div>
-      <button class="btn btn-md bg-primary text-white capitalize-block" @click="openCreateModal">
-        {{ $t('create') }}
-      </button>
+
+      <!-- Clear Filters Button -->
+      <div class="mt-4" v-if="hasActiveFilters">
+        <button
+          @click="clearAllFilters"
+          class="btn btn-sm bg-gray-500 text-white"
+        >
+          {{ $t('clear_all_filters') }}
+        </button>
+      </div>
     </div>
 
     <!-- Spendings List -->
@@ -39,7 +82,7 @@
             <!-- Color Indicator -->
             <div
               v-if="spending.color"
-              class="w-4 h-4 rounded-full flex-shrink-0"
+              class="w-4 h-4 rounded-lg flex-shrink-0"
               :style="{ backgroundColor: spending.color }"
             ></div>
 
@@ -126,6 +169,7 @@
 import { defineComponent } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSpendingStore } from '~/stores/SpendingStore'
+import { useUserStore } from '~/stores/UserStore'
 import { useGlobalStore } from '~/stores/global'
 import { PaymentMethod, type SpendingItemResponse } from '~/models/SpendingModel'
 import SpendingCreateModal from '@/components/modals/spending/SpendingCreateModal.vue'
@@ -144,10 +188,17 @@ export default defineComponent({
     const { setActivePageTitle } = useGlobalStore()
     const { spendings } = storeToRefs(useSpendingStore())
     const { getSpendings } = useSpendingStore()
+    const { users } = storeToRefs(useUserStore())
+    const { getUsers } = useUserStore()
     const router = useRouter()
     const route = useRoute()
 
-    const selectedDate = ref('')
+    const filters = ref({
+      userId: '',
+      fromDate: '',
+      toDate: '',
+      color: ''
+    })
     const firstLoad = ref(true)
 
     const pagination = ref({
@@ -159,6 +210,8 @@ export default defineComponent({
 
     onMounted(async () => {
       setActivePageTitle('Spending')
+      // Load users first
+      await getUsers({ page_number: 1, page_size: 999 })
       initializeStateFromQuery(route.query)
       await refreshSpendings()
       firstLoad.value = false
@@ -167,29 +220,41 @@ export default defineComponent({
     const initializeStateFromQuery = (query: any) => {
       pagination.value.currentPage = parseInt(query.page) || 1
       pagination.value.pageSize = parseInt(query.pageSize) || 50
-      selectedDate.value = query.date || ''
+      filters.value.userId = query.userId || ''
+      filters.value.fromDate = query.fromDate || ''
+      filters.value.toDate = query.toDate || ''
+      filters.value.color = query.color || ''
     }
+
+    const hasActiveFilters = computed(() => {
+      return !!(filters.value.userId || filters.value.fromDate || filters.value.toDate || filters.value.color)
+    })
 
     const refreshSpendings = async () => {
       try {
-        router.push({
-          query: {
-            ...route.query,
-            page: pagination.value.currentPage,
-            pageSize: pagination.value.pageSize,
-            date: selectedDate.value || undefined,
-          },
-        })
+        const queryParams: any = {
+          page: pagination.value.currentPage,
+          pageSize: pagination.value.pageSize,
+        }
+
+        // Add filters to query params if they exist
+        if (filters.value.userId) queryParams.userId = filters.value.userId
+        if (filters.value.fromDate) queryParams.fromDate = filters.value.fromDate
+        if (filters.value.toDate) queryParams.toDate = filters.value.toDate
+        if (filters.value.color) queryParams.color = filters.value.color
+
+        router.push({ query: queryParams })
 
         const params: any = {
           page_number: pagination.value.currentPage,
           page_size: pagination.value.pageSize,
         }
 
-        if (selectedDate.value) {
-          params.from_date = selectedDate.value
-          params.to_date = selectedDate.value
-        }
+        // Add filters to API params
+        if (filters.value.userId) params.application_user_id = filters.value.userId
+        if (filters.value.fromDate) params.from_date = filters.value.fromDate
+        if (filters.value.toDate) params.to_date = filters.value.toDate
+        if (filters.value.color) params.color = filters.value.color
 
         const data = await getSpendings(params)
         if (data) {
@@ -205,8 +270,18 @@ export default defineComponent({
       }
     }
 
-    const clearDateFilter = async () => {
-      selectedDate.value = ''
+    const applyFilters = async () => {
+      pagination.value.currentPage = 1
+      await refreshSpendings()
+    }
+
+    const clearAllFilters = async () => {
+      filters.value = {
+        userId: '',
+        fromDate: '',
+        toDate: '',
+        color: ''
+      }
       pagination.value.currentPage = 1
       await refreshSpendings()
     }
@@ -257,7 +332,7 @@ export default defineComponent({
     }
 
     const SpendingDeleteModalRef = ref<InstanceType<typeof SpendingDeleteModal> | null>(null)
-    const openDeleteModal = (id: number) => {
+    const openDeleteModal = (id: string) => {
       if (SpendingDeleteModalRef.value) {
         SpendingDeleteModalRef.value.open([id])
       }
@@ -272,10 +347,13 @@ export default defineComponent({
 
     return {
       spendings,
-      selectedDate,
+      users,
+      filters,
       pagination,
+      hasActiveFilters,
       refreshSpendings,
-      clearDateFilter,
+      applyFilters,
+      clearAllFilters,
       changePage,
       formatCurrency,
       formatDate,

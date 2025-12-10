@@ -39,7 +39,7 @@ public class UserController : ControllerBase
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(404, "Bad request", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
-    public async Task<IActionResult> GetUserById(string userId)
+    public async Task<IActionResult> GetUserById(Guid userId)
     {
         return Ok(await _mediator.Send(new GetUserByIdQuery(userId)));
     }

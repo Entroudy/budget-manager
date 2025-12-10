@@ -2,14 +2,28 @@ namespace BudgetManager.Domain.Entities;
 
 public class Income : AuditableEntity
 {
-    public int Id { get; set; }
-    public string ApplicationUserId { get; set; } = string.Empty;
-    public ApplicationUser ApplicationUser { get; set; } = null!;
+    public Income(Guid applicationUserId, decimal amount, PaymentMethod paymentMethod, string? comment)
+    {
+        ApplicationUserId = applicationUserId;
+        Amount = amount;
+        PaymentMethod = paymentMethod;
+        Comment = comment;
+    }
+
+    public Income Update(Guid applicationUserId, decimal amount, PaymentMethod paymentMethod, string? comment)
+    {
+        ApplicationUserId = applicationUserId;
+        Amount = amount;
+        PaymentMethod = paymentMethod;
+        Comment = comment;
+
+        return this;
+    }
+
+    public Guid Id { get; set; }
+    public Guid ApplicationUserId { get; set; }
+    public ApplicationUser ApplicationUser { get; set; }
     public decimal Amount { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
     public string? Comment { get; set; }
-
-    public Income()
-    {
-    }
 }

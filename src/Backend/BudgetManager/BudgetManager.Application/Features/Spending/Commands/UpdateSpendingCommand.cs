@@ -10,25 +10,35 @@ namespace BudgetManager.Application;
 public class UpdateSpendingCommand(UpdateSpendingRequest request) : IRequest<Unit>
 {
     public Guid Id { get; set; }
+    public Guid? UserId { get; set; } = request.UserId;
     public string Item { get; set; } = request.Item;
     public decimal Amount { get; set; } = request.Amount;
     public PaymentMethod PaymentMethod { get; set; } = request.PaymentMethod;
     public string? Comment { get; set; } = request.Comment;
     public string? Color { get; set; } = request.Color;
-    public DateOnly Date { get; set; } = request.Date;
+    public DateTime Date { get; set; } = request.Date;
 }
 
 public class UpdateSpendingCommandHandler : IRequestHandler<UpdateSpendingCommand, Unit>
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateSpendingCommandHandler(AppDbContext context)
+    public UpdateSpendingCommandHandler(AppDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Unit> Handle(UpdateSpendingCommand request, CancellationToken cancellationToken)
     {
+        Guid userId = request.UserId ?? Guid.Empty;
+
+        if (request.UserId == null && Guid.TryParse(_currentUserService.UserId, out var currentUserId))
+        {
+            userId = currentUserId;
+        }
+
         var spending = await _context.Spendings
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
@@ -37,7 +47,7 @@ public class UpdateSpendingCommandHandler : IRequestHandler<UpdateSpendingComman
             throw new ValidationException($"Spending with ID {request.Id} not found");
         }
 
-        spending.Update(request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
+        spending.Update(userId, request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
 
         await _context.SaveChangesAsync(cancellationToken);
 

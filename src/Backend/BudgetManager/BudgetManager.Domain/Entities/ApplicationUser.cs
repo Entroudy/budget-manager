@@ -2,7 +2,7 @@
 
 namespace BudgetManager.Domain.Entities;
 
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser<Guid>
 {
     public ApplicationUser Update(string? firstName, string? lastName, string? nickName)
     {
@@ -16,7 +16,8 @@ public class ApplicationUser : IdentityUser
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? NickName { get; set; }
-    public ICollection<Income> Incomes { get; set; }
+    public ICollection<Income> Incomes { get; set; } = new List<Income>();
+    public ICollection<Spending> Spendings { get; set; } = new List<Spending>();
 
     public void SetPassword(string passwordHash)
     {

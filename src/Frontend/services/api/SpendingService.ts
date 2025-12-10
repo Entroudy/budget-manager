@@ -4,8 +4,9 @@ import type { SpendingItemResponse, SpendingCreate, SpendingListResponse, Spendi
 import type { ParamsType } from '@/models'
 
 export default class SpendingAPI {
-  async createSpending (spending: SpendingCreate): Promise<number | undefined> {
+  async createSpending (spending: SpendingCreate): Promise<string | undefined> {
     const { data } = (await api.post('/spendings', <AxiosRequestConfig['data']>{
+      applicationUserId: spending.applicationUserId,
       item: spending.item,
       amount: spending.amount,
       paymentMethod: spending.paymentMethod,
@@ -21,13 +22,14 @@ export default class SpendingAPI {
     return data || undefined
   }
 
-  async getSpending (id: number): Promise<SpendingItemResponse | undefined> {
+  async getSpending (id: string): Promise<SpendingItemResponse | undefined> {
     const { data } = (await api.get(`/spendings/${id}`))
     return data || undefined
   }
 
   async editSpending (spending: SpendingUpdate): Promise<{} | undefined> {
     const { data } = (await api.put(`/spendings/${spending.id}`, <AxiosRequestConfig['data']>{
+      applicationUserId: spending.applicationUserId,
       item: spending.item,
       amount: spending.amount,
       paymentMethod: spending.paymentMethod,
@@ -38,7 +40,7 @@ export default class SpendingAPI {
     return data || undefined
   }
 
-  async deleteSpending (id: number): Promise<{} | undefined> {
+  async deleteSpending (id: string): Promise<{} | undefined> {
     const { data } = (await api.delete(`/spendings/${id}`))
     return data || undefined
   }

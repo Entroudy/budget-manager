@@ -6,6 +6,7 @@ using BudgetManager.Application.Models.Responses;
 using BudgetManager.Infrastructure;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetManager.Application.Users;
 public class GetUserListQuery : IRequest<PaginatedResult<UserResponse>>
@@ -29,7 +30,11 @@ public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, Paginat
 
     public Task<PaginatedResult<UserResponse>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
     {
-        return _context.ApplicationUsers.Search(request.PaginationPostModel, x => x.Email, x => x.LastName, x => x.FirstName).ToUserResponse().ToPaginatedResultAsync(request.PaginationPostModel);
+        return _context.ApplicationUsers
+            .Include(x => x.Incomes)
+            .Search(request.PaginationPostModel, x => x.Email, x => x.LastName, x => x.FirstName)
+            .ToUserResponse()
+            .ToPaginatedResultAsync(request.PaginationPostModel);
     }
 }
 public class GetProjectListQueryValidator : AbstractValidator<GetUserListQuery>

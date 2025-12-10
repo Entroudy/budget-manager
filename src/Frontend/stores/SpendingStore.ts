@@ -32,7 +32,7 @@ export const useSpendingStore = defineStore('spending', {
         return null
       }
     },
-    async getSpending (id: number) {
+    async getSpending (id: string) {
       try {
         const data = await this.api.spending.getSpending(id)
         return data
@@ -48,7 +48,7 @@ export const useSpendingStore = defineStore('spending', {
         return null
       }
     },
-    async deleteSpending (id: number) {
+    async deleteSpending (id: string) {
       try {
         const data = await this.api.spending.deleteSpending(id)
         return data

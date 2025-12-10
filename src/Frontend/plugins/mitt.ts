@@ -15,7 +15,8 @@ export default defineNuxtPlugin(() => {
   return {
     provide: {
       event: emitter.emit,
-      listen: emitter.on
+      listen: emitter.on,
+      unlisten: emitter.off
     }
   }
 })

@@ -29,10 +29,21 @@ const { activePageTitle } = storeToRefs(globalStore);
 import { defineComponent } from 'vue'
 
 export default defineComponent({
+  data() {
+    return {
+      notificationHandler: null as any
+    }
+  },
   mounted() {
-    this.$listen('notification', (data) => {
+    this.notificationHandler = (data) => {
       this.$showNotification(data.type, data.message)
-    })
+    }
+    this.$listen('notification', this.notificationHandler)
+  },
+  beforeUnmount() {
+    if (this.notificationHandler) {
+      this.$unlisten('notification', this.notificationHandler)
+    }
   }
 })
 </script>

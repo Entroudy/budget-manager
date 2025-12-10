@@ -6,7 +6,8 @@ export enum PaymentMethod {
 }
 
 export type SpendingItemResponse = BaseResponseProps & {
-  id: number
+  id: string
+  applicationUserId: string
   item: string
   amount: number
   paymentMethod: PaymentMethod
@@ -20,6 +21,7 @@ export type SpendingListResponse = BasePagination & {
 }
 
 export type SpendingCreate = {
+  applicationUserId: string
   item: string
   amount: number
   paymentMethod: PaymentMethod
@@ -29,7 +31,8 @@ export type SpendingCreate = {
 }
 
 export type SpendingUpdate = {
-  id: number
+  id: string
+  applicationUserId: string
   item: string
   amount: number
   paymentMethod: PaymentMethod

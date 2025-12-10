@@ -11,11 +11,11 @@ namespace BudgetManager.Application;
 
 public class GetSpendingListQuery : IRequest<PaginatedResult<SpendingListResponse>>
 {
-    public GetSpendingListQuery(PaginationPostModel paginationPostModel)
+    public GetSpendingListQuery(SpendingFilterPostModel filterPostModel)
     {
-        PaginationPostModel = paginationPostModel;
+        FilterPostModel = filterPostModel;
     }
-    public PaginationPostModel PaginationPostModel { get; private set; }
+    public SpendingFilterPostModel FilterPostModel { get; private set; }
 }
 
 public class GetSpendingListQueryHandler : IRequestHandler<GetSpendingListQuery, PaginatedResult<SpendingListResponse>>
@@ -29,9 +29,33 @@ public class GetSpendingListQueryHandler : IRequestHandler<GetSpendingListQuery,
 
     public Task<PaginatedResult<SpendingListResponse>> Handle(GetSpendingListQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Spendings.Search(request.PaginationPostModel, x => x.Item);
+        var query = _context.Spendings.AsQueryable();
 
-        return query.ToSpendingListResponse().ToPaginatedResultAsync(request.PaginationPostModel);
+        // Apply filters
+        if (request.FilterPostModel.ApplicationUserId.HasValue)
+        {
+            query = query.Where(x => x.ApplicationUserId == request.FilterPostModel.ApplicationUserId.Value);
+        }
+
+        if (request.FilterPostModel.FromDate.HasValue)
+        {
+            query = query.Where(x => x.Date >= request.FilterPostModel.FromDate.Value);
+        }
+
+        if (request.FilterPostModel.ToDate.HasValue)
+        {
+            query = query.Where(x => x.Date <= request.FilterPostModel.ToDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.FilterPostModel.Color))
+        {
+            query = query.Where(x => x.Color == request.FilterPostModel.Color);
+        }
+
+        // Apply search and pagination
+        query = query.Search(request.FilterPostModel, x => x.Item);
+
+        return query.ToSpendingListResponse().ToPaginatedResultAsync(request.FilterPostModel);
     }
 }
 
@@ -39,6 +63,6 @@ public class GetSpendingListQueryValidator : AbstractValidator<GetSpendingListQu
 {
     public GetSpendingListQueryValidator()
     {
-        RuleFor(x => x.PaginationPostModel).NotNull();
+        RuleFor(x => x.FilterPostModel).NotNull();
     }
 }

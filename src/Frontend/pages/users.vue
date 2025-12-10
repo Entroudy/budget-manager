@@ -1,65 +1,98 @@
 <template>
     <div class="rounded-lg bg-white dark:bg-gray-800 shadow-xl dark:text-white px-4 py-4 md:px-8 md:py-6">
-      <CustomTable :title="{ top: $t('list_of'), bottom: $t('users') }" :headings="headings"
-        :table-data="users" :pagination="pagination" :sort-count="sortCount"
-        :search="true" :search-query="searchValue" :hoverText="hoverText" :sort-by="sortBy"
-        @on-page-size-change="changePageSize" @on-search="onSearchChange" @on-data-selected="selectRows"
-        @on-page-change="changePage" @on-table-sort="sortTable" @on-row-item-click="openEditModal"
-        @on-row-item-edit="editRowItem">
-        <template #main-action>
-          <div class="flex space-x-4">
-            <button class="btn btn-md bg-primary text-white capitalize-block" @click="openCreateModal">
-              {{ $t('create') }}
-            </button>
-          </div>
-        </template>
-        <template v-slot:rowItem="slotProps">
-          <template v-if="slotProps.heading == 'url'">
-              <div v-if="slotProps.data[0].url != ''">
-                <a :href="slotProps.data[0].url.startsWith('http') ? slotProps.data[0].url : `https://${slotProps.data[0].url}`"
-                rel="noopener noreferrer" class="underline text-md font-bold" target="_blank" @click.stop><i
-                  class="fas fa-link text-xl" style="color:#c8d414"></i></a>
-              </div>
-              <div v-else>
-                
-              </div>
-            </template>
-          <template v-if="slotProps.heading == 'expireDate'">
-            {{ formatDate(slotProps.data[0].expireDate) }}
-          </template>
-          <template v-if="slotProps.heading == 'name'">
-            <p class="font-bold">{{ slotProps.data[0].name }}</p>
-          </template>
-          <template v-if="slotProps.heading == 'alert'">
-            <div v-if="slotProps.data[0].alert">
-              <i class="fas fa-bell text-xl" style="color:#c8d414"></i>
+      <!-- Top Bar -->
+      <div class="flex items-center justify-between gap-4 mb-6">
+        <!-- Left: Page Size -->
+        
+        <div class="flex items-center gap-2">
+          <button
+            class="btn btn-md bg-primary text-white capitalize-block px-6 py-2 hover:bg-primary-dark transition-colors"
+            @click="openCreateModal"
+          >
+            {{ $t('create') }}
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input
+            id="search"
+            v-model="searchValue"
+            type="text"
+            :placeholder="$t('searching')"
+            class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm w-64"
+          >
+        </div>
+      </div>
+
+      <!-- Users List -->
+      <div class="mt-6">
+        
+
+        <div v-if="users.length > 0" class="space-y-2">
+          <div
+            v-for="user in users"
+            :key="user.id"
+            @click="openEditModal(user)"
+            class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+          >
+            <div class="flex flex-col">
+              <span class="font-bold text-base">{{ user.lastName }}</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ user.nickName }}</span>
+              <span class="text-sm text-gray-500 dark:text-gray-500">{{ user.email }}</span>
             </div>
-            <div v-else>
-              
-            </div>
-          </template>
-        </template>
-        <template #bulk-actions>
-          <div class="relative z-40 flex">
-            <button class="btn btn-sm bg-gray-700 text-white capitalize-block" v-click-outside="handleDropdownClick"
-              @click="showBulkActionDropdown = !showBulkActionDropdown">
-              <span class="hidden md:flex">
-                <i class="fas fa-bars"></i>
-              </span>
-              <span class="md:hidden">{{ $t('group_actions') }}</span>
-            </button>
-            <div :class="[showBulkActionDropdown ? '' : 'hidden']"
-              class="absolute right-1/2 translate-x-1/2 z-50 mt-2 w-32 origin-top-right cursor-pointer rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-              role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-              <div class="py-1" role="none">
-                <span @click="openDeleteModal"
-                  class="capitalize-block hover:bg-gray-100 hover:text-gray-900 block rounded-md px-4 py-2 text-sm dark:text-white"
-                  role="menuitem" tabindex="-1" id="menu-item-2">{{ $t('delete') }}</span>
-              </div>
+            <div class="flex items-center gap-2">
+              <input
+                type="checkbox"
+                :checked="selectedIds.includes(user.id)"
+                @click.stop="toggleSelection(user.id)"
+                class="w-4 h-4"
+              >
             </div>
           </div>
-        </template>
-      </CustomTable>
+        </div>
+
+        <div v-else class="text-center py-8 text-gray-500">
+          {{ $t('no_data') }}
+        </div>
+
+        <h3 class="text-s mt-4">
+          {{ $t('list_of') }} {{ $t('users') }} ({{ users.length }} {{ $t('of') }} {{ pagination.totalCount }})
+        </h3>
+      </div>
+
+      <!-- Bulk Actions -->
+      <div v-if="selectedIds.length > 0" class="mt-4 flex gap-2">
+        <button
+          @click="openDeleteModal"
+          class="btn btn-sm bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+        >
+          {{ $t('delete') }} ({{ selectedIds.length }})
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="pagination.totalPages > 1" class="mt-6 flex items-center justify-between">
+        <button
+          @click="changePage(-1)"
+          :disabled="pagination.currentPage === 1"
+          class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        >
+          {{ $t('previous') }}
+        </button>
+
+        <span class="text-sm">
+          {{ $t('page') }} {{ pagination.currentPage }} {{ $t('of') }} {{ pagination.totalPages }}
+        </span>
+
+        <button
+          @click="changePage(1)"
+          :disabled="pagination.currentPage === pagination.totalPages"
+          class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        >
+          {{ $t('next') }}
+        </button>
+      </div>
+
       <UserCreateModal ref="UserCreateModalRef" @item-created="refreshUsers" />
       <UserEditModal ref="UserEditModalRef" @item-edited="refreshUsers" />
       <UserDeleteModal ref="UserDeleteModalRef" @item-deleted="handleDelete" />
@@ -88,17 +121,12 @@
   
       const { t } = useI18n();
   
-      const showBulkActionDropdown = ref(false)
-      const handleDropdownClick = () => {
-        if (showBulkActionDropdown.value) {
-          showBulkActionDropdown.value = false
-        }
-      }
-  
-      const showExtraBulkActionDropdown = ref(false)
-      const handleExtraDropdownClick = () => {
-        if (showExtraBulkActionDropdown.value) {
-          showExtraBulkActionDropdown.value = false
+      const toggleSelection = (userId: string) => {
+        const index = selectedIds.value.indexOf(userId)
+        if (index > -1) {
+          selectedIds.value.splice(index, 1)
+        } else {
+          selectedIds.value.push(userId)
         }
       }
   
@@ -162,64 +190,18 @@
         } catch (error) { }
       }
   
-  
-      type EditRowItemData<T = string> = {
-        id: string;
-        key: keyof UserListItem;
-        value: T;
-      };
-      const editRowItem = async (data: EditRowItemData) => {
-        const itemToEdit = users.value.find((item: { id: string }) => item.id === data.id)
-        if (itemToEdit && itemToEdit[data.key] != data.value) {
-          itemToEdit[data.key] = data.value
-          const response = await editUser(itemToEdit)
-          if (response) {
-            $showNotification('success', `${t('successful_save')}`)
-          }
-        }
-      }
-  
       /* TABLE ACTIONS */
-  
+
       const selectedIds = ref([])
-      const headings = ref([
-        {
-          name: 'Teljes név',
-          key: 'lastName', //todo
-          width: 'auto',
-          dataType: 'text',
-          editMode: false,
-          classes: ''
-        },
-        {
-          name: 'Becenév',
-          key: 'nickName',
-          width: 'auto',
-          dataType: 'text',
-          editMode: false,
-          classes: ''
-        },
-        {
-          name: 'E-mail fiók',
-          key: 'email',
-          width: 'auto',
-          dataType: 'text',
-          editMode: false,
-          classes: ''
-        },
-      ])
       const pagination = ref({
         currentPage: 1,
         pageSize: 10,
         totalCount: 0,
         totalPages: 0
       })
-      const activationState = ref(true)
       const sortBy = ref('')
       const ascending = ref(false)
-      const sortCount = ref(0)
       const searchValue = ref('')
-      const hoverText = `${t('name') + ',' + t('type')}`
   
   
       watch(searchValue, async (newValue) => {
@@ -233,19 +215,6 @@
         }
       })
   
-      watch(activationState, async (newValue) => {
-        if (!firstLoad.value) {
-          await refreshUsers()
-        }
-      })
-  
-      const onSearchChange = (value: string) => {
-        searchValue.value = value
-      }
-  
-      const selectRows = (data: any) => {
-        selectedIds.value = data
-      }
   
       const changePage = async (pageNumber: number) => {
         pagination.value.currentPage += pageNumber
@@ -258,28 +227,6 @@
         await refreshUsers()
       }
   
-      const formatDate = (value) => {
-        const date = new Date(value)
-        const year = date.getFullYear()
-        const month = date.toLocaleString('hu-HU', { month: 'long' })
-        const day = date.getDate()
-  
-        return `${year}. ${month} ${day}.`
-      }
-  
-      const sortTable = async (sortByValue: string) => {
-        sortCount.value++
-        if (sortCount.value % 3 === 0) {
-          sortCount.value = 0
-          sortBy.value = ''
-          ascending.value = false
-          await refreshUsers()
-          return
-        }
-        sortBy.value = sortByValue
-        ascending.value = !ascending.value
-        await refreshUsers()
-      }
   
       /* MODAL ACTIONS */
   
@@ -312,28 +259,14 @@
       }
   
       return {
-        activationState,
-        showBulkActionDropdown,
-        showExtraBulkActionDropdown,
-        handleDropdownClick,
-        handleExtraDropdownClick,
         users,
-        formatDate,
         selectedIds,
-        headings,
         pagination,
-        sortBy,
-        hoverText,
-        ascending,
-        sortCount,
         searchValue,
         refreshUsers,
-        editRowItem,
-        onSearchChange,
-        selectRows,
+        toggleSelection,
         changePage,
         changePageSize,
-        sortTable,
         UserCreateModalRef,
         openCreateModal,
         UserEditModalRef,

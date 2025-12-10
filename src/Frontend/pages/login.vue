@@ -41,26 +41,24 @@
       </div>
     </div>
 
-    <div class="mt-5">
-      <label class="flex items-center cursor-pointer">
+    <div class="flex items-center gap-2 mt-6">
+      <button
+        class="flex-[9] px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        @click="loginUser"
+        :disabled="isLoading"
+      >
+        <span>Sign in</span>
+        <i v-show="isLoading" class="fas fa-spinner fa-spin ml-2"></i>
+      </button>
+      <div class="flex-[1] flex items-center justify-center">
         <input
           id="remember-me"
           v-model="form.rememberMe"
           type="checkbox"
-          class="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-0 focus:ring-offset-0"
+          class="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-0 focus:ring-offset-0 cursor-pointer"
         >
-        <span class="ml-2 text-sm text-gray-600 select-none">Remember me</span>
-      </label>
+      </div>
     </div>
-
-    <button
-      class="w-full mt-6 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-      @click="loginUser"
-      :disabled="isLoading"
-    >
-      <span>Sign in</span>
-      <i v-show="isLoading" class="fas fa-spinner fa-spin ml-2"></i>
-    </button>
   </div>
 </template>
 

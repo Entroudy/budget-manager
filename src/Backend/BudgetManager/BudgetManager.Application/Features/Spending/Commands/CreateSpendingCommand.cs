@@ -8,26 +8,36 @@ namespace BudgetManager.Application;
 
 public class CreateSpendingCommand(CreateSpendingRequest request) : IRequest<Guid>
 {
+    public Guid? UserId { get; set; } = request.UserId;
     public string Item { get; set; } = request.Item;
     public decimal Amount { get; set; } = request.Amount;
     public PaymentMethod PaymentMethod { get; set; } = request.PaymentMethod;
     public string? Comment { get; set; } = request.Comment;
     public string? Color { get; set; } = request.Color;
-    public DateOnly Date { get; set; } = request.Date;
+    public DateTime Date { get; set; } = request.Date;
 }
 
 public class CreateSpendingCommandHandler : IRequestHandler<CreateSpendingCommand, Guid>
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateSpendingCommandHandler(AppDbContext context)
+    public CreateSpendingCommandHandler(AppDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Guid> Handle(CreateSpendingCommand request, CancellationToken cancellationToken)
     {
-        var spending = new Spending(request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
+        Guid userId = request.UserId ?? Guid.Empty;
+
+        if (request.UserId == null && Guid.TryParse(_currentUserService.UserId, out var currentUserId))
+        {
+            userId = currentUserId;
+        }
+
+        var spending = new Spending(userId, request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
 
         _context.Spendings.Add(spending);
         await _context.SaveChangesAsync(cancellationToken);

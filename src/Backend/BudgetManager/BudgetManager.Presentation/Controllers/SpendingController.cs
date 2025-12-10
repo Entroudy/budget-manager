@@ -30,9 +30,9 @@ public class SpendingController : ControllerBase
     [SwaggerResponse(400, "Bad request", typeof(ProblemDetails))]
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
-    public async Task<IActionResult> GetSpendingList([FromQuery] PaginationPostModel paginationPostModel)
+    public async Task<IActionResult> GetSpendingList([FromQuery] SpendingFilterPostModel filterPostModel)
     {
-        return Ok(await _mediator.Send(new GetSpendingListQuery(paginationPostModel)));
+        return Ok(await _mediator.Send(new GetSpendingListQuery(filterPostModel)));
     }
 
     [JwtAuthorize()]

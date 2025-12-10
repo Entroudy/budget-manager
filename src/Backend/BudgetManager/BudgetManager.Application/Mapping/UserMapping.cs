@@ -13,7 +13,17 @@ public static class UserMapping
             Email = x.Email,
             LastName = x.LastName,
             FirstName = x.FirstName,
-            NickName = x.NickName
+            NickName = x.NickName,
+            Incomes = x.Incomes.Select(i => new IncomeResponse
+            {
+                Id = i.Id,
+                ApplicationUserId = i.ApplicationUserId,
+                Amount = i.Amount,
+                PaymentMethod = i.PaymentMethod,
+                Comment = i.Comment,
+                CreatedDate = i.CreatedAt,
+                LastModifiedDate = i.ModifiedAt
+            }).ToList()
         });
     }
 }

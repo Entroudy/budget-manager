@@ -11,6 +11,20 @@
           <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
             <div class="sm:col-span-full">
+              <label for="user" class="required capitalize-block">{{ $t('user') }}</label>
+              <select id="user" v-model="spending.applicationUserId" class="w-full" :class="{
+                '!border-red-600 !focus-visible:border-red-600': v$.applicationUserId.$error,
+                '!border-green-500': !v$.applicationUserId.$invalid,
+              }" @change="v$.applicationUserId.$touch">
+                <option value="">{{ $t('select_user') }}</option>
+                <option v-for="user in users" :key="user.id" :value="user.id">
+                  {{ user.nickName || user.lastName }}
+                </option>
+              </select>
+              <span v-if="v$.applicationUserId.$error" class="text-xs text-red-600">{{ v$.applicationUserId.$silentErrors[0].$message }}</span>
+            </div>
+
+            <div class="sm:col-span-full">
               <label for="item" class="required capitalize-block">{{ $t('item') }}</label>
               <input id="item" v-model="spending.item" type="text" class="w-full" :class="{
                 '!border-red-600 !focus-visible:border-red-600': v$.item.$error,
@@ -78,13 +92,19 @@ import { useVuelidate } from '@vuelidate/core'
 import type { SpendingUpdate, SpendingItemResponse } from '~/models/SpendingModel'
 import { PaymentMethod } from '~/models/SpendingModel'
 import { useSpendingStore } from '~/stores/SpendingStore'
+import { useUserStore } from '~/stores/UserStore'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'SpendingEditModal',
   emits: ['item-edited'],
   setup(props, context) {
+    const { users } = storeToRefs(useUserStore())
+    const { getUsers } = useUserStore()
+
     const spending = reactive({
-      id: 0,
+      id: '',
+      applicationUserId: '',
       item: '',
       amount: 0,
       paymentMethod: PaymentMethod.Cash,
@@ -102,6 +122,9 @@ export default defineComponent({
 
     const rules = computed(() => {
       return {
+        applicationUserId: {
+          required: helpers.withMessage(t('user_required'), required)
+        },
         item: {
           required: helpers.withMessage(t('item_required'), required)
         },
@@ -120,8 +143,10 @@ export default defineComponent({
 
     const v$ = useVuelidate(rules, spending)
 
-    const open = (spendingData: SpendingItemResponse) => {
+    const open = async (spendingData: SpendingItemResponse) => {
+      await getUsers({ page_number: 1, page_size: 999 })
       spending.id = spendingData.id
+      spending.applicationUserId = spendingData.applicationUserId
       spending.item = spendingData.item
       spending.amount = spendingData.amount
       spending.paymentMethod = spendingData.paymentMethod
@@ -156,6 +181,7 @@ export default defineComponent({
     }
 
     return {
+      users,
       spending,
       v$,
       isLoading,

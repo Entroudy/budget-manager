@@ -53,7 +53,8 @@ class APIService {
         if (error.response.status === 401) {
           return logout()
         }
-        $event('notification', { type: 'error', message: error.response.data.title })
+        const errorMessage = error.response.data.detail || error.response.data.title || 'An error occurred'
+        $event('notification', { type: 'error', message: errorMessage })
         console.log(error)
         return Promise.reject(error)
       }

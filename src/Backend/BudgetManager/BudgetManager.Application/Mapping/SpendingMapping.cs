@@ -15,6 +15,7 @@ public static class SpendingMapping
             PaymentMethod = s.PaymentMethod,
             Comment = s.Comment,
             Color = s.Color,
+            Date = s.Date,
             CreatedAt = s.CreatedAt,
             CreatedBy = s.CreatedBy,
             ModifiedAt = s.ModifiedAt,
@@ -27,11 +28,15 @@ public static class SpendingMapping
         return entity.Select(s => new SpendingListResponse
         {
             Id = s.Id,
+            UserId = s.ApplicationUserId,
+            UserFullName = s.ApplicationUser.LastName + " " + s.ApplicationUser.FirstName,
+            UserNickName = s.ApplicationUser.NickName,
             Item = s.Item,
             Amount = s.Amount,
             PaymentMethod = s.PaymentMethod,
             Comment = s.Comment,
             Color = s.Color,
+            Date = s.Date,
             CreatedAt = s.CreatedAt,
             CreatedBy = s.CreatedBy
         });

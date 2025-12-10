@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 namespace BudgetManager.Application.Users;
 public class GetUserByIdQuery : IRequest<UserResponse>
 {
-    public GetUserByIdQuery(string id)
+    public GetUserByIdQuery(Guid id)
     {
         Id = id;
     }
-    public string Id { get; private set; }
+    public Guid Id { get; private set; }
 }
 public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserResponse>
 {
@@ -27,6 +27,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserRes
     public async Task<UserResponse> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         return await _context.ApplicationUsers
+            .Include(x => x.Incomes)
             .ToUserResponse()
             .FirstOrDefaultAsync(x => x.Id == request.Id) ?? throw new NotFoundException("User", request.Id);
     }
