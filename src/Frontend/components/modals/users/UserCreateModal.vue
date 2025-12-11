@@ -2,93 +2,208 @@
   <Transition name="modal">
     <BaseModal v-if="showModal" :show-close="true" :showing="showModal" @close="close" :preventBackgroundClose="true">
       <template #title>
-        <span class="break-normal">
-          {{ $t('create') }}
-        </span>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <i class="fas fa-user-plus text-primary text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $t('create') }} {{ $t('users') }}</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('fill_in_user_details') }}</p>
+          </div>
+        </div>
       </template>
       <template #body>
-        <form v-enter-submit="submit">
+        <form v-enter-submit="submit" class="space-y-6">
 
-          <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          <!-- Personal Information Section -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+              {{ $t('personal_information') }}
+            </h3>
 
-            <div class="sm:col-span-3">
-              <label for="lastName" class="required capitalize-block">{{ $t('last_name') }}</label>
-              <input id="lastName" v-model="user.lastName" type="text" class="w-full" :class="{
-                '!border-red-600 !focus-visible:border-red-600': v$.lastName.$error,
-                '!border-green-500 ': !v$.lastName.$invalid,
-              }" @change="v$.lastName.$touch">
-              <span v-if="v$.lastName.$error" class="text-xs text-red-600">{{ v$.lastName.$silentErrors[0].$message
-                }}</span>
-            </div>
-
-            <div class="sm:col-span-3">
-              <label for="firstName" class="required capitalize-block">{{ $t('first_name') }}</label>
-              <input id="firstName" v-model="user.firstName" type="text" class="w-full" :class="{
-                '!border-red-600 !focus-visible:border-red-600': v$.firstName.$error,
-                '!border-green-500 ': !v$.firstName.$invalid,
-              }" @change="v$.firstName.$touch">
-              <span v-if="v$.firstName.$error" class="text-xs text-red-600">{{ v$.fistName.$silentErrors[0].$message
-                }}</span>
-            </div>
-
-            <div class="sm:col-span-3">
-              <label for="email" class="required capitalize-block">{{ $t('email') }}</label>
-              <input id="email" v-model="user.email" type="text" class="w-full" :class="{
-                '!border-red-600 !focus-visible:border-red-600': v$.email.$error,
-                '!border-green-500 ': !v$.email.$invalid,
-              }" @change="v$.email.$touch">
-              <span v-if="v$.email.$error" class="text-xs text-red-600">{{ v$.email.$silentErrors[0].$message
-                }}</span>
-            </div>
-
-            <div class="sm:col-span-3">
-              <label for="nickName" class="required capitalize-block">{{ $t('nickName') }}</label>
-              <input id="nickName" v-model="user.nickName" type="text" class="w-full" :class="{
-                '!border-red-600 !focus-visible:border-red-600': v$.nickName.$error,
-                '!border-green-500 ': !v$.nickName.$invalid,
-              }" @change="v$.nickName.$touch">
-              <span v-if="v$.nickName.$error" class="text-xs text-red-600">{{ v$.nickName.$silentErrors[0].$message
-                }}</span>
-            </div>
-
-            <div class="sm:col-span-3">
-              <label for="password" class="required capitalize-block">{{ $t('password') }}</label>
-              <div class="flex items-center">
-                <input id="password" v-model="user.password" :type="passwordVisible ? 'text' : 'password'"
-                  class="w-full" :class="{
-                    '!border-red-600 !focus-visible:border-red-600': v$.password.$error,
-                    '!border-green-500 ': !v$.password.$invalid,
-                  }" @change="v$.password.$touch">
-                  <i class="fas fa-eye text-black px-4 text-sm cursor-pointer"
-                  :class="[passwordVisible ? 'fa-lock-open' : 'fa-lock']" @click="passwordVisible = !passwordVisible" />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- First Name -->
+              <div>
+                <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {{ $t('first_name') }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="firstName"
+                  v-model="user.firstName"
+                  type="text"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  :class="{
+                    'border-red-500 focus:ring-red-500': v$.firstName.$error,
+                    'border-green-500 focus:ring-green-500': !v$.firstName.$invalid && v$.firstName.$dirty,
+                  }"
+                  @blur="v$.firstName.$touch"
+                  :placeholder="$t('enter_first_name')"
+                >
+                <span v-if="v$.firstName.$error" class="text-xs text-red-500 mt-1 block">
+                  {{ v$.firstName.$silentErrors[0].$message }}
+                </span>
               </div>
-              <span v-if="v$.password.$error" class="text-xs text-red-600">{{ v$.password.$silentErrors[0].$message
-                }}</span>
-            </div>
 
-            <div class="sm:col-span-3">
-              <label for="confirmPassword" class="required capitalize-block">{{ $t('confirm_password') }}</label>
-              <div class="flex items-center">
-                <input id="confirmPassword" v-model="user.confirmPassword" :type="passwordVisible ? 'text' : 'password'"
-                  class="w-full" :class="{
-                    '!border-red-600 !focus-visible:border-red-600': v$.confirmPassword.$error,
-                    '!border-green-500 ': !v$.confirmPassword.$invalid,
-                  }" @change="v$.confirmPassword.$touch">
-                  <i class="fas text-black px-4 text-sm cursor-pointer"
-                  :class="[passwordVisible ? 'fa-lock-open' : 'fa-lock']" @click="passwordVisible = !passwordVisible" />
+              <!-- Last Name -->
+              <div>
+                <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {{ $t('last_name') }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="lastName"
+                  v-model="user.lastName"
+                  type="text"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  :class="{
+                    'border-red-500 focus:ring-red-500': v$.lastName.$error,
+                    'border-green-500 focus:ring-green-500': !v$.lastName.$invalid && v$.lastName.$dirty,
+                  }"
+                  @blur="v$.lastName.$touch"
+                  :placeholder="$t('enter_last_name')"
+                >
+                <span v-if="v$.lastName.$error" class="text-xs text-red-500 mt-1 block">
+                  {{ v$.lastName.$silentErrors[0].$message }}
+                </span>
               </div>
-              <span v-if="v$.confirmPassword.$error" class="text-xs text-red-600">{{ v$.confirmPassword.$silentErrors[0].$message
-                }}</span>
             </div>
 
+            <!-- Nickname -->
+            <div>
+              <label for="nickName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {{ $t('nickName') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="nickName"
+                v-model="user.nickName"
+                type="text"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                :class="{
+                  'border-red-500 focus:ring-red-500': v$.nickName.$error,
+                  'border-green-500 focus:ring-green-500': !v$.nickName.$invalid && v$.nickName.$dirty,
+                }"
+                @blur="v$.nickName.$touch"
+                :placeholder="$t('enter_nickname')"
+              >
+              <span v-if="v$.nickName.$error" class="text-xs text-red-500 mt-1 block">
+                {{ v$.nickName.$silentErrors[0].$message }}
+              </span>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {{ $t('email') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                v-model="user.email"
+                type="email"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                :class="{
+                  'border-red-500 focus:ring-red-500': v$.email.$error,
+                  'border-green-500 focus:ring-green-500': !v$.email.$invalid && v$.email.$dirty,
+                }"
+                @blur="v$.email.$touch"
+                :placeholder="$t('enter_email')"
+              >
+              <span v-if="v$.email.$error" class="text-xs text-red-500 mt-1 block">
+                {{ v$.email.$silentErrors[0].$message }}
+              </span>
+            </div>
           </div>
-          
+
+          <!-- Security Section -->
+          <div class="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+              {{ $t('security') }}
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Password -->
+              <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {{ $t('password') }} <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input
+                    id="password"
+                    v-model="user.password"
+                    :type="passwordVisible ? 'text' : 'password'"
+                    class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    :class="{
+                      'border-red-500 focus:ring-red-500': v$.password.$error,
+                      'border-green-500 focus:ring-green-500': !v$.password.$invalid && v$.password.$dirty,
+                    }"
+                    @blur="v$.password.$touch"
+                    :placeholder="$t('enter_password')"
+                  >
+                  <button
+                    type="button"
+                    @click="passwordVisible = !passwordVisible"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                  >
+                    <i class="fas" :class="passwordVisible ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </button>
+                </div>
+                <span v-if="v$.password.$error" class="text-xs text-red-500 mt-1 block">
+                  {{ v$.password.$silentErrors[0].$message }}
+                </span>
+              </div>
+
+              <!-- Confirm Password -->
+              <div>
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {{ $t('confirm_password') }} <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input
+                    id="confirmPassword"
+                    v-model="user.confirmPassword"
+                    :type="passwordVisible ? 'text' : 'password'"
+                    class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    :class="{
+                      'border-red-500 focus:ring-red-500': v$.confirmPassword.$error,
+                      'border-green-500 focus:ring-green-500': !v$.confirmPassword.$invalid && v$.confirmPassword.$dirty,
+                    }"
+                    @blur="v$.confirmPassword.$touch"
+                    :placeholder="$t('confirm_your_password')"
+                  >
+                  <button
+                    type="button"
+                    @click="passwordVisible = !passwordVisible"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                  >
+                    <i class="fas" :class="passwordVisible ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </button>
+                </div>
+                <span v-if="v$.confirmPassword.$error" class="text-xs text-red-500 mt-1 block">
+                  {{ v$.confirmPassword.$silentErrors[0].$message }}
+                </span>
+              </div>
+            </div>
+          </div>
+
         </form>
       </template>
       <template #action>
-        <button class="btn bg-primary w-full text-white capitalize" @click="submit" :disabled="isLoading">
-          {{ $t('create') }}<i v-show="isLoading" class="fas fa-spinner fa-spin text-white ml-2"></i>
-        </button>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            @click="close"
+            class="flex-1 px-6 py-3 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            :disabled="isLoading"
+          >
+            {{ $t('cancel') }}
+          </button>
+          <button
+            @click="submit"
+            class="flex-1 px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors flex items-center justify-center gap-2"
+            :disabled="isLoading"
+          >
+            <i v-if="isLoading" class="fas fa-spinner fa-spin"></i>
+            <span>{{ $t('create') }}</span>
+          </button>
+        </div>
       </template>
     </BaseModal>
   </Transition>
@@ -140,7 +255,7 @@ export default defineComponent({
           required: helpers.withMessage('The password field is required', required)
         },
         confirmPassword: {
-          sameAs: helpers.withMessage('Password`s need to match', sameAs(user.password))
+          sameAs: helpers.withMessage('Passwords need to match', sameAs(user.password))
         },
       }
     })
