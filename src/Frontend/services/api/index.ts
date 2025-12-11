@@ -5,15 +5,18 @@ import { useAuthStore } from '@/stores/AuthStore'
 import AuthAPI from '@/services/api/AuthService'
 import UserAPI from '@/services/api/UserService'
 import SpendingAPI from '~/services/api/SpendingService'
+import IncomeAPI from '~/services/api/IncomeService'
 
 class APIService {
   auth: AuthAPI
   user: UserAPI
   spending: SpendingAPI
+  income: IncomeAPI
   constructor() {
     this.auth = new AuthAPI()
     this.user = new UserAPI()
     this.spending = new SpendingAPI()
+    this.income = new IncomeAPI()
   }
 
   public axiosInstance() {

@@ -4,11 +4,12 @@ namespace BudgetManager.Domain.Entities;
 
 public class ApplicationUser : IdentityUser<Guid>
 {
-    public ApplicationUser Update(string? firstName, string? lastName, string? nickName)
+    public ApplicationUser Update(string? firstName, string? lastName, string? nickName, string email)
     {
         FirstName = firstName;
         LastName = lastName;
         NickName = nickName;
+        Email = email;
 
         return this;
     }

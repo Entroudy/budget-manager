@@ -77,7 +77,7 @@ export default defineComponent({
 }
 
 .md-editor-toolbar-wrapper .md-editor-toolbar-item:hover {
-  background-color: #442D1C;
+  background-color: #52343A;
 }
 
 .md-editor-preview.github-theme,
@@ -106,12 +106,12 @@ export default defineComponent({
 
 .md-editor-footer-item label {
   margin-bottom: 0;
-  color: #442D1C;
+  color: #52343A;
 }
 .github-theme pre code .code-block {
   color: #6b7280;
 }
 .github-theme code {
-  color: #442D1C;
+  color: #52343A;
 }
 </style>

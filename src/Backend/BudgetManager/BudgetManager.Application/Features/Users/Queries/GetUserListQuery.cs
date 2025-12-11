@@ -32,8 +32,9 @@ public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, Paginat
     {
         return _context.ApplicationUsers
             .Include(x => x.Incomes)
-            .Search(request.PaginationPostModel, x => x.Email, x => x.LastName, x => x.FirstName)
             .ToUserResponse()
+            .Sort(request.PaginationPostModel)
+            .Search(request.PaginationPostModel, x => x.Email, x => x.LastName, x => x.FirstName, x => x.NickName)
             .ToPaginatedResultAsync(request.PaginationPostModel);
     }
 }

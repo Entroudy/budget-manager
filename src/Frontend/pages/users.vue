@@ -47,8 +47,8 @@
                 >
                   <!-- Avatar -->
                   <div class="flex items-start gap-4">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
-                      {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
+                    <div class="w-14 h-14 rounded-full bg-primary to-primary-dark flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
+                      {{ user.lastName?.charAt(0) }}{{ user.firstName?.charAt(0) }}
                     </div>
 
                     <div class="flex-1 min-w-0">
@@ -64,9 +64,17 @@
                       </div>
 
                       <!-- Email -->
-                      <div class="flex items-center gap-2">
+                      <div class="flex items-center gap-2 mb-2">
                         <i class="fas fa-envelope text-gray-400 text-xs"></i>
                         <span class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email }}</span>
+                      </div>
+
+                      <!-- Total Income -->
+                      <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                        <i class="fas fa-coins text-green-500 text-xs"></i>
+                        <span class="text-sm font-semibold text-green-600 dark:text-green-400">
+                          {{ $t('income') }}: {{ formatCurrency(calculateTotalIncome(user)) }}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -249,7 +257,7 @@ export default defineComponent({
 
         // Add optional params if they exist
         if (sortBy.value) params.sort_By = sortBy.value;
-        if (searchValue.value) params.search_value = searchValue.value;
+        if (searchValue.value) params.searchTerm = searchValue.value;
 
         const data = await getUsers(params)
         if (data) {
@@ -332,6 +340,21 @@ export default defineComponent({
       }
     }
 
+    // Income helpers
+    const calculateTotalIncome = (user: UserListItem) => {
+      if (!user.incomes || user.incomes.length === 0) return 0
+      return user.incomes.reduce((sum, income) => sum + (income.amount || 0), 0)
+    }
+
+    const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('hu-HU', {
+        style: 'currency',
+        currency: 'HUF',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount)
+    }
+
     return {
       users,
       selectedIds,
@@ -348,6 +371,8 @@ export default defineComponent({
       UserDeleteModalRef,
       openDeleteModal,
       handleDelete,
+      calculateTotalIncome,
+      formatCurrency,
     }
 
   },

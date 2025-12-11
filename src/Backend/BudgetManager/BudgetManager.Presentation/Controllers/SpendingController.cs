@@ -70,7 +70,11 @@ public class SpendingController : ControllerBase
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
     public async Task<IActionResult> UpdateSpending(Guid id, [FromBody] UpdateSpendingRequest request)
     {
-        return Ok(await _mediator.Send(new UpdateSpendingCommand(request)));
+        var command = new UpdateSpendingCommand(request)
+        {
+            Id = id
+        };
+        return Ok(await _mediator.Send(command));
     }
 
     [JwtAuthorize()]

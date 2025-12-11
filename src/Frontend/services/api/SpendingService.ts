@@ -10,8 +10,8 @@ export default class SpendingAPI {
       item: spending.item,
       amount: spending.amount,
       paymentMethod: spending.paymentMethod,
-      comment: spending.comment,
-      color: spending.color,
+      comment: spending.comment || null,
+      color: spending.color || null,
       date: spending.date
     }))
     return data || undefined
@@ -33,8 +33,8 @@ export default class SpendingAPI {
       item: spending.item,
       amount: spending.amount,
       paymentMethod: spending.paymentMethod,
-      comment: spending.comment,
-      color: spending.color,
+      comment: spending.comment || null,
+      color: spending.color || null,
       date: spending.date
     }))
     return data || undefined

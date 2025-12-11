@@ -7,6 +7,4 @@ public class PaginationPostModel
     public string? SearchTerm { get; set; }
     public string? SortBy { get; set; }
     public bool SortDescending { get; set; } = false;
-    public string? SearchValue { get; internal set; }
-    public bool? Ascending { get; internal set; }
 }

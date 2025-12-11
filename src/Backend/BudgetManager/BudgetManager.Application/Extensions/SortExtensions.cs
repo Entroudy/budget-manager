@@ -16,7 +16,7 @@ namespace BudgetManager.Application.Extensions
         public static IQueryable<TBase> Sort<TBase>(this IQueryable<TBase> source, PaginationPostModel request) where TBase : class
         {
             if (!string.IsNullOrWhiteSpace(request.SortBy))
-                return source.Sort(request.SortBy, request.Ascending);
+                return source.Sort(request.SortBy, request.SortDescending);
 
             return source;
         }

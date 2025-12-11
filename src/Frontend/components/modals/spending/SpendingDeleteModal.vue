@@ -3,7 +3,7 @@
     <BaseModal v-if="showModal" :show-close="true" :showing="showModal" @close="close" :preventBackgroundClose="true">
       <template #title>
         <span class="break-normal">
-          {{ $t('delete_spending') }}
+          {{ $t('delete') }}
         </span>
       </template>
       <template #body>
@@ -11,7 +11,7 @@
           <i class="fas fa-exclamation-triangle text-yellow-500 text-6xl mb-4"></i>
           <p class="text-lg mb-2">{{ $t('are_you_sure') }}</p>
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ $t('delete_spending_confirmation', { count: selectedIds.length }) }}
+            {{ $t('delete_spending_confirmation') }}
           </p>
         </div>
       </template>

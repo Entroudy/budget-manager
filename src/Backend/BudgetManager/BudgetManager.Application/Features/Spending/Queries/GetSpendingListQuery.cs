@@ -53,7 +53,7 @@ public class GetSpendingListQueryHandler : IRequestHandler<GetSpendingListQuery,
         }
 
         // Apply search and pagination
-        query = query.Search(request.FilterPostModel, x => x.Item);
+        query = query.Sort(request.FilterPostModel).Search(request.FilterPostModel, x => x.Item);
 
         return query.ToSpendingListResponse().ToPaginatedResultAsync(request.FilterPostModel);
     }

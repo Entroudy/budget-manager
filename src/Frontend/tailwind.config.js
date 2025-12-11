@@ -54,11 +54,11 @@ module.exports = {
         '208px': '208px',
       },
       colors: {
-        primary: '#442D1C',
+        primary: '#52343A',
         secondary: '#6B4E3D',
         brand: {
           darkBrown: {
-            DEFAULT: '#442D1C',
+            DEFAULT: '#52343A',
             700: '#352415',
             500: '#2A1D11',
           },
@@ -77,7 +77,7 @@ module.exports = {
         warning: '#C8D414',
         info: '#625ae3',
         dark: {
-          DEFAULT: '#442D1C',
+          DEFAULT: '#52343A',
           text: '#FFFFFF',
         },
         body: '#f1f5f9'

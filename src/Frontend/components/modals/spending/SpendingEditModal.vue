@@ -3,7 +3,7 @@
     <BaseModal v-if="showModal" :show-close="true" :showing="showModal" @close="close" :preventBackgroundClose="true">
       <template #title>
         <span class="break-normal">
-          {{ $t('edit_spending') }}
+          {{ $t('edit') }}
         </span>
       </template>
       <template #body>
@@ -65,7 +65,18 @@
 
             <div class="sm:col-span-3">
               <label for="color" class="capitalize-block">{{ $t('color') }}</label>
-              <input id="color" v-model="spending.color" type="color" class="w-full h-10">
+              <div class="flex gap-2">
+                <button
+                  v-for="colorOption in colorOptions"
+                  :key="colorOption.value"
+                  type="button"
+                  @click="spending.color = colorOption.value"
+                  class="w-12 h-10 rounded border-2 transition-all"
+                  :class="spending.color === colorOption.value ? 'border-gray-900 dark:border-white scale-110' : 'border-gray-300 dark:border-gray-600 hover:scale-105'"
+                  :style="{ backgroundColor: colorOption.value }"
+                  :title="colorOption.label"
+                ></button>
+              </div>
             </div>
 
             <div class="sm:col-span-full">
@@ -102,6 +113,14 @@ export default defineComponent({
     const { users } = storeToRefs(useUserStore())
     const { getUsers } = useUserStore()
 
+    const colorOptions = [
+      { label: 'Gray', value: '#6B7280' },
+      { label: 'Red', value: '#EF4444' },
+      { label: 'Yellow', value: '#EAB308' },
+      { label: 'Light Blue', value: '#3B82F6' },
+      { label: 'Dark Blue', value: '#1E3A8A' }
+    ]
+
     const spending = reactive({
       id: '',
       applicationUserId: '',
@@ -109,7 +128,7 @@ export default defineComponent({
       amount: 0,
       paymentMethod: PaymentMethod.Cash,
       comment: '',
-      color: '#3B82F6',
+      color: '#6B7280',
       date: '',
     } as SpendingUpdate)
 
@@ -151,8 +170,9 @@ export default defineComponent({
       spending.amount = spendingData.amount
       spending.paymentMethod = spendingData.paymentMethod
       spending.comment = spendingData.comment || ''
-      spending.color = spendingData.color || '#3B82F6'
-      spending.date = spendingData.date
+      spending.color = spendingData.color || '#6B7280'
+      // Format date to YYYY-MM-DD for HTML date input
+      spending.date = spendingData.date ? new Date(spendingData.date).toISOString().split('T')[0] : ''
       showModal.value = true
     }
 
@@ -183,6 +203,7 @@ export default defineComponent({
     return {
       users,
       spending,
+      colorOptions,
       v$,
       isLoading,
       showModal,

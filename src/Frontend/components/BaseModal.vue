@@ -4,9 +4,10 @@
       class="fixed inset-0 z-50 flex h-full items-center justify-center bg-black bg-opacity-75 md:fixed md:h-auto md:p-6"
       @click.self="preventOutsideClick">
       <div
-        class="flex h-full max-h-full w-full flex-col bg-white dark:bg-brand-darkGray shadow md:h-auto md:rounded-xl"
+        class="flex h-full max-h-full w-full flex-col bg-white dark:bg-brand-darkGray shadow md:h-auto md:max-h-[90vh] md:rounded-xl"
         :class="[maxWidth, textColor]">
-        <div class="flex flex-col p-4 md:p-6 h-auto">
+        <!-- Header - Fixed -->
+        <div class="flex-shrink-0 p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-between space-x-3">
             <div class="flex items-center space-x-3">
               <slot v-if="$slots.icon" name="icon" />
@@ -19,12 +20,16 @@
               <i class="fas fa-times text-2xl text-gray-800 dark:text-white" />
             </button>
           </div>
-          <div v-if="$slots.body" class="mt-5 flex-grow">
-            <slot name="body" />
-          </div>
-          <div v-if="$slots.action" class="w-full" :class="[$slots.action ? 'mt-5' : '']">
-            <slot name="action" />
-          </div>
+        </div>
+
+        <!-- Body - Scrollable -->
+        <div v-if="$slots.body" class="flex-1 overflow-y-auto p-4 md:p-6">
+          <slot name="body" />
+        </div>
+
+        <!-- Footer - Fixed -->
+        <div v-if="$slots.action" class="flex-shrink-0 p-4 md:p-6 border-t border-gray-200 dark:border-gray-700">
+          <slot name="action" />
         </div>
       </div>
     </div>

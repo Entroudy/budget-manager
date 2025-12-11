@@ -16,14 +16,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #442D1C;
+  background-color: #52343A;
   border-radius: 5px;
 }
 
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #442D1C transparent;
+  scrollbar-color: #52343A transparent;
 }
 
 /* Print helper */
@@ -399,7 +399,7 @@ label.required:after {
 }
 
 .multiselect__option--selected {
-  color: #442D1C !important;
+  color: #52343A !important;
   background: #e5e7eb !important;
 }
 

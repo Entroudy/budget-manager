@@ -1,5 +1,18 @@
 import type { BasePagination, BaseResponseProps } from './'
 
+export enum PaymentMethod {
+  Cash = 0,
+  Card = 1
+}
+
+export type Income = {
+  id?: string
+  applicationUserId?: string
+  paymentMethod: PaymentMethod
+  amount: number
+  description?: string
+}
+
 export type BaseUser = {
   lastName: string
   firstName: string
@@ -24,6 +37,7 @@ export type UserUpdate ={
   firstName: string
   nickName: string
   email: string
+  incomes?: Income[]
 }
 
 export type ChangePassword ={
@@ -34,6 +48,7 @@ export type ChangePassword ={
 
 export type UserListItem = BaseUser & {
   id: string
+  incomes?: Income[]
 }
 
 export type UserType = UserCreate

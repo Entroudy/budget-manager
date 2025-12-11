@@ -19,7 +19,7 @@ namespace BudgetManager.Application.Extensions
             if (parameters == null)
                 return source;
 
-            var searchTerm = parameters.SearchValue;
+            var searchTerm = parameters.SearchTerm;
 
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return source;

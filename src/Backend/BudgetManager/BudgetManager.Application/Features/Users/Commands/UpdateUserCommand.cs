@@ -33,7 +33,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Unit>
         if (user == null)
             throw new NotFoundException($"User with {request.ApplicationUserId} dows not exits");
 
-        user.Update(request.FirstName, request.LastName, request.NickName);
+        user.Update(request.FirstName, request.LastName, request.NickName, request.Email);
 
         await _context.SaveChangesAsync(cancellationToken);
 
