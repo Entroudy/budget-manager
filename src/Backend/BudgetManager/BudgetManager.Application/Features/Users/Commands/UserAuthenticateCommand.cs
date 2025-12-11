@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BudgetManager.Application.Users;
+namespace BudgetManager.Application.ApplicationUsers;
 public class UserAuthenticateCommand : IRequest<SuccessAuthenticateResponse>
 {
     public UserAuthenticateCommand(string email, string password, int tokenExpiration)

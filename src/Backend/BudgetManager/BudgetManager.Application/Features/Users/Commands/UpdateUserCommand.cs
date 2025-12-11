@@ -6,10 +6,10 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace BudgetManager.Application.Users;
+namespace BudgetManager.Application.ApplicationUsers;
 public class UpdateUserCommand(string id, UpdateUserRequest request) : IRequest<Unit>
 {
-    public string UserId { get; set; } = id;
+    public string ApplicationUserId { get; set; } = id;
     public string Email { get; set; } = request.Email;
     public string FirstName { get; set; } = request.FirstName;
     public string LastName { get; set; } = request.LastName;
@@ -29,9 +29,9 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Unit>
 
     public async Task<Unit> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(request.UserId);
+        var user = await _userManager.FindByIdAsync(request.ApplicationUserId);
         if (user == null)
-            throw new NotFoundException($"User with {request.UserId} dows not exits");
+            throw new NotFoundException($"User with {request.ApplicationUserId} dows not exits");
 
         user.Update(request.FirstName, request.LastName, request.NickName);
 
@@ -44,7 +44,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {
     public UpdateUserCommandValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.ApplicationUserId).NotEmpty();
         RuleFor(x => x.Email).NotEmpty();
         RuleFor(x => x.LastName).NotEmpty();
         RuleFor(x => x.FirstName).NotEmpty();

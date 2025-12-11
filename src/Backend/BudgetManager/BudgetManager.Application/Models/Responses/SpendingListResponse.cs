@@ -5,7 +5,7 @@ namespace BudgetManager.Application.Models.Responses;
 public class SpendingListResponse
 {
     public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public Guid ApplicationUserId { get; set; }
     public string UserFullName { get; set; } = string.Empty;
     public string UserNickName { get; set; } = string.Empty;
     public string Item { get; set; } = string.Empty;

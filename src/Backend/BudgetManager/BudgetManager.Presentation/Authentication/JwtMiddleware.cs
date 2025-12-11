@@ -48,11 +48,11 @@ public class JwtMiddleware
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
+            var applicationUserId = jwtToken.Claims.First(x => x.Type == ClaimTypes.Sid).Value;
             var userName = jwtToken.Claims.First(x => x.Type == "name").Value;
 
             // attach user to context on successful jwt validation
-            context.Items["UserId"] = userId;
+            context.Items["ApplicationUserId"] = applicationUserId;
             context.Items["UserName"] = userName;
         }
         catch

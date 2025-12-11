@@ -7,10 +7,10 @@ using LinqKit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace BudgetManager.Application.Users;
+namespace BudgetManager.Application.ApplicationUsers;
 public class ChangePasswordCommand(string id, ChangePasswordRequest request) : IRequest<Unit>
 {
-    public string UserId { get; set; } = id;
+    public string ApplicationUserId { get; set; } = id;
     public string Password { get; set; } = request.Password;
 }
 
@@ -25,9 +25,9 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 
     public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(request.UserId);
+        var user = await _userManager.FindByIdAsync(request.ApplicationUserId);
         if (user == null)
-            throw new NotFoundException($"User with {request.UserId} dows not exits");
+            throw new NotFoundException($"User with {request.ApplicationUserId} dows not exits");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, request.Password);
@@ -45,14 +45,14 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         if (result.Succeeded)
             return Unit.Value;
 
-        throw new Exception("Can't change users password");
+        throw new Exception("Can't change applicationUsers password");
     }
 }
 public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand>
 {
     public ChangePasswordCommandValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.ApplicationUserId).NotEmpty();
         RuleFor(x => x.Password).NotEmpty();
     }
 }

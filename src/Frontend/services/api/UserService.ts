@@ -5,12 +5,12 @@ import type { ParamsType } from '@/models'
 
 export default class UserAPI {
   async getUsers (params: ParamsType) {
-    const { data } = (await api.query('users', { params }))
+    const { data } = (await api.query('applicationUsers', { params }))
     return data || undefined
   }
 
   async createUser (user: UserType) {
-    const { data } = (await api.post('users', <AxiosRequestConfig['data']>{
+    const { data } = (await api.post('applicationUsers', <AxiosRequestConfig['data']>{
       lastName: user.lastName,
       firstName: user.firstName,
       nickName: user.nickName,
@@ -22,17 +22,17 @@ export default class UserAPI {
   }
 
   async getUser (id: string) {
-    const { data } = (await api.get(`users/${id}`))
+    const { data } = (await api.get(`applicationUsers/${id}`))
     return data || undefined
   }
 
   async deleteUser (id: string) {
-    const { data } = (await api.delete(`users/${id}`))
+    const { data } = (await api.delete(`applicationUsers/${id}`))
     return data || undefined
   }
 
-  async updateUser (userId: string, user: UserType) {
-    const { data } = (await api.put(`users/${userId}`, <AxiosRequestConfig['data']>{
+  async updateUser (applicationUserId: string, user: UserType) {
+    const { data } = (await api.put(`applicationUsers/${applicationUserId}`, <AxiosRequestConfig['data']>{
       lastName: user.lastName,
       firstName: user.firstName,
       nickName: user.nickName,
@@ -43,8 +43,8 @@ export default class UserAPI {
     return data || undefined
   }
 
-  async changePassword (userId: string, password: string) {
-    const { data } = (await api.patch(`users/${userId}/change-password`, <AxiosRequestConfig['data']>{
+  async changePassword (applicationUserId: string, password: string) {
+    const { data } = (await api.patch(`applicationUsers/${applicationUserId}/change-password`, <AxiosRequestConfig['data']>{
       password: password,
     }))
 

@@ -9,12 +9,12 @@ namespace BudgetManager.Application.Incomes;
 
 public class GetIncomesByUserIdQuery : IRequest<List<IncomeResponse>>
 {
-    public GetIncomesByUserIdQuery(Guid userId)
+    public GetIncomesByUserIdQuery(Guid applicationUserId)
     {
-        UserId = userId;
+        ApplicationUserId = applicationUserId;
     }
 
-    public Guid UserId { get; private set; }
+    public Guid ApplicationUserId { get; private set; }
 }
 
 public class GetIncomesByUserIdQueryHandler : IRequestHandler<GetIncomesByUserIdQuery, List<IncomeResponse>>
@@ -29,7 +29,7 @@ public class GetIncomesByUserIdQueryHandler : IRequestHandler<GetIncomesByUserId
     public async Task<List<IncomeResponse>> Handle(GetIncomesByUserIdQuery request, CancellationToken cancellationToken)
     {
         return await _context.Incomes
-            .Where(x => x.ApplicationUserId == request.UserId)
+            .Where(x => x.ApplicationUserId == request.ApplicationUserId)
             .ToIncomeResponse()
             .ToListAsync(cancellationToken);
     }
@@ -39,6 +39,6 @@ public class GetIncomesByUserIdQueryValidator : AbstractValidator<GetIncomesByUs
 {
     public GetIncomesByUserIdQueryValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.ApplicationUserId).NotEmpty();
     }
 }

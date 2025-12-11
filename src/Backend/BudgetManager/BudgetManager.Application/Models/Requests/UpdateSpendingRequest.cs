@@ -5,7 +5,7 @@ namespace BudgetManager.Application.Models.Requests;
 public class UpdateSpendingRequest
 {
     public int Id { get; set; }
-    public Guid? UserId { get; set; }
+    public Guid? ApplicationUserId { get; set; }
     public string Item { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public PaymentMethod PaymentMethod { get; set; }

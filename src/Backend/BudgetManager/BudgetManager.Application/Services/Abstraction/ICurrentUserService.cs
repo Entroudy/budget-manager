@@ -2,6 +2,6 @@
 
 public interface ICurrentUserService
 {
-    string? UserId { get; }
+    string? ApplicationUserId { get; }
     bool IsAuthenticated { get; }
 }

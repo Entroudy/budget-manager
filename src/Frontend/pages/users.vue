@@ -121,12 +121,12 @@
   
       const { t } = useI18n();
   
-      const toggleSelection = (userId: string) => {
-        const index = selectedIds.value.indexOf(userId)
+      const toggleSelection = (applicationUserId: string) => {
+        const index = selectedIds.value.indexOf(applicationUserId)
         if (index > -1) {
           selectedIds.value.splice(index, 1)
         } else {
-          selectedIds.value.push(userId)
+          selectedIds.value.push(applicationUserId)
         }
       }
   

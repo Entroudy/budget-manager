@@ -8,7 +8,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetManager.Application.Users;
+namespace BudgetManager.Application.ApplicationUsers;
 public class GetUserListQuery : IRequest<PaginatedResult<UserResponse>>
 {
     public GetUserListQuery(PaginationPostModel paginationPostModel)

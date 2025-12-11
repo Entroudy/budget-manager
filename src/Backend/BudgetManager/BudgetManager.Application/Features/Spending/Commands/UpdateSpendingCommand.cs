@@ -10,7 +10,7 @@ namespace BudgetManager.Application;
 public class UpdateSpendingCommand(UpdateSpendingRequest request) : IRequest<Unit>
 {
     public Guid Id { get; set; }
-    public Guid? UserId { get; set; } = request.UserId;
+    public Guid? ApplicationUserId { get; set; } = request.ApplicationUserId;
     public string Item { get; set; } = request.Item;
     public decimal Amount { get; set; } = request.Amount;
     public PaymentMethod PaymentMethod { get; set; } = request.PaymentMethod;
@@ -32,11 +32,11 @@ public class UpdateSpendingCommandHandler : IRequestHandler<UpdateSpendingComman
 
     public async Task<Unit> Handle(UpdateSpendingCommand request, CancellationToken cancellationToken)
     {
-        Guid userId = request.UserId ?? Guid.Empty;
+        Guid applicationUserId = request.ApplicationUserId ?? Guid.Empty;
 
-        if (request.UserId == null && Guid.TryParse(_currentUserService.UserId, out var currentUserId))
+        if (request.ApplicationUserId == null && Guid.TryParse(_currentUserService.ApplicationUserId, out var currentUserId))
         {
-            userId = currentUserId;
+            applicationUserId = currentUserId;
         }
 
         var spending = await _context.Spendings
@@ -47,7 +47,7 @@ public class UpdateSpendingCommandHandler : IRequestHandler<UpdateSpendingComman
             throw new ValidationException($"Spending with ID {request.Id} not found");
         }
 
-        spending.Update(userId, request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
+        spending.Update(applicationUserId, request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
 
         await _context.SaveChangesAsync(cancellationToken);
 

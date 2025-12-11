@@ -14,7 +14,7 @@ namespace BudgetManager.Infrastructure.Persistence.Helpers
 
         public Guid GetUserId()
         {
-            var userIdString = _httpContextAccessor.HttpContext?.Items["UserId"].ToString();
+            var userIdString = _httpContextAccessor.HttpContext?.Items["ApplicationUserId"].ToString();
             Guid result;
 
             if (userIdString != null)

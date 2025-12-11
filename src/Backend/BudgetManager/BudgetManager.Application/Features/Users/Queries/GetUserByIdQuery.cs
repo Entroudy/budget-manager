@@ -6,7 +6,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetManager.Application.Users;
+namespace BudgetManager.Application.ApplicationUsers;
 public class GetUserByIdQuery : IRequest<UserResponse>
 {
     public GetUserByIdQuery(Guid id)

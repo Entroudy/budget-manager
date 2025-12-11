@@ -1,7 +1,7 @@
 ﻿using BudgetManager.Application.Models;
 using BudgetManager.Application.Models.PostModels;
 using BudgetManager.Application.Models.Responses;
-using BudgetManager.Application.Users;
+using BudgetManager.Application.ApplicationUsers;
 using BudgetManager.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace BudgetManager.Controllers;
 [ApiController]
-[Route("users")]
+[Route("applicationUsers")]
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
@@ -33,15 +33,15 @@ public class UserController : ControllerBase
     }
 
     [JwtAuthorize()]
-    [HttpGet("{userId}")]
+    [HttpGet("{applicationUserId}")]
     [SwaggerOperation("Get user by id")]
     [SwaggerResponse(200, "Success", typeof(UserResponse))]
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(404, "Bad request", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
-    public async Task<IActionResult> GetUserById(Guid userId)
+    public async Task<IActionResult> GetUserById(Guid applicationUserId)
     {
-        return Ok(await _mediator.Send(new GetUserByIdQuery(userId)));
+        return Ok(await _mediator.Send(new GetUserByIdQuery(applicationUserId)));
     }
 
     [JwtAuthorize()]
@@ -57,39 +57,39 @@ public class UserController : ControllerBase
     }
 
     [JwtAuthorize()]
-    [HttpDelete("{userId}")]
+    [HttpDelete("{applicationUserId}")]
     [SwaggerOperation("Deletes a user")]
     [SwaggerResponse(200, "Success")]
     [SwaggerResponse(400, "Bad request", typeof(ProblemDetails))]
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
-    public async Task<IActionResult> DeleteUser(string userId)
+    public async Task<IActionResult> DeleteUser(string applicationUserId)
     {
-        return Ok(await _mediator.Send(new DeleteUserCommand(userId)));
+        return Ok(await _mediator.Send(new DeleteUserCommand(applicationUserId)));
     }
 
     [JwtAuthorize()]
-    [HttpPut("{userId}")]
+    [HttpPut("{applicationUserId}")]
     [SwaggerOperation("update the user")]
     [SwaggerResponse(200, "Success", typeof(UserResponse))]
     [SwaggerResponse(400, "Bad request", typeof(ProblemDetails))]
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
-    public async Task<IActionResult> UpdateUser(string userId, [FromBody] UpdateUserRequest request)
+    public async Task<IActionResult> UpdateUser(string applicationUserId, [FromBody] UpdateUserRequest request)
     {
-        return Ok(await _mediator.Send(new UpdateUserCommand(userId, request)));
+        return Ok(await _mediator.Send(new UpdateUserCommand(applicationUserId, request)));
     }
 
     [JwtAuthorize()]
-    [HttpPut("{userId}/change-password")]
+    [HttpPut("{applicationUserId}/change-password")]
     [SwaggerOperation("Change the user password")]
     [SwaggerResponse(200, "Success", typeof(UserResponse))]
     [SwaggerResponse(400, "Bad request", typeof(ProblemDetails))]
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
-    public async Task<IActionResult> ChangePassword(string userId, [FromBody] ChangePasswordRequest request)
+    public async Task<IActionResult> ChangePassword(string applicationUserId, [FromBody] ChangePasswordRequest request)
     {
-        return Ok(await _mediator.Send(new ChangePasswordCommand(userId, request)));
+        return Ok(await _mediator.Send(new ChangePasswordCommand(applicationUserId, request)));
     }
 }
 

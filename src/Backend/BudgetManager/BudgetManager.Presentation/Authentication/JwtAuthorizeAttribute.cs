@@ -13,7 +13,7 @@ public class JwtAuthorizeAttribute : Attribute, IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var user = (string)context.HttpContext.Items["UserId"];
+        var user = (string)context.HttpContext.Items["ApplicationUserId"];
         if (user == null)
         {
             // not logged in

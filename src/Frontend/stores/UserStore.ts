@@ -62,17 +62,17 @@ export const useUserStore = defineStore('user', {
         return null
       }
     },
-    async updateUser (userId: string, userType: UserType) {
+    async updateUser (applicationUserId: string, userType: UserType) {
       try {
-         const data = await this.api.user.updateUser(userId, userType)
+         const data = await this.api.user.updateUser(applicationUserId, userType)
         return data
       } catch (error) {
         return null
       }
     },
-    async changePassword (userId: string, password: string) {
+    async changePassword (applicationUserId: string, password: string) {
       try {
-         const data = await this.api.user.changePassword(userId, password)
+         const data = await this.api.user.changePassword(applicationUserId, password)
         return data
       } catch (error) {
         return null

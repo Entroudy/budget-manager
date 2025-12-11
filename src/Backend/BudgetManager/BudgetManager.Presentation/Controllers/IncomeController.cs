@@ -22,14 +22,14 @@ public class IncomeController : ControllerBase
     }
 
     [JwtAuthorize()]
-    [HttpGet("user/{userId}")]
+    [HttpGet("user/{applicationUserId}")]
     [SwaggerOperation("Get incomes by user id")]
     [SwaggerResponse(200, "Success", typeof(List<IncomeResponse>))]
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
-    public async Task<IActionResult> GetIncomesByUserId(Guid userId)
+    public async Task<IActionResult> GetIncomesByUserId(Guid applicationUserId)
     {
-        return Ok(await _mediator.Send(new GetIncomesByUserIdQuery(userId)));
+        return Ok(await _mediator.Send(new GetIncomesByUserIdQuery(applicationUserId)));
     }
 
     [JwtAuthorize()]

@@ -13,7 +13,7 @@
         <div>
           <label class="text-sm font-medium mb-1 block">{{ $t('user') }}:</label>
           <select
-            v-model="filters.userId"
+            v-model="filters.applicationUserId"
             class="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600"
             @change="applyFilters"
           >
@@ -194,7 +194,7 @@ export default defineComponent({
     const route = useRoute()
 
     const filters = ref({
-      userId: '',
+      applicationUserId: '',
       fromDate: '',
       toDate: '',
       color: ''
@@ -220,14 +220,14 @@ export default defineComponent({
     const initializeStateFromQuery = (query: any) => {
       pagination.value.currentPage = parseInt(query.page) || 1
       pagination.value.pageSize = parseInt(query.pageSize) || 50
-      filters.value.userId = query.userId || ''
+      filters.value.applicationUserId = query.applicationUserId || ''
       filters.value.fromDate = query.fromDate || ''
       filters.value.toDate = query.toDate || ''
       filters.value.color = query.color || ''
     }
 
     const hasActiveFilters = computed(() => {
-      return !!(filters.value.userId || filters.value.fromDate || filters.value.toDate || filters.value.color)
+      return !!(filters.value.applicationUserId || filters.value.fromDate || filters.value.toDate || filters.value.color)
     })
 
     const refreshSpendings = async () => {
@@ -238,7 +238,7 @@ export default defineComponent({
         }
 
         // Add filters to query params if they exist
-        if (filters.value.userId) queryParams.userId = filters.value.userId
+        if (filters.value.applicationUserId) queryParams.applicationUserId = filters.value.applicationUserId
         if (filters.value.fromDate) queryParams.fromDate = filters.value.fromDate
         if (filters.value.toDate) queryParams.toDate = filters.value.toDate
         if (filters.value.color) queryParams.color = filters.value.color
@@ -251,9 +251,9 @@ export default defineComponent({
         }
 
         // Add filters to API params
-        if (filters.value.userId) params.application_user_id = filters.value.userId
-        if (filters.value.fromDate) params.from_date = filters.value.fromDate
-        if (filters.value.toDate) params.to_date = filters.value.toDate
+        if (filters.value.applicationUserId) params.applicationUserId = filters.value.applicationUserId
+        if (filters.value.fromDate) params.fromDate = filters.value.fromDate
+        if (filters.value.toDate) params.toDate = filters.value.toDate
         if (filters.value.color) params.color = filters.value.color
 
         const data = await getSpendings(params)
@@ -277,7 +277,7 @@ export default defineComponent({
 
     const clearAllFilters = async () => {
       filters.value = {
-        userId: '',
+        applicationUserId: '',
         fromDate: '',
         toDate: '',
         color: ''

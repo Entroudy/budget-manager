@@ -7,7 +7,7 @@ using LinqKit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace BudgetManager.Application.Users;
+namespace BudgetManager.Application.ApplicationUsers;
 public class CreateUserCommand(CreateUserRequest request) : IRequest<Unit>
 {
     public string Email { get; set; } = request.Email;

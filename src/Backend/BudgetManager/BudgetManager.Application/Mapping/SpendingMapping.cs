@@ -28,7 +28,7 @@ public static class SpendingMapping
         return entity.Select(s => new SpendingListResponse
         {
             Id = s.Id,
-            UserId = s.ApplicationUserId,
+            ApplicationUserId = s.ApplicationUserId,
             UserFullName = s.ApplicationUser.LastName + " " + s.ApplicationUser.FirstName,
             UserNickName = s.ApplicationUser.NickName,
             Item = s.Item,

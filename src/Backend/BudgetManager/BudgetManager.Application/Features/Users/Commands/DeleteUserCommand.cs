@@ -3,7 +3,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace BudgetManager.Application.Users;
+namespace BudgetManager.Application.ApplicationUsers;
 public class DeleteUserCommand : IRequest<Unit>
 {
     public DeleteUserCommand(string id)

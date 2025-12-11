@@ -26,7 +26,7 @@ public class DeleteSpendingCommandHandler : IRequestHandler<DeleteSpendingComman
         if (!_currentUserService.IsAuthenticated)
             throw new ValidationException("Unauthorized");
 
-        if (!Guid.TryParse(_currentUserService.UserId, out var currentUserId))
+        if (!Guid.TryParse(_currentUserService.ApplicationUserId, out var currentUserId))
         {
             throw new ValidationException("User not found");
         }
