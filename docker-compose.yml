@@ -16,7 +16,7 @@ services:
     image: budget-manager:latest
     ports:
       - 4000:80
-    restart: always
+    restart: none
     environment:
       APP_ENV: 'local'
       HOST: 'localhost'
