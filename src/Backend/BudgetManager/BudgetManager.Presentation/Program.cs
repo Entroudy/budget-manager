@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using BudgetManager.Application;
 using BudgetManager.Application.Exceptions;
-using BudgetManager.Application.Features.ApplicationUsers.DefaultUserSeed;
+using BudgetManager.Application.Features.Users.DefaultUserSeed;
 using BudgetManager.Authentication;
 using BudgetManager.Common;
 using BudgetManager.Common.Exceptions;

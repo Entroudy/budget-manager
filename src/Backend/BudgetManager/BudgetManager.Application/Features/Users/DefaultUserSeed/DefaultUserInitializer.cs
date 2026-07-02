@@ -3,7 +3,7 @@ using BudgetManager.Domain.Entities;
 using BudgetManager.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 
-namespace BudgetManager.Application.Features.ApplicationUsers.DefaultUserSeed
+namespace BudgetManager.Application.Features.Users.DefaultUserSeed
 {
     public static class DefaultUserInitializer
     {

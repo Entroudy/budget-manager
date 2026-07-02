@@ -1,6 +1,5 @@
 ﻿using BudgetManager.Application.Models;
 using BudgetManager.Application.Models.Responses;
-using BudgetManager.Application.ApplicationUsers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

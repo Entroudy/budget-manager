@@ -1,5 +1,4 @@
-using BudgetManager.Application.Incomes;
-using BudgetManager.Application.Models.Requests;
+using BudgetManager.Application.Models;
 using BudgetManager.Application.Models.Responses;
 using BudgetManager.Authentication;
 using MediatR;
