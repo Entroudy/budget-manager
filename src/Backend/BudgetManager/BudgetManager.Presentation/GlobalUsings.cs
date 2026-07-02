@@ -1,0 +1,11 @@
+global using BudgetManager.Application;
+global using BudgetManager.Application.Models;
+global using BudgetManager.Application.Models.PostModels;
+global using BudgetManager.Application.Models.Responses;
+global using BudgetManager.Authentication;
+global using MediatR;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;
+global using Swashbuckle.AspNetCore.Annotations;
+global using System.Text;
+global using System.Text.Json.Serialization;
