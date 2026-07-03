@@ -1,7 +1,3 @@
-using BudgetManager.Application.Models;
-using BudgetManager.Domain.Entities;
-using MediatR;
-
 namespace BudgetManager.Application;
 
 public class CreateSpendingCommand(CreateSpendingRequest request) : IRequest<Guid>

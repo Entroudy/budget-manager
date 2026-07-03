@@ -1,8 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
-using System.Text;
-
-namespace BudgetManager.Application.Behaviors
+﻿namespace BudgetManager.Application.Behaviors
 {
     public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
        where TRequest : IRequest<TResponse>

@@ -1,8 +1,3 @@
-using BudgetManager.Application.Models;
-using BudgetManager.Application.Models.Responses;
-using BudgetManager.Domain.Entities;
-using MediatR;
-
 namespace BudgetManager.Application;
 
 public class CreateIncomeCommand(CreateIncomeRequest request) : IRequest<IncomeResponse>

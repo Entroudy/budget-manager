@@ -1,8 +1,3 @@
-using BudgetManager.Domain.Entities;
-using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-
 namespace BudgetManager.Application;
 
 public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Unit>

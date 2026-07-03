@@ -1,8 +1,3 @@
-using BudgetManager.Common.Exceptions;
-using BudgetManager.Infrastructure;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-
 namespace BudgetManager.Application;
 
 public class DeleteIncomeCommandHandler : IRequestHandler<DeleteIncomeCommand, Unit>

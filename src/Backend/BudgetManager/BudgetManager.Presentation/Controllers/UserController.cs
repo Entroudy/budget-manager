@@ -1,12 +1,5 @@
-﻿using BudgetManager.Application.Models;
-using BudgetManager.Application.Models.PostModels;
-using BudgetManager.Application.Models.Responses;
-using BudgetManager.Authentication;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+﻿namespace BudgetManager.Controllers;
 
-namespace BudgetManager.Controllers;
 [ApiController]
 [Route("applicationUsers")]
 public class UserController : ControllerBase

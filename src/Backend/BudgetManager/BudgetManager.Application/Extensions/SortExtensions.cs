@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
-using BudgetManager.Application.Models.PostModels;
 
 namespace BudgetManager.Application.Extensions
 {

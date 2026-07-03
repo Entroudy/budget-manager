@@ -1,12 +1,3 @@
-using BudgetManager.Application.Extensions;
-using BudgetManager.Application.Mappings;
-using BudgetManager.Application.Models;
-using BudgetManager.Application.Models.PostModels;
-using BudgetManager.Application.Models.Responses;
-using BudgetManager.Infrastructure;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-
 namespace BudgetManager.Application;
 
 public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, PaginatedResult<UserResponse>>

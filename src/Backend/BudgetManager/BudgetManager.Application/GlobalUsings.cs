@@ -1,8 +1,6 @@
 global using BudgetManager.Application.Extensions;
 global using BudgetManager.Application.Mappings;
 global using BudgetManager.Application.Models;
-global using BudgetManager.Application.Models.PostModels;
-global using BudgetManager.Application.Models.Responses;
 global using BudgetManager.Common;
 global using BudgetManager.Common.Exceptions;
 global using BudgetManager.Domain.Entities;

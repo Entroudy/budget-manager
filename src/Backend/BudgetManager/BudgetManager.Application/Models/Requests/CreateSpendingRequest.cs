@@ -1,6 +1,4 @@
-using BudgetManager.Domain.Entities;
-
-namespace BudgetManager.Application.Models.Requests;
+namespace BudgetManager.Application.Models;
 
 public class CreateSpendingRequest
 {

@@ -1,4 +1,4 @@
-namespace BudgetManager.Application.Models.PostModels;
+namespace BudgetManager.Application.Models;
 
 public class SpendingFilterPostModel : PaginationPostModel
 {

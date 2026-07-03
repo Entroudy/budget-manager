@@ -1,10 +1,3 @@
-using System.Text;
-using BudgetManager.Common.Exceptions;
-using BudgetManager.Domain.Entities;
-using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-
 namespace BudgetManager.Application;
 
 public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, Unit>

@@ -1,6 +1,5 @@
-﻿using System.Linq.Expressions;
-using BudgetManager.Application.Models.PostModels;
-using LinqKit;
+﻿using LinqKit;
+using System.Linq.Expressions;
 
 namespace BudgetManager.Application.Extensions
 {

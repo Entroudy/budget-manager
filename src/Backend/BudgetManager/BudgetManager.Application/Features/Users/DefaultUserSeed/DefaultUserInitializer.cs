@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using BudgetManager.Domain.Entities;
-using BudgetManager.Infrastructure;
-using Microsoft.AspNetCore.Identity;
-
+﻿
 namespace BudgetManager.Application.Features.Users.DefaultUserSeed
 {
     public static class DefaultUserInitializer
@@ -15,7 +11,7 @@ namespace BudgetManager.Application.Features.Users.DefaultUserSeed
             if (string.IsNullOrWhiteSpace(defaultUserPassword))
                 defaultUserPassword = "Almafa123!";
 
-            var emailValidator = new EmailAddressAttribute();
+            var emailValidator = new System.ComponentModel.DataAnnotations.EmailAddressAttribute();
             if (!emailValidator.IsValid(defaultUserEmail))
                 throw new ValidationException($"Given super admin email \" {defaultUserEmail} \" is not a valid address");
 

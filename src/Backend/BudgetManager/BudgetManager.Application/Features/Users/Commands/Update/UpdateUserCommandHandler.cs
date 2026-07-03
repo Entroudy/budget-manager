@@ -1,10 +1,3 @@
-using BudgetManager.Application.Models;
-using BudgetManager.Common.Exceptions;
-using BudgetManager.Domain.Entities;
-using BudgetManager.Infrastructure;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-
 namespace BudgetManager.Application;
 
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Unit>

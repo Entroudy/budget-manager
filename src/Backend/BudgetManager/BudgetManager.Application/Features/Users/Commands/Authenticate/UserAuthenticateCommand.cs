@@ -1,7 +1,3 @@
-using BudgetManager.Application.Models;
-using BudgetManager.Application.Models.Responses;
-using MediatR;
-
 namespace BudgetManager.Application;
 
 public class UserAuthenticateCommand : IRequest<SuccessAuthenticateResponse>

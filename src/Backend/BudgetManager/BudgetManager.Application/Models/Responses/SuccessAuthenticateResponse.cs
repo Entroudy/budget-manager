@@ -1,4 +1,5 @@
-﻿namespace BudgetManager.Application.Models.Responses;
+﻿namespace BudgetManager.Application.Models;
+
 public class SuccessAuthenticateResponse
 {
     public string Token { get; set; }

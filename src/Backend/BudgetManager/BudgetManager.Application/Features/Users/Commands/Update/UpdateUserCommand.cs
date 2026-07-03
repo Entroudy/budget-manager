@@ -1,6 +1,3 @@
-using BudgetManager.Application.Models;
-using MediatR;
-
 namespace BudgetManager.Application;
 
 public class UpdateUserCommand(string id, UpdateUserRequest request) : IRequest<Unit>

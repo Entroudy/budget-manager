@@ -1,12 +1,13 @@
-﻿using System.Reflection;
-using BudgetManager.Domain.Entities;
+﻿using BudgetManager.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Reflection;
 
 namespace BudgetManager.Infrastructure;
+
 public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     public AppDbContext()

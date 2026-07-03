@@ -1,5 +1,3 @@
-using MediatR;
-
 namespace BudgetManager.Application;
 
 public class DeleteUserCommand : IRequest<Unit>

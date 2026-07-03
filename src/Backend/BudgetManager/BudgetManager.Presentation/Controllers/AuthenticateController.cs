@@ -1,11 +1,4 @@
-﻿using BudgetManager.Application.Models;
-using BudgetManager.Application.Models.Responses;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-
-namespace BudgetManager.Controllers;
+﻿namespace BudgetManager.Controllers;
 
 [ApiController]
 [Route("authenticate")]

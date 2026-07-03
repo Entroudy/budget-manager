@@ -1,5 +1,3 @@
-using FluentValidation;
-
 namespace BudgetManager.Application;
 
 public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand>

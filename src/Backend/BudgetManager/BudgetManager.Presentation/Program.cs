@@ -1,9 +1,5 @@
-using System.Text;
-using System.Text.Json.Serialization;
-using BudgetManager.Application;
 using BudgetManager.Application.Exceptions;
 using BudgetManager.Application.Features.Users.DefaultUserSeed;
-using BudgetManager.Authentication;
 using BudgetManager.Common;
 using BudgetManager.Common.Exceptions;
 using BudgetManager.Domain.Entities;
@@ -12,7 +8,6 @@ using BudgetManager.Infrastructure.Configuration;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;

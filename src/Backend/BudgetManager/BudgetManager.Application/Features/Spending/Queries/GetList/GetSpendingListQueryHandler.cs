@@ -1,11 +1,3 @@
-using BudgetManager.Application.Extensions;
-using BudgetManager.Application.Mappings;
-using BudgetManager.Application.Models;
-using BudgetManager.Application.Models.PostModels;
-using BudgetManager.Application.Models.Responses;
-using BudgetManager.Infrastructure;
-using MediatR;
-
 namespace BudgetManager.Application;
 
 public class GetSpendingListQueryHandler : IRequestHandler<GetSpendingListQuery, PaginatedResult<SpendingListResponse>>

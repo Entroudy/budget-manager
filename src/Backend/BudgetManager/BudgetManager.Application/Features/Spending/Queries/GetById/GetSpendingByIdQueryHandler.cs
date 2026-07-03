@@ -1,10 +1,3 @@
-using BudgetManager.Application.Mappings;
-using BudgetManager.Application.Models.Responses;
-using BudgetManager.Common.Exceptions;
-using BudgetManager.Infrastructure;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-
 namespace BudgetManager.Application;
 
 public class GetSpendingByIdQueryHandler : IRequestHandler<GetSpendingByIdQuery, SpendingResponse>

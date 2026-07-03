@@ -1,7 +1,4 @@
-﻿using BudgetManager.Application.Models.Responses;
-using BudgetManager.Domain.Entities;
-
-namespace BudgetManager.Application.Mappings;
+﻿namespace BudgetManager.Application.Mappings;
 
 public static class UserMapping
 {

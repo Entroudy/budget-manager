@@ -1,8 +1,3 @@
-using BudgetManager.Application;
-using BudgetManager.Domain.Entities;
-using BudgetManager.Infrastructure;
-using MediatR;
-
 namespace BudgetManager.Application;
 
 public class CreateSpendingCommandHandler : IRequestHandler<CreateSpendingCommand, Guid>

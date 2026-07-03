@@ -1,16 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using BudgetManager.Application.Models.Responses;
-using BudgetManager.Common;
-using BudgetManager.Domain.Entities;
-using BudgetManager.Infrastructure;
-using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-
 namespace BudgetManager.Application;
 
 public class UserAuthenticateCommandHandler : IRequestHandler<UserAuthenticateCommand, SuccessAuthenticateResponse>

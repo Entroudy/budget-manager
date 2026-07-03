@@ -1,9 +1,3 @@
-using BudgetManager.Application;
-using BudgetManager.Infrastructure;
-using FluentValidation;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-
 namespace BudgetManager.Application;
 
 public class DeleteSpendingCommandHandler : IRequestHandler<DeleteSpendingCommand, Unit>

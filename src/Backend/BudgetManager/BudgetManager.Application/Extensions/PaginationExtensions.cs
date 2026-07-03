@@ -1,8 +1,4 @@
-﻿using BudgetManager.Application.Models;
-using BudgetManager.Application.Models.PostModels;
-using Microsoft.EntityFrameworkCore;
-
-namespace BudgetManager.Application.Extensions
+﻿namespace BudgetManager.Application.Extensions
 {
     public static class PaginationExtensions
     {

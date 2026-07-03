@@ -1,6 +1,4 @@
-using BudgetManager.Domain.Entities;
-
-namespace BudgetManager.Application.Models.Responses;
+namespace BudgetManager.Application.Models;
 
 public class IncomeResponse
 {

@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BudgetManager.Infrastructure.Persistence.Helpers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using BudgetManager.Infrastructure.Persistence.Helpers;
 
 namespace BudgetManager.Infrastructure.Configuration;
+
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, string connectionString)
