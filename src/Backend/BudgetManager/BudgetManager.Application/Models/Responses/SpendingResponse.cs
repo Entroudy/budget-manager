@@ -8,7 +8,7 @@ public class SpendingResponse
     public PaymentMethod PaymentMethod { get; set; }
     public string? Comment { get; set; }
     public string? Color { get; set; }
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? ModifiedAt { get; set; }

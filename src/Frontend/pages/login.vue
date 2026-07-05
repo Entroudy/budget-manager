@@ -6,7 +6,7 @@
           id="email"
           v-model="form.email"
           type="text"
-          placeholder="Email"
+          :placeholder="$t('email_placeholder')"
           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors"
           :class="{
             'border-red-500 focus:border-red-500': v$.email.$error,
@@ -22,7 +22,7 @@
             id="password"
             v-model="form.password"
             :type="passwordVisible ? 'text' : 'password'"
-            placeholder="Password"
+            :placeholder="$t('password_placeholder')"
             class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors"
             :class="{
               'border-red-500 focus:border-red-500': v$.password.$error,
@@ -47,7 +47,7 @@
         @click="loginUser"
         :disabled="isLoading"
       >
-        <span>Sign in</span>
+        <span>{{ $t('sign_in') }}</span>
         <i v-show="isLoading" class="fas fa-spinner fa-spin ml-2"></i>
       </button>
       <div class="flex-[1] flex items-center justify-center">
@@ -74,6 +74,8 @@ definePageMeta({ layout: 'auth' })
 export default defineComponent({
   name: 'LoginPage',
   setup(props) {
+    const { t } = useI18n()
+
     const form = reactive({
       email: '',
       password: '',
@@ -83,10 +85,10 @@ export default defineComponent({
     const rules = computed(() => {
       return {
         email: {
-          required: helpers.withMessage('The email field is required', required)
+          required: helpers.withMessage(t('email_field_required'), required)
         },
         password: {
-          required: helpers.withMessage('The password field is required', required)
+          required: helpers.withMessage(t('password_field_required'), required)
         },
       }
     })

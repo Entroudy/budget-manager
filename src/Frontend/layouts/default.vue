@@ -19,7 +19,7 @@
                 <i class="fas fa-layer-group text-white text-xl"></i>
               </div>
               <div>
-                <p class="text-white/80 text-sm font-medium uppercase tracking-wider">Dashboard</p>
+                <p class="text-white/80 text-sm font-medium uppercase tracking-wider">{{ $t('dashboard') }}</p>
                 <h1 class="text-white font-bold text-3xl md:text-4xl capitalize">
                   {{ activePageTitle }}
                 </h1>

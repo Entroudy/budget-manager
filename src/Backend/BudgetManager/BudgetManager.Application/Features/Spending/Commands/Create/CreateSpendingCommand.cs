@@ -8,5 +8,5 @@ public class CreateSpendingCommand(CreateSpendingRequest request) : IRequest<Gui
     public PaymentMethod PaymentMethod { get; set; } = request.PaymentMethod;
     public string? Comment { get; set; } = request.Comment;
     public string? Color { get; set; } = request.Color;
-    public DateTime Date { get; set; } = request.Date;
+    public DateOnly Date { get; set; } = request.Date;
 }

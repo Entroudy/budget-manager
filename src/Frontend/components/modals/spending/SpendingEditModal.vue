@@ -113,14 +113,6 @@ export default defineComponent({
     const { users } = storeToRefs(useUserStore())
     const { getUsers } = useUserStore()
 
-    const colorOptions = [
-      { label: 'Gray', value: '#6B7280' },
-      { label: 'Red', value: '#EF4444' },
-      { label: 'Yellow', value: '#EAB308' },
-      { label: 'Light Blue', value: '#3B82F6' },
-      { label: 'Dark Blue', value: '#1E3A8A' }
-    ]
-
     const spending = reactive({
       id: '',
       applicationUserId: '',
@@ -133,6 +125,13 @@ export default defineComponent({
     } as SpendingUpdate)
 
     const { t } = useI18n()
+    const colorOptions = computed(() => [
+      { label: t('gray'), value: '#6B7280' },
+      { label: t('red'), value: '#EF4444' },
+      { label: t('yellow'), value: '#EAB308' },
+      { label: t('light_blue'), value: '#3B82F6' },
+      { label: t('dark_blue'), value: '#1E3A8A' }
+    ])
     const isLoading = ref(false)
     const showModal = ref(false)
 

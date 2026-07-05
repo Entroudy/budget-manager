@@ -11,6 +11,7 @@ export type Income = {
   paymentMethod: PaymentMethod
   amount: number
   description?: string
+  date: string
 }
 
 export type BaseUser = {

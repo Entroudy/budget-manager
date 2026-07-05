@@ -15,7 +15,7 @@ public class UpdateIncomeCommandHandler : IRequestHandler<UpdateIncomeCommand, I
             .FirstOrDefaultAsync(x => x.Id == request.IncomeId, cancellationToken)
             ?? throw new NotFoundException("Income", request.IncomeId.ToString());
 
-        income.Update(request.ApplicationUserId, request.Amount, request.PaymentMethod, request.Comment);
+        income.Update(request.ApplicationUserId, request.Amount, request.PaymentMethod, request.Comment, request.Date);
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -11,13 +11,16 @@ public static class UserMapping
             LastName = x.LastName,
             FirstName = x.FirstName,
             NickName = x.NickName,
-            Incomes = x.Incomes.Select(i => new IncomeResponse
+            Incomes = x.Incomes
+                .OrderByDescending(i => i.Date)
+                .Select(i => new IncomeResponse
             {
                 Id = i.Id,
                 ApplicationUserId = i.ApplicationUserId,
                 Amount = i.Amount,
                 PaymentMethod = i.PaymentMethod,
                 Comment = i.Comment,
+                Date = i.Date,
                 CreatedDate = i.CreatedAt,
                 LastModifiedDate = i.ModifiedAt
             }).ToList()

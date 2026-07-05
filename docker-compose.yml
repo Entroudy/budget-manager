@@ -13,10 +13,15 @@ services:
       - mysql_data:/var/lib/mysql
 
   budget-manager:
+    build:
+      context: .
+      dockerfile: src/Backend/BudgetManager/BudgetManager.Presentation/Dockerfile
     image: budget-manager:latest
     ports:
       - 4000:80
-    restart: none
+    depends_on:
+      - mysql
+    restart: "no"
     environment:
       APP_ENV: 'local'
       HOST: 'localhost'

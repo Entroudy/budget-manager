@@ -69,7 +69,7 @@
           class="cursor-pointer text-gray-400  group flex gap-x-3 rounded-md text-sm leading-6 font-semibold items-center hover:text-white"
           :class="[sidebarOpen ? 'lg:justify-center px-5 lg:px-3 py-4' : 'px-5 py-3']" @click="logout">
           <i class="fas fa-sign-out-alt" />
-          <span :class="[sidebarOpen ? 'lg:sr-only' : '']">Logout</span>
+          <span :class="[sidebarOpen ? 'lg:sr-only' : '']">{{ $t('logout') }}</span>
         </li>
       </ul>
     </nav>

@@ -18,9 +18,10 @@ public static class DependencyInjection
                         b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
                         b.MigrationsHistoryTable("_migrations_history");
                     }
-                    ));
+        ));
 
         services.AddSingleton<IUserAccessor, UserAccessor>();
+        services.AddQuartz();
 
         return services;
     }

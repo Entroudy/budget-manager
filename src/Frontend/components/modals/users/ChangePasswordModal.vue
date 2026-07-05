@@ -77,10 +77,10 @@
       const rules = computed(() => {
         return {
           password: {
-            required: helpers.withMessage('The password field is required', required)
+            required: helpers.withMessage(t('password_field_required'), required)
           },
           confirmPassword: {
-            sameAs: helpers.withMessage('Password`s need to match', sameAs(user.password))
+            sameAs: helpers.withMessage(t('passwords_need_to_match'), sameAs(user.password))
           },
         }
       })

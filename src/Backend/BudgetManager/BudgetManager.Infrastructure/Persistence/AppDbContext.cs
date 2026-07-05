@@ -22,28 +22,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public virtual DbSet<Spending> Spendings { get; set; }
     public virtual DbSet<Income> Incomes { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        // Global query filter for soft delete
-        foreach (var entityType in builder.Model.GetEntityTypes())
-        {
-            if (typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType))
-            {
-                var parameter = System.Linq.Expressions.Expression.Parameter(entityType.ClrType, "e");
-                var property = System.Linq.Expressions.Expression.Property(parameter, nameof(AuditableEntity.IsDeleted));
-                var filterExpression = System.Linq.Expressions.Expression.Lambda(
-                    System.Linq.Expressions.Expression.Equal(property, System.Linq.Expressions.Expression.Constant(false)),
-                    parameter);
-
-                entityType.SetQueryFilter(filterExpression);
-            }
-        }
-
-        base.OnModelCreating(builder);
-    }
-
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
@@ -83,5 +61,43 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
             d => d.GetHashCode())
         {
         }
-    };
+    }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        builder.Entity<Spending>(entity =>
+        {
+            entity.Property(x => x.Date)
+                .HasConversion<DateOnlyConverter>()
+                .HasColumnType("date")
+                .Metadata.SetValueComparer(new DateOnlyComparer());
+        });
+
+        builder.Entity<Income>(entity =>
+        {
+            entity.Property(x => x.Date)
+                .HasConversion<DateOnlyConverter>()
+                .HasColumnType("date")
+                .Metadata.SetValueComparer(new DateOnlyComparer());
+        });
+
+        // Global query filter for soft delete
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            if (typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                var parameter = System.Linq.Expressions.Expression.Parameter(entityType.ClrType, "e");
+                var property = System.Linq.Expressions.Expression.Property(parameter, nameof(AuditableEntity.IsDeleted));
+                var filterExpression = System.Linq.Expressions.Expression.Lambda(
+                    System.Linq.Expressions.Expression.Equal(property, System.Linq.Expressions.Expression.Constant(false)),
+                    parameter);
+
+                entityType.SetQueryFilter(filterExpression);
+            }
+        }
+    }
 }

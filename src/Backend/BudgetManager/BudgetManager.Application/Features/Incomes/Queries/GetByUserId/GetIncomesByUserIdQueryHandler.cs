@@ -13,6 +13,7 @@ public class GetIncomesByUserIdQueryHandler : IRequestHandler<GetIncomesByUserId
     {
         return await _context.Incomes
             .Where(x => x.ApplicationUserId == request.ApplicationUserId)
+            .OrderByDescending(x => x.Date)
             .ToIncomeResponse()
             .ToListAsync(cancellationToken);
     }

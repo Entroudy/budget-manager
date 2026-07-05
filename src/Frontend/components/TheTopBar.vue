@@ -3,7 +3,7 @@
     class="fixed w-fill top-0 flex h-16 shrink-0 z-50 items-center gap-x-4 dark:bg-brand-darkGray sm:gap-x-6 pr-4 sm:pr-6 xl:pr-8 print:hidden">
     <button type="button" class="btn btn-sm bg-primary text-gray-400 !py-1.5 !px-3 top-0 absolute left-0 h-16 !rounded-none !rounded-br-xl"
       @click="openSidebar">
-      <span class="sr-only">Open sidebar</span>
+      <span class="sr-only">{{ $t('open_sidebar') }}</span>
       <span class="cursor-pointer">
         <i class="fas text-white" :class="[sidebarOpen ? 'fa-angle-double-right' : 'fa-angle-double-left']" />
       </span>

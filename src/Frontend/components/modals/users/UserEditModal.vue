@@ -150,13 +150,16 @@
                       <i class="fas" :class="income.paymentMethod === 1 ? 'fa-credit-card' : 'fa-money-bill-wave'"></i>
                     </div>
                     <div class="flex-1">
-                      <div class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-gray-900 dark:text-white capitalize">{{ income.paymentMethod === 1 ? $t('card') : $t('cash') }}</span>
-                        <span class="text-xs px-2 py-0.5 rounded-full"
-                              :class="income.id && !income.id.toString().startsWith('temp_') ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' : 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300'">
-                          {{ income.id && !income.id.toString().startsWith('temp_') ? $t('saved') : $t('not_saved') }}
-                        </span>
-                      </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium text-gray-900 dark:text-white capitalize">{{ income.paymentMethod === 1 ? $t('card') : $t('cash') }}</span>
+                      <span class="text-xs px-2 py-0.5 rounded-full"
+                            :class="income.id && !income.id.toString().startsWith('temp_') ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' : 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300'">
+                        {{ income.id && !income.id.toString().startsWith('temp_') ? $t('saved') : $t('not_saved') }}
+                      </span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      {{ formatIncomeDate(income.date) }}
+                    </p>
                       <p v-if="income.description" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ income.description }}</p>
                     </div>
                     <div class="text-right">
@@ -171,7 +174,7 @@
                 <!-- Expanded Edit View -->
                 <div v-if="expandedIncomeIndex === index" class="px-3 pb-3 pt-2 border-t border-gray-200 dark:border-gray-600">
                   <div class="space-y-3">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <!-- Payment Method -->
                       <div>
                         <label :for="`paymentMethod-${index}`" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -185,6 +188,19 @@
                           <option :value="0">{{ $t('cash') }}</option>
                           <option :value="1">{{ $t('card') }}</option>
                         </select>
+                      </div>
+
+                      <!-- Date -->
+                      <div>
+                        <label :for="`date-${index}`" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          {{ $t('date') }}
+                        </label>
+                        <input
+                          :id="`date-${index}`"
+                          v-model="income.date"
+                          type="date"
+                          class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
                       </div>
 
                       <!-- Amount -->
@@ -317,16 +333,16 @@ export default defineComponent({
     const rules = computed(() => {
       return {
         lastName: {
-          required: helpers.withMessage('The last name field is required', required)
+          required: helpers.withMessage(t('last_name_field_required'), required)
         },
         firstName: {
-          required: helpers.withMessage('The first name field is required', required)
+          required: helpers.withMessage(t('first_name_field_required'), required)
         },
         nickName: {
-          required: helpers.withMessage('The nickName field is required', required)
+          required: helpers.withMessage(t('nickname_field_required'), required)
         },
         email: {
-          required: helpers.withMessage('The email field is required', required)
+          required: helpers.withMessage(t('email_field_required'), required)
         }
       }
     })
@@ -345,13 +361,28 @@ export default defineComponent({
       if (!user.incomes) {
         user.incomes = []
       }
+
+      const today = new Date()
+      const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
       user.incomes.push({
         paymentMethod: PaymentMethod.Card, // Card = 1
         amount: 0,
+        date: localDate,
         description: ''
       })
       // Auto-expand the newly added income
       expandedIncomeIndex.value = user.incomes.length - 1
+    }
+
+    const sortIncomesByDate = () => {
+      if (!user.incomes || user.incomes.length === 0) return
+
+      user.incomes = [...user.incomes].sort((a, b) => {
+        const left = a.date ? new Date(`${a.date}T00:00:00`).getTime() : 0
+        const right = b.date ? new Date(`${b.date}T00:00:00`).getTime() : 0
+        return right - left
+      })
     }
 
     const saveIncome = async (income: Income, index: number) => {
@@ -414,6 +445,7 @@ export default defineComponent({
       const incomes = await getIncomesByUserId(user.id)
       if (incomes) {
         user.incomes = incomes
+        sortIncomesByDate()
       }
     }
 
@@ -429,6 +461,16 @@ export default defineComponent({
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
       }).format(amount)
+    }
+
+    const formatIncomeDate = (dateString: string) => {
+      if (!dateString) return ''
+
+      return new Date(`${dateString}T00:00:00`).toLocaleDateString('hu-HU', {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit'
+      })
     }
 
     const open = async (userData: UserListItem) => {
@@ -485,6 +527,7 @@ export default defineComponent({
       toggleIncomeExpand,
       totalIncome,
       formatCurrency,
+      formatIncomeDate,
       savingIncomeIndex,
       deletingIncomeIndex,
       expandedIncomeIndex

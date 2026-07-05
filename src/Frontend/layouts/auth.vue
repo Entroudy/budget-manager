@@ -7,7 +7,7 @@
           <i class="fas fa-wallet text-white text-2xl"></i>
         </div>
         <h1 class="text-2xl font-semibold text-primary mb-1">Budget Manager</h1>
-        <p class="text-sm text-gray-600">Sign in to manage your finances</p>
+        <p class="text-sm text-gray-600">{{ $t('sign_in_to_manage_finances') }}</p>
       </div>
 
       <!-- Login Card -->

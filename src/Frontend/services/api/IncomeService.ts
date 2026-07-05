@@ -2,10 +2,19 @@ import type { AxiosRequestConfig } from 'axios'
 import { api } from '@/services/api/index'
 import type { Income } from '@/models/UserModel'
 
+const mapIncome = (income: any): Income => ({
+  id: income.id,
+  applicationUserId: income.applicationUserId,
+  paymentMethod: income.paymentMethod,
+  amount: income.amount,
+  description: income.comment ?? income.description ?? '',
+  date: income.date
+})
+
 export default class IncomeAPI {
   async getIncomesByUserId (userId: string) {
     const { data } = (await api.get(`incomes/user/${userId}`))
-    return data || undefined
+    return data?.map(mapIncome) || undefined
   }
 
   async createIncome (income: Income, userId: string) {
@@ -14,9 +23,10 @@ export default class IncomeAPI {
       amount: income.amount,
       paymentMethod: income.paymentMethod,
       comment: income.description || null,
+      date: income.date,
     }))
 
-    return data || undefined
+    return data ? mapIncome(data) : undefined
   }
 
   async updateIncome (incomeId: string, income: Income, userId: string) {
@@ -25,9 +35,10 @@ export default class IncomeAPI {
       amount: income.amount,
       paymentMethod: income.paymentMethod,
       comment: income.description || null,
+      date: income.date,
     }))
 
-    return data || undefined
+    return data ? mapIncome(data) : undefined
   }
 
   async deleteIncome (incomeId: string) {

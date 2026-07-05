@@ -10,9 +10,9 @@ public class Spending : AuditableEntity
     public PaymentMethod PaymentMethod { get; set; }
     public string? Comment { get; set; }
     public string? Color { get; set; }
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
 
-    public Spending(Guid applicationUserId, string item, decimal amount, PaymentMethod paymentMethod, string? comment, string? color, DateTime date)
+    public Spending(Guid applicationUserId, string item, decimal amount, PaymentMethod paymentMethod, string? comment, string? color, DateOnly date)
     {
         ApplicationUserId = applicationUserId;
         Item = item;
@@ -23,7 +23,7 @@ public class Spending : AuditableEntity
         Date = date;
     }
 
-    public Spending Update(Guid applicationUserId, string item, decimal amount, PaymentMethod paymentMethod, string? comment, string? color, DateTime date)
+    public Spending Update(Guid applicationUserId, string item, decimal amount, PaymentMethod paymentMethod, string? comment, string? color, DateOnly date)
     {
         ApplicationUserId = applicationUserId;
         Item = item;

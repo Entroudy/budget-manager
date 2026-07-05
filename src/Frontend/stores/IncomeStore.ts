@@ -12,10 +12,10 @@ export const useIncomeStore = defineStore('income', {
       try {
         const data = await this.api.income.getIncomesByUserId(userId)
         if (data) {
-          // Merge new incomes with existing ones, avoiding duplicates
-          const existingIds = this.incomes.map(i => i.id)
-          const newIncomes = data.filter((income: Income) => !existingIds.includes(income.id))
-          this.incomes = [...this.incomes, ...newIncomes]
+          this.incomes = [
+            ...this.incomes.filter(income => income.applicationUserId !== userId),
+            ...data
+          ]
           return data
         }
       } catch (error) {

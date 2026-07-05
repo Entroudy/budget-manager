@@ -6,4 +6,5 @@ public class CreateIncomeRequest
     public decimal Amount { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
     public string? Comment { get; set; }
+    public DateOnly Date { get; set; }
 }

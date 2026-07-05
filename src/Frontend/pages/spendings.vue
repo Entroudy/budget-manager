@@ -11,7 +11,7 @@
         <button
           @click="navigateMonth(-1)"
           class="p-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-          title="Previous Month"
+          :title="$t('previous_month')"
         >
           <i class="fas fa-chevron-left"></i>
         </button>
@@ -23,7 +23,7 @@
         <button
           @click="navigateMonth(1)"
           class="p-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-          title="Next Month"
+          :title="$t('next_month')"
         >
           <i class="fas fa-chevron-right"></i>
         </button>
@@ -312,8 +312,16 @@ export default defineComponent({
     // Month navigation
     const currentMonthLabel = computed(() => {
       const date = new Date(viewingYear.value, viewingMonth.value, 1)
-      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      return date.toLocaleDateString('hu-HU', { month: 'long', year: 'numeric' })
     })
+
+    const isIncomeInViewMonth = (incomeDate: string) => {
+      if (!filters.value.fromDate || !filters.value.toDate) {
+        return true
+      }
+
+      return incomeDate >= filters.value.fromDate && incomeDate <= filters.value.toDate
+    }
 
     const isCurrentMonth = computed(() => {
       const today = new Date()
@@ -429,7 +437,9 @@ export default defineComponent({
     })
 
     const grandIncome = computed(() => {
-      return incomes.value.reduce((sum, income) => sum + (income.amount || 0), 0)
+      return incomes.value
+        .filter(income => income.date && isIncomeInViewMonth(income.date))
+        .reduce((sum, income) => sum + (income.amount || 0), 0)
     })
 
     const grandRemaining = computed(() => {
@@ -452,7 +462,9 @@ export default defineComponent({
     }
 
     const getUserIncome = (userId: string) => {
-      const userIncomes = incomes.value.filter(income => income.applicationUserId === userId)
+      const userIncomes = incomes.value.filter(income =>
+        income.applicationUserId === userId && income.date && isIncomeInViewMonth(income.date)
+      )
       return userIncomes.reduce((sum, income) => sum + (income.amount || 0), 0)
     }
 
@@ -492,7 +504,7 @@ export default defineComponent({
     }
 
     const formatDateShort = (dateString: string) => {
-      const date = new Date(dateString)
+      const date = new Date(`${dateString}T00:00:00`)
       return date.toLocaleDateString('hu-HU', {
         month: '2-digit',
         day: '2-digit'

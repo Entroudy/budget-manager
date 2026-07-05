@@ -8,5 +8,5 @@ public class CreateSpendingRequest
     public PaymentMethod PaymentMethod { get; set; }
     public string? Comment { get; set; }
     public string? Color { get; set; }
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
 }

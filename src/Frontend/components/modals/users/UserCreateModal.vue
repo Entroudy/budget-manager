@@ -240,22 +240,22 @@ export default defineComponent({
     const rules = computed(() => {
       return {
         lastName: {
-          required: helpers.withMessage('The last name field is required', required)
+          required: helpers.withMessage(t('last_name_field_required'), required)
         },
         firstName: {
-          required: helpers.withMessage('The first name field is required', required)
+          required: helpers.withMessage(t('first_name_field_required'), required)
         },
         nickName: {
-          required: helpers.withMessage('The nickName field is required', required)
+          required: helpers.withMessage(t('nickname_field_required'), required)
         },
         email: {
-          required: helpers.withMessage('The email field is required', required)
+          required: helpers.withMessage(t('email_field_required'), required)
         },
         password: {
-          required: helpers.withMessage('The password field is required', required)
+          required: helpers.withMessage(t('password_field_required'), required)
         },
         confirmPassword: {
-          sameAs: helpers.withMessage('Passwords need to match', sameAs(user.password))
+          sameAs: helpers.withMessage(t('passwords_need_to_match'), sameAs(user.password))
         },
       }
     })
