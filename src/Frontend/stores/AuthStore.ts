@@ -1,13 +1,15 @@
 import { defineStore } from 'pinia'
 import { saveUser, getUser, removeUser } from '~/services/api/JwtService'
 import type { UserLogin } from '@/models/UserModel'
+import { getInitialLocale, normalizeLocale, persistLocalePreference, persistLocaleToStoredUser, type AppLocale } from '~/utils/locale'
 
 export const useAuthStore = defineStore('auth', {
   state: () => {
     return {
       account: {
         email: '',
-        token: ''
+        token: '',
+        locale: getInitialLocale() as AppLocale
       }
     }
   },
@@ -20,10 +22,16 @@ export const useAuthStore = defineStore('auth', {
     async login (userInfo: UserLogin) {
       try {
         const data = await this.api.auth.login(userInfo)
-        data.email = userInfo.email
         if (data) {
-          saveUser(JSON.stringify(data))
-          this.account.token = data.token
+          data.email = userInfo.email
+          const locale = normalizeLocale(getInitialLocale())
+          this.account = {
+            email: userInfo.email,
+            token: data.token,
+            locale
+          }
+          persistLocalePreference(locale)
+          saveUser(JSON.stringify(this.account))
           navigateTo('/')
         }
       } catch (error) {
@@ -32,9 +40,24 @@ export const useAuthStore = defineStore('auth', {
     },
     logout () {
       removeUser()
-      this.account.token = ''
+      this.account = {
+        email: '',
+        token: '',
+        locale: getInitialLocale()
+      }
 
       navigateTo('/login')
+    },
+    setLocale (locale: AppLocale) {
+      const normalized = normalizeLocale(locale)
+      this.account.locale = normalized
+      persistLocalePreference(normalized)
+
+      if (this.account.token) {
+        saveUser(JSON.stringify(this.account))
+      } else {
+        persistLocaleToStoredUser(normalized)
+      }
     },
     getUser () {
       return new Promise((resolve, reject) => {
@@ -42,7 +65,12 @@ export const useAuthStore = defineStore('auth', {
           try {
             const user = JSON.parse(getUser() as any)
             if (user !== null) {
-              this.account = user
+              this.account = {
+                email: user.email ?? '',
+                token: user.token ?? '',
+                locale: normalizeLocale(user.locale ?? getInitialLocale())
+              }
+              persistLocalePreference(this.account.locale)
               resolve(user)
             } else {
               reject('Item with key \'user\' not found in localStorage.')

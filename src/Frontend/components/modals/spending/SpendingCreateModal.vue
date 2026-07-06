@@ -63,6 +63,39 @@
               <span v-if="v$.paymentMethod.$error" class="text-xs text-red-600">{{ v$.paymentMethod.$silentErrors[0].$message }}</span>
             </div>
 
+            <div
+              v-if="showCashWarning"
+              class="sm:col-span-full rounded-lg border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/20 p-4"
+            >
+              <div class="flex items-start gap-3">
+                <i class="fas fa-triangle-exclamation text-amber-500 mt-1"></i>
+                <div class="flex-1">
+                  <p class="font-semibold text-amber-800 dark:text-amber-200">
+                    {{ $t('cash_spending_warning_title') }}
+                  </p>
+                  <p class="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                    {{ $t('cash_spending_warning_message') }}
+                  </p>
+                  <div class="flex gap-2 mt-3">
+                    <button
+                      type="button"
+                      class="px-3 py-2 rounded-md bg-amber-600 text-white text-sm font-medium hover:bg-amber-700 transition-colors"
+                      @click="confirmCashWarning"
+                    >
+                      {{ $t('confirmation') }}
+                    </button>
+                    <button
+                      type="button"
+                      class="px-3 py-2 rounded-md border border-amber-300 text-amber-800 dark:text-amber-200 text-sm font-medium hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+                      @click="dismissCashWarning"
+                    >
+                      {{ $t('cancel') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="sm:col-span-3">
               <label for="color" class="capitalize-block">{{ $t('color') }}</label>
               <div class="flex gap-2">
@@ -103,6 +136,7 @@ import { useVuelidate } from '@vuelidate/core'
 import type { SpendingCreate } from '~/models/SpendingModel'
 import { PaymentMethod } from '~/models/SpendingModel'
 import { useSpendingStore } from '~/stores/SpendingStore'
+import { useAuthStore } from '~/stores/AuthStore'
 import { useUserStore } from '~/stores/UserStore'
 import { storeToRefs } from 'pinia'
 
@@ -111,13 +145,14 @@ export default defineComponent({
   emits: ['item-created'],
   setup(props, context) {
     const { users } = storeToRefs(useUserStore())
+    const { account } = storeToRefs(useAuthStore())
     const { getUsers } = useUserStore()
 
     const spending = reactive({
       applicationUserId: '',
       item: '',
       amount: 0,
-      paymentMethod: PaymentMethod.Cash,
+      paymentMethod: PaymentMethod.Card,
       comment: '',
       color: '#6B7280',
       date: new Date().toISOString().split('T')[0],
@@ -133,6 +168,35 @@ export default defineComponent({
     ])
     const isLoading = ref(false)
     const showModal = ref(false)
+    const showCashWarning = ref(false)
+    const bypassCashWarning = ref(false)
+
+    const getMonthValue = (dateString: string) => dateString.slice(0, 7)
+    const getCurrentMonthValue = () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const month = String(today.getMonth() + 1).padStart(2, '0')
+      return `${year}-${month}`
+    }
+
+    const currentUserHasCashIncomeForMonth = computed(() => {
+      const selectedUser = users.value.find(user => user.id === spending.applicationUserId)
+      if (!selectedUser || !selectedUser.incomes || selectedUser.incomes.length === 0) {
+        return false
+      }
+
+      const spendingMonth = getMonthValue(spending.date || getCurrentMonthValue())
+      return selectedUser.incomes.some((income) =>
+        getMonthValue(income.date || '') === spendingMonth && income.paymentMethod === PaymentMethod.Cash
+      )
+    })
+
+    const shouldShowCashWarning = computed(() => {
+      return spending.paymentMethod === PaymentMethod.Cash &&
+        !!spending.applicationUserId &&
+        !!spending.date &&
+        !currentUserHasCashIncomeForMonth.value
+    })
 
     const { createSpending } = useSpendingStore()
     const { $showNotification } = useNuxtApp()
@@ -160,8 +224,20 @@ export default defineComponent({
 
     const v$ = useVuelidate(rules, spending)
 
+    watch(
+      () => [spending.applicationUserId, spending.paymentMethod, spending.date],
+      () => {
+        showCashWarning.value = false
+        bypassCashWarning.value = false
+      }
+    )
+
     const open = async () => {
       await getUsers({ page_number: 1, page_size: 999 })
+      spending.applicationUserId = users.value.find(user => user.email === account.value.email)?.id || ''
+      spending.paymentMethod = PaymentMethod.Card
+      showCashWarning.value = false
+      bypassCashWarning.value = false
       showModal.value = true
     }
 
@@ -174,14 +250,27 @@ export default defineComponent({
       spending.applicationUserId = ''
       spending.item = ''
       spending.amount = 0
-      spending.paymentMethod = PaymentMethod.Cash
+      spending.paymentMethod = PaymentMethod.Card
       spending.comment = ''
       spending.color = '#6B7280'
       spending.date = new Date().toISOString().split('T')[0]
+      showCashWarning.value = false
+      bypassCashWarning.value = false
       v$.value.$reset()
     }
 
-    const submit = async () => {
+    const confirmCashWarning = async () => {
+      bypassCashWarning.value = true
+      showCashWarning.value = false
+      await submit()
+    }
+
+    const dismissCashWarning = () => {
+      showCashWarning.value = false
+      bypassCashWarning.value = false
+    }
+
+    const performSubmit = async () => {
       const isFormCorrect = await v$.value.$validate()
       if (!isFormCorrect) return
 
@@ -197,7 +286,19 @@ export default defineComponent({
         console.error('Error creating spending:', error)
       } finally {
         isLoading.value = false
+        bypassCashWarning.value = false
       }
+    }
+
+    const submit = async () => {
+      const shouldWarn = shouldShowCashWarning.value && !bypassCashWarning.value
+      if (shouldWarn) {
+        showCashWarning.value = true
+        return
+      }
+
+      showCashWarning.value = false
+      await performSubmit()
     }
 
     return {
@@ -207,9 +308,12 @@ export default defineComponent({
       v$,
       isLoading,
       showModal,
+      showCashWarning,
       PaymentMethod,
       open,
       close,
+      confirmCashWarning,
+      dismissCashWarning,
       submit,
     }
   },

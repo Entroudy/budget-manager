@@ -53,10 +53,11 @@ class APIService {
       function (error) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
-        if (error.response.status === 401) {
+        const status = error?.response?.status
+        if (status === 401) {
           return logout()
         }
-        const errorMessage = error.response.data.detail || error.response.data.title || 'An error occurred'
+        const errorMessage = error?.response?.data?.detail || error?.response?.data?.title || error?.message || 'An error occurred'
         $event('notification', { type: 'error', message: errorMessage })
         console.log(error)
         return Promise.reject(error)

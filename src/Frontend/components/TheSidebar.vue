@@ -56,12 +56,12 @@
       <nav>
       <ul role="list" class="flex flex-col space-y-2 lg:space-y-4 px-4 lg:px-6">
         <template v-for="item in menuItems.bottom">
-          <li v-if="item.name !== 'Logout'" :key="item.name">
+          <li v-if="item.name !== 'logout'" :key="item.name">
             <NuxtLink :to="item.link"
               class="hover:text-white text-gray-400 group flex gap-x-3 rounded-md text-sm leading-6 font-semibold items-center"
               :class="[sidebarOpen ? 'lg:justify-center px-5 lg:px-3 py-4' : 'px-5 py-3']">
               <i :class="item.iconClass" />
-              <span :class="[sidebarOpen ? 'lg:sr-only' : '']">{{ item.name }}</span>
+              <span :class="[sidebarOpen ? 'lg:sr-only' : '']">{{ $t(item.name) }}</span>
             </NuxtLink>
           </li>
         </template>
@@ -77,7 +77,7 @@
     <div class="flex justify-center text-gray-400 text-sm pb-4"
       :class="[sidebarOpen ? 'absolute bottom-4 left-1/2 -translate-x-1/2' : '']">
       <span class="inline-flex text-center text-xs"><span :class="[sidebarOpen ? '!hidden' : '']"
-          class="lg:flex">service-manager -</span> <span>v2.0.1</span></span>
+          class="lg:flex">Budget Manager -</span> <span>v2.0.1</span></span>
     </div>
   </div>
 </template>

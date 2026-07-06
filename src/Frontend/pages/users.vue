@@ -217,7 +217,7 @@ export default defineComponent({
     onMounted(async () => {
       initializeStateFromQuery(route.query);
       await refreshUsers()
-      setActivePageTitle(`${t('users')}`)
+      setActivePageTitle('users')
       firstLoad.value = false
     })
 
@@ -341,9 +341,24 @@ export default defineComponent({
     }
 
     // Income helpers
+    const getCurrentMonthValue = () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const month = String(today.getMonth() + 1).padStart(2, '0')
+      return `${year}-${month}`
+    }
+
+    const normalizeIncomeMonth = (dateString?: string) => {
+      if (!dateString) return ''
+      return dateString.slice(0, 7)
+    }
+
     const calculateTotalIncome = (user: UserListItem) => {
       if (!user.incomes || user.incomes.length === 0) return 0
-      return user.incomes.reduce((sum, income) => sum + (income.amount || 0), 0)
+      const currentMonth = getCurrentMonthValue()
+      return user.incomes
+        .filter(income => normalizeIncomeMonth(income.date) === currentMonth)
+        .reduce((sum, income) => sum + (income.amount || 0), 0)
     }
 
     const formatCurrency = (amount: number) => {

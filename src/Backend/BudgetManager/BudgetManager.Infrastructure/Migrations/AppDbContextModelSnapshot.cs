@@ -17,7 +17,7 @@ namespace BudgetManager.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "9.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -103,7 +103,8 @@ namespace BudgetManager.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
+                        .HasPrecision(16, 2)
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("char(36)");
@@ -111,14 +112,14 @@ namespace BudgetManager.Infrastructure.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("longtext");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
@@ -152,7 +153,8 @@ namespace BudgetManager.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
+                        .HasPrecision(16, 2)
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("char(36)");
@@ -169,7 +171,7 @@ namespace BudgetManager.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<DateOnly>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("DeletedAt")

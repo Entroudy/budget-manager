@@ -13,12 +13,12 @@ const string CorsAllowSpecificOrigins = "_corsAllowSpecificOrigins";
 
 DotNetEnv.Env.Load();
 Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", AppSettings.AppEnv);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPresentationServices();
 builder.Services.AddInfrastructureServices(AppSettings.DbConnectionString);
 builder.Services.AddApplicationServices();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsAllowSpecificOrigins, policy =>
@@ -28,7 +28,6 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -46,11 +45,11 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT"
     });
     options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecuritySchemeReference("Bearer", null, null),
-                    new List<string>()
-                }
+    {
+        {
+            new OpenApiSecuritySchemeReference("Bearer", null, null),
+            new List<string>()
+        }
     });
 });
 

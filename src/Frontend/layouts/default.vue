@@ -18,11 +18,14 @@
               <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 <i class="fas fa-layer-group text-white text-xl"></i>
               </div>
-              <div>
+              <div class="flex-1 min-w-0">
                 <p class="text-white/80 text-sm font-medium uppercase tracking-wider">{{ $t('dashboard') }}</p>
                 <h1 class="text-white font-bold text-3xl md:text-4xl capitalize">
                   {{ activePageTitle }}
                 </h1>
+              </div>
+              <div class="shrink-0">
+                <LanguageSwitcher />
               </div>
             </div>
 
@@ -51,7 +54,12 @@ import { useGlobalStore } from '@/stores/global';
 import { storeToRefs } from 'pinia';
 
 const globalStore = useGlobalStore();
-const { activePageTitle } = storeToRefs(globalStore);
+const { activePageTitleKey } = storeToRefs(globalStore);
+const { t } = useI18n();
+
+const activePageTitle = computed(() => {
+  return activePageTitleKey.value ? t(activePageTitleKey.value) : '';
+});
 
 </script>
 

@@ -67,48 +67,50 @@
               </div>
             </div>
 
-            <!-- Nickname -->
-            <div>
-              <label for="nickName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {{ $t('nickName') }} <span class="text-red-500">*</span>
-              </label>
-              <input
-                id="nickName"
-                v-model="user.nickName"
-                type="text"
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                :class="{
-                  'border-red-500 focus:ring-red-500': v$.nickName.$error,
-                  'border-green-500 focus:ring-green-500': !v$.nickName.$invalid && v$.nickName.$dirty,
-                }"
-                @blur="v$.nickName.$touch"
-                :placeholder="$t('enter_nickname')"
-              >
-              <span v-if="v$.nickName.$error" class="text-xs text-red-500 mt-1 block">
-                {{ v$.nickName.$silentErrors[0].$message }}
-              </span>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Nickname -->
+              <div>
+                <label for="nickName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {{ $t('nickName') }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="nickName"
+                  v-model="user.nickName"
+                  type="text"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  :class="{
+                    'border-red-500 focus:ring-red-500': v$.nickName.$error,
+                    'border-green-500 focus:ring-green-500': !v$.nickName.$invalid && v$.nickName.$dirty,
+                  }"
+                  @blur="v$.nickName.$touch"
+                  :placeholder="$t('enter_nickname')"
+                >
+                <span v-if="v$.nickName.$error" class="text-xs text-red-500 mt-1 block">
+                  {{ v$.nickName.$silentErrors[0].$message }}
+                </span>
+              </div>
 
-            <!-- Email -->
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {{ $t('email') }} <span class="text-red-500">*</span>
-              </label>
-              <input
-                id="email"
-                v-model="user.email"
-                type="email"
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                :class="{
-                  'border-red-500 focus:ring-red-500': v$.email.$error,
-                  'border-green-500 focus:ring-green-500': !v$.email.$invalid && v$.email.$dirty,
-                }"
-                @blur="v$.email.$touch"
-                :placeholder="$t('enter_email')"
-              >
-              <span v-if="v$.email.$error" class="text-xs text-red-500 mt-1 block">
-                {{ v$.email.$silentErrors[0].$message }}
-              </span>
+              <!-- Email -->
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {{ $t('email') }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="email"
+                  v-model="user.email"
+                  type="email"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  :class="{
+                    'border-red-500 focus:ring-red-500': v$.email.$error,
+                    'border-green-500 focus:ring-green-500': !v$.email.$invalid && v$.email.$dirty,
+                  }"
+                  @blur="v$.email.$touch"
+                  :placeholder="$t('enter_email')"
+                >
+                <span v-if="v$.email.$error" class="text-xs text-red-500 mt-1 block">
+                  {{ v$.email.$silentErrors[0].$message }}
+                </span>
+              </div>
             </div>
           </div>
 

@@ -4,7 +4,7 @@ export default defineI18nConfig(async () => {
 
   return {
     legacy: false,
-    locale: 'hu',
+    locale: 'en',
     fallbackLocale: 'en',
     messages: {
       en: enMessages.default,

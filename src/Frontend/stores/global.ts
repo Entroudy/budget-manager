@@ -2,11 +2,11 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useGlobalStore = defineStore('global', () => {
-  const activePageTitle = ref('');
+  const activePageTitleKey = ref('');
 
   function setActivePageTitle(value: string) {
-    activePageTitle.value = value;
+    activePageTitleKey.value = value;
   }
 
-  return { activePageTitle, setActivePageTitle };
+  return { activePageTitleKey, setActivePageTitle };
 });

@@ -20,6 +20,7 @@ public static class DependencyInjection
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddTransient<ICurrentUserService, CurrentUserService>();
         services.AddEndpointsApiExplorer();
         services.AddProblemDetails();
         services.AddAuthentication();

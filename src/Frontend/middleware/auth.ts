@@ -1,10 +1,11 @@
-import { useAuthStore } from '@/stores/AuthStore'
+import { getUser } from '~/services/api/JwtService'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const { getUser } = useAuthStore()
-
   try {
-    const promise = await getUser()
+    const user = getUser()
+    if (!user) {
+      return navigateTo('/login')
+    }
   } catch (error) {
     if (error) {
       return navigateTo('/login')

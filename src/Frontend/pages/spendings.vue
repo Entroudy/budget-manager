@@ -59,10 +59,18 @@
           </div>
 
           <!-- Financial Summary -->
-          <div class="grid grid-cols-3 gap-2 pt-3 border-t border-white/20">
+          <div class="grid grid-cols-2 lg:grid-cols-5 gap-2 pt-3 border-t border-white/20">
             <div class="text-center">
               <p class="text-white/60 text-xs mb-1">{{ $t('income') }}</p>
               <p class="text-white font-bold text-sm">{{ formatCurrency(getUserIncome(userId)) }}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-white/60 text-xs mb-1">{{ $t('card') }} {{ $t('spendings') }}</p>
+              <p class="text-white font-bold text-sm">{{ formatCurrency(getUserCardSpendings(userSpendings)) }}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-white/60 text-xs mb-1">{{ $t('cash') }} {{ $t('spendings') }}</p>
+              <p class="text-white font-bold text-sm">{{ formatCurrency(getUserCashSpendings(userSpendings)) }}</p>
             </div>
             <div class="text-center">
               <p class="text-white/60 text-xs mb-1">{{ $t('spent') }}</p>
@@ -187,14 +195,18 @@
       </div>
 
       <!-- Financial Summary Grid -->
-      <div class="grid grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
           <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('grand_income') }}</p>
           <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ formatCurrency(grandIncome) }}</p>
         </div>
-        <div class="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('grand_spending') }}</p>
-          <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ formatCurrency(grandTotal) }}</p>
+        <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('card') }} {{ $t('spendings') }}</p>
+          <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ formatCurrency(cardSpendingsTotal) }}</p>
+        </div>
+        <div class="text-center p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('cash') }} {{ $t('spendings') }}</p>
+          <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ formatCurrency(cashSpendingsTotal) }}</p>
         </div>
         <div class="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
           <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ $t('grand_remaining') }}</p>
@@ -232,7 +244,7 @@ export default defineComponent({
   name: 'SpendingPage',
   components: { SpendingCreateModal, SpendingEditModal, SpendingDeleteModal },
   setup() {
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
     const { setActivePageTitle } = useGlobalStore()
     const { spendings } = storeToRefs(useSpendingStore())
     const { getSpendings } = useSpendingStore()
@@ -276,7 +288,7 @@ export default defineComponent({
     const firstLoad = ref(true)
 
     onMounted(async () => {
-      setActivePageTitle('Spendings')
+      setActivePageTitle('spendings')
       // Load users first
       await getUsers({ page_number: 1, page_size: 999 })
       // Load incomes for all users
@@ -312,7 +324,8 @@ export default defineComponent({
     // Month navigation
     const currentMonthLabel = computed(() => {
       const date = new Date(viewingYear.value, viewingMonth.value, 1)
-      return date.toLocaleDateString('hu-HU', { month: 'long', year: 'numeric' })
+      const resolvedLocale = locale.value === 'hu' ? 'hu-HU' : 'en-US'
+      return date.toLocaleDateString(resolvedLocale, { month: 'long', year: 'numeric' })
     })
 
     const isIncomeInViewMonth = (incomeDate: string) => {
@@ -436,6 +449,18 @@ export default defineComponent({
       return spendings.value.reduce((sum, spending) => sum + spending.amount, 0)
     })
 
+    const cardSpendingsTotal = computed(() => {
+      return spendings.value
+        .filter(spending => spending.paymentMethod === PaymentMethod.Card)
+        .reduce((sum, spending) => sum + spending.amount, 0)
+    })
+
+    const cashSpendingsTotal = computed(() => {
+      return spendings.value
+        .filter(spending => spending.paymentMethod === PaymentMethod.Cash)
+        .reduce((sum, spending) => sum + spending.amount, 0)
+    })
+
     const grandIncome = computed(() => {
       return incomes.value
         .filter(income => income.date && isIncomeInViewMonth(income.date))
@@ -459,6 +484,18 @@ export default defineComponent({
 
     const getUserTotal = (userSpendings: SpendingItemResponse[]) => {
       return userSpendings.reduce((sum, spending) => sum + spending.amount, 0)
+    }
+
+    const getUserCardSpendings = (userSpendings: SpendingItemResponse[]) => {
+      return userSpendings
+        .filter(spending => spending.paymentMethod === PaymentMethod.Card)
+        .reduce((sum, spending) => sum + spending.amount, 0)
+    }
+
+    const getUserCashSpendings = (userSpendings: SpendingItemResponse[]) => {
+      return userSpendings
+        .filter(spending => spending.paymentMethod === PaymentMethod.Cash)
+        .reduce((sum, spending) => sum + spending.amount, 0)
     }
 
     const getUserIncome = (userId: string) => {
@@ -505,7 +542,8 @@ export default defineComponent({
 
     const formatDateShort = (dateString: string) => {
       const date = new Date(`${dateString}T00:00:00`)
-      return date.toLocaleDateString('hu-HU', {
+      const resolvedLocale = locale.value === 'hu' ? 'hu-HU' : 'en-US'
+      return date.toLocaleDateString(resolvedLocale, {
         month: '2-digit',
         day: '2-digit'
       })
@@ -559,12 +597,16 @@ export default defineComponent({
       spendingsByUser,
       totalSpendingsCount,
       grandTotal,
+      cardSpendingsTotal,
+      cashSpendingsTotal,
       grandIncome,
       grandRemaining,
       getUserName,
       getUserInitials,
       getUserTotal,
       getUserIncome,
+      getUserCardSpendings,
+      getUserCashSpendings,
       getUserRemaining,
       toggleSort,
       navigateMonth,

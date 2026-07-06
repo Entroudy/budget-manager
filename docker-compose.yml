@@ -11,6 +11,12 @@ services:
       - "13006:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   budget-manager:
     build:
@@ -20,8 +26,9 @@ services:
     ports:
       - 4000:80
     depends_on:
-      - mysql
-    restart: "no"
+      mysql:
+        condition: service_healthy
+    restart: "always"
     environment:
       APP_ENV: 'local'
       HOST: 'localhost'

@@ -1,6 +1,9 @@
 <template>
   <div class="flex min-h-screen items-center justify-center p-4 bg-white">
     <div class="w-full max-w-md">
+      <div class="flex justify-end mb-4">
+        <LanguageSwitcher variant="light" />
+      </div>
       <!-- Simple Financial Icon -->
       <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 bg-primary">

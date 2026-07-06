@@ -71,6 +71,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
         builder.Entity<Spending>(entity =>
         {
+            entity.Property(x => x.Amount)
+                .HasPrecision(16, 2);
+
             entity.Property(x => x.Date)
                 .HasConversion<DateOnlyConverter>()
                 .HasColumnType("date")
@@ -79,6 +82,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
         builder.Entity<Income>(entity =>
         {
+            entity.Property(x => x.Amount)
+                .HasPrecision(16, 2);
+
             entity.Property(x => x.Date)
                 .HasConversion<DateOnlyConverter>()
                 .HasColumnType("date")
