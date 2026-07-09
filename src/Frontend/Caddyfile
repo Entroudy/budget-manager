@@ -1,0 +1,13 @@
+budget-manager.hu, www.budget-manager.hu {
+	encode zstd gzip
+
+	handle_path /api/* {
+		reverse_proxy backend:80
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

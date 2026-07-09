@@ -1,0 +1,66 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: bm_mysql_prod
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bm_db}
+      MYSQL_USER: ${MYSQL_USER:-admin}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  backend:
+    image: ghcr.io/entroudy/budget-manager-backend:latest
+    container_name: bm_backend_prod
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      HOST: 0.0.0.0
+      PORT: 80
+      ASPNETCORE_HTTP_PORTS: 80
+      DB_CONNECTION: server=mysql;port=3306;user=${MYSQL_USER:-admin};password=${MYSQL_PASSWORD};database=${MYSQL_DATABASE:-bm_db}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_VALID_AUDIENCE: ${JWT_VALID_AUDIENCE}
+      JWT_VALID_ISSUER: ${JWT_VALID_ISSUER}
+      DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
+      DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
+    expose:
+      - "80"
+
+  frontend:
+    image: ghcr.io/entroudy/budget-manager-frontend:latest
+    container_name: bm_frontend_prod
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  mysql_data:
+  caddy_data:
+  caddy_config:
