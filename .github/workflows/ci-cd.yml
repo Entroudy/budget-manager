@@ -119,6 +119,7 @@ jobs:
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
+    environment: production
     needs: build-and-push
     if: github.event_name == 'push'
 
