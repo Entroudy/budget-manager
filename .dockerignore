@@ -21,5 +21,12 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/.nuxt
+**/.output
+**/dist
+**/*.user
+**/*.suo
+**/*.cache
+**/.DS_Store
 LICENSE
 README.md

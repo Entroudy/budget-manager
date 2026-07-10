@@ -94,6 +94,60 @@ The repository also includes `docker-compose.yml`, which starts:
 
 If you use the Docker compose setup, make sure the backend container environment variables match your build and deployment setup.
 
+## Production Deployment
+
+The repository also includes a VPS-oriented production stack:
+
+- `docker-compose.prod.yml`
+- `src/Frontend/Dockerfile`
+- `src/Frontend/Caddyfile`
+- `.github/workflows/ci-cd.yml`
+
+The intended flow is:
+
+1. push to `main`
+2. GitHub Actions validates the backend and frontend
+3. Docker images are built and pushed to GHCR
+4. the VPS pulls the new images
+5. `docker compose up -d` replaces the running containers
+
+The production stack uses:
+
+- `frontend` as the public entrypoint on ports `80` and `443`
+- `backend` on the internal Docker network only
+- `mysql` as the database container
+
+The frontend container terminates TLS with Caddy and proxies `/api/*` to the backend container, so the app can use the same origin in production.
+
+Before the first deploy, create a `.env` file next to `docker-compose.prod.yml` from `.env.production.example` and fill in:
+
+- MySQL credentials
+- JWT secret
+- JWT issuer and audience
+- default admin credentials
+
+The deploy workflow expects these GitHub repository secrets:
+
+- `VPS_HOST`
+- `VPS_USER`
+- `VPS_SSH_PRIVATE_KEY`
+- `GHCR_USERNAME`
+- `GHCR_TOKEN`
+- `MYSQL_ROOT_PASSWORD`
+- `MYSQL_DATABASE`
+- `MYSQL_USER`
+- `MYSQL_PASSWORD`
+- `JWT_SECRET`
+- `JWT_VALID_AUDIENCE`
+- `JWT_VALID_ISSUER`
+- `DEFAULT_ADMIN_EMAIL`
+- `DEFAULT_ADMIN_PASSWORD`
+- `NUXT_AUTH0_DOMAIN`
+- `NUXT_AUTH0_CLIENT_ID`
+- `NUXT_AUTH0_AUDIENCE`
+
+The VPS does not need a full repository checkout. The workflow creates `/opt/budget-manager`, uploads `docker-compose.prod.yml`, writes `.env`, logs in to GHCR, and then runs `docker compose pull` and `docker compose up -d`.
+
 ## Default Admin Account
 
 The repository includes a default admin account for local development:

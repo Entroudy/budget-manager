@@ -63,7 +63,11 @@ var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Applicati
 DefaultUserInitializer.Seed(userManager, db, AppSettings.DefaultAdminEmail, AppSettings.DefaultAdminPassword);
 
 app.UseMiddleware<JwtMiddleware>();
-app.UseHttpsRedirection();
+var httpsPorts = Environment.GetEnvironmentVariable("ASPNETCORE_HTTPS_PORTS");
+if (!string.IsNullOrWhiteSpace(httpsPorts))
+{
+    app.UseHttpsRedirection();
+}
 app.UseProblemDetails();
 app.UseCors(CorsAllowSpecificOrigins);
 app.UseAuthentication();
