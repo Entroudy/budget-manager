@@ -6,7 +6,7 @@ on:
       - main
   push:
     branches:
-      - main
+      - deploy-preparation
   workflow_dispatch:
 
 concurrency:
