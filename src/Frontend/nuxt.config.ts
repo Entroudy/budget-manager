@@ -49,7 +49,7 @@ export default defineNuxtConfig({
       'en'
      ],
     defaultLocale: 'en',
-    vueI18n: './i18n.config.js'
+    vueI18n: './i18n.config.mjs'
   },
 
   postcss: {
