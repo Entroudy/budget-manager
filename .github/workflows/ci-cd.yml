@@ -124,6 +124,9 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Ensure remote directory exists
         uses: appleboy/ssh-action@v1.0.3
         with:
