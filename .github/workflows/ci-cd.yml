@@ -123,6 +123,41 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
+<<<<<<< Updated upstream
+=======
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate deploy secrets
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
+          JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
+          DEFAULT_ADMIN_EMAIL: ${{ secrets.DEFAULT_ADMIN_EMAIL }}
+          DEFAULT_ADMIN_PASSWORD: ${{ secrets.DEFAULT_ADMIN_PASSWORD }}
+        run: |
+          for var in \
+            MYSQL_ROOT_PASSWORD \
+            MYSQL_DATABASE \
+            MYSQL_USER \
+            MYSQL_PASSWORD \
+            JWT_SECRET \
+            JWT_VALID_AUDIENCE \
+            JWT_VALID_ISSUER \
+            DEFAULT_ADMIN_EMAIL \
+            DEFAULT_ADMIN_PASSWORD
+          do
+            if [ -z "${!var}" ]; then
+              echo "::error::$var is missing"
+              exit 1
+            fi
+          done
+
+>>>>>>> Stashed changes
       - name: Ensure remote directory exists
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -151,17 +186,17 @@ jobs:
           script: |
             cd /opt/budget-manager
             cat > .env <<'EOF'
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-            MYSQL_USER=${{ secrets.MYSQL_USER }}
-            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"
+            MYSQL_DATABASE="${{ secrets.MYSQL_DATABASE }}"
+            MYSQL_USER="${{ secrets.MYSQL_USER }}"
+            MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD }}"
 
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            JWT_VALID_AUDIENCE=${{ secrets.JWT_VALID_AUDIENCE }}
-            JWT_VALID_ISSUER=${{ secrets.JWT_VALID_ISSUER }}
+            JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            JWT_VALID_AUDIENCE="${{ secrets.JWT_VALID_AUDIENCE }}"
+            JWT_VALID_ISSUER="${{ secrets.JWT_VALID_ISSUER }}"
 
-            DEFAULT_ADMIN_EMAIL=${{ secrets.DEFAULT_ADMIN_EMAIL }}
-            DEFAULT_ADMIN_PASSWORD=${{ secrets.DEFAULT_ADMIN_PASSWORD }}
+            DEFAULT_ADMIN_EMAIL="${{ secrets.DEFAULT_ADMIN_EMAIL }}"
+            DEFAULT_ADMIN_PASSWORD="${{ secrets.DEFAULT_ADMIN_PASSWORD }}"
             EOF
 
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ secrets.GHCR_USERNAME }}" --password-stdin

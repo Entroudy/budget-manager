@@ -3,16 +3,16 @@ services:
     image: mysql:8.0
     container_name: bm_mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: change-me-root-password
       MYSQL_USER: admin
       MYSQL_DATABASE: bm_db
-      MYSQL_PASSWORD: admin
+      MYSQL_PASSWORD: change-me-db-password
     ports: 
       - "13006:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pchange-me-root-password"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -35,9 +35,9 @@ services:
       PORT: '80'
       JWT_VALID_AUDIENCE: 'Api'
       JWT_VALID_ISSUER: 'http://localhost:8080'
-      JWT_SECRET: 'f288ff98822f36c1151aa70149334892'
+      JWT_SECRET: 'change-me-jwt-secret'
       ASPNETCORE_HTTP_PORTS: '80'
-      DB_CONNECTION: server=mysql;port=3306;user=admin;password=admin;database=bm_db
+      DB_CONNECTION: server=mysql;port=3306;user=admin;password=change-me-db-password;database=bm_db
   
   phpmyadmin:
     image: phpmyadmin:latest
@@ -45,7 +45,7 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_USER: admin
-      PMA_PASSWORD: admin
+      PMA_PASSWORD: change-me-db-password
     ports:
       - 19107:80
     depends_on:

@@ -51,11 +51,11 @@ An example file is available at:
 
 - `src/Backend/BudgetManager/BudgetManager.Presentation/example.env`
 
-Typical local values from the repository:
+Typical local values:
 
-- `DB_CONNECTION=server=localhost;port=13006;user=admin;password=admin;database=bm_db`
-- `DEFAULT_ADMIN_EMAIL=admin@entroudy.com`
-- `DEFAULT_ADMIN_PASSWORD=Almafa123!`
+- `DB_CONNECTION=server=localhost;port=13006;user=admin;password=change-me;database=bm_db`
+- `DEFAULT_ADMIN_EMAIL=change-me-admin-email`
+- `DEFAULT_ADMIN_PASSWORD=change-me-admin-password`
 
 ### 3. Run the backend
 
@@ -150,12 +150,7 @@ The VPS does not need a full repository checkout. The workflow creates `/opt/bud
 
 ## Default Admin Account
 
-The repository includes a default admin account for local development:
-
-- Email: `admin@entroudy.com`
-- Password: `Almafa123!`
-
-If you change these values, update your local environment accordingly.
+The repository does not include a committed default admin credential pair. Set `DEFAULT_ADMIN_EMAIL` and `DEFAULT_ADMIN_PASSWORD` in your local environment before starting the backend.
 
 ## Notes
 
