@@ -1,4 +1,5 @@
 global using BudgetManager.Application.Extensions;
+global using BudgetManager.Application.Exceptions;
 global using BudgetManager.Application.Mappings;
 global using BudgetManager.Application.Models;
 global using BudgetManager.Common;

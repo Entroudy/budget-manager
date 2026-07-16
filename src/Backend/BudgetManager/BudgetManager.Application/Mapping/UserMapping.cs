@@ -2,28 +2,33 @@
 
 public static class UserMapping
 {
-    public static IQueryable<UserResponse> ToUserResponse(this IQueryable<ApplicationUser> entity)
+    public static async Task<UserResponse> ToUserResponseAsync(this ApplicationUser entity, UserManager<ApplicationUser> userManager)
     {
-        return entity.Select(x => new UserResponse
+        var roles = (await userManager.GetRolesAsync(entity)).ToList();
+        if (!roles.Any())
+            roles = new List<string> { AppRoles.User };
+
+        return new UserResponse
         {
-            Id = x.Id,
-            Email = x.Email,
-            LastName = x.LastName,
-            FirstName = x.FirstName,
-            NickName = x.NickName,
-            Incomes = x.Incomes
+            Id = entity.Id,
+            Email = entity.Email,
+            LastName = entity.LastName,
+            FirstName = entity.FirstName,
+            NickName = entity.NickName,
+            Roles = roles.ToList(),
+            Incomes = entity.Incomes
                 .OrderByDescending(i => i.Date)
                 .Select(i => new IncomeResponse
-            {
-                Id = i.Id,
-                ApplicationUserId = i.ApplicationUserId,
-                Amount = i.Amount,
-                PaymentMethod = i.PaymentMethod,
-                Comment = i.Comment,
-                Date = i.Date,
-                CreatedDate = i.CreatedAt,
-                LastModifiedDate = i.ModifiedAt
-            }).ToList()
-        });
+                {
+                    Id = i.Id,
+                    ApplicationUserId = i.ApplicationUserId,
+                    Amount = i.Amount,
+                    PaymentMethod = i.PaymentMethod,
+                    Comment = i.Comment,
+                    Date = i.Date,
+                    CreatedDate = i.CreatedAt,
+                    LastModifiedDate = i.ModifiedAt
+                }).ToList()
+        };
     }
 }

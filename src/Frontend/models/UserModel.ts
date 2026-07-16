@@ -30,7 +30,11 @@ export type UserLogin = {
   rememberMe: boolean
 }
 
-export type UserCreate = BaseUser
+export type UserRole = 'User' | 'Admin'
+
+export type UserCreate = BaseUser & {
+  role?: UserRole
+}
 
 export type UserUpdate ={
   id: string
@@ -38,6 +42,7 @@ export type UserUpdate ={
   firstName: string
   nickName: string
   email: string
+  role?: UserRole
   incomes?: Income[]
 }
 
@@ -49,6 +54,7 @@ export type ChangePassword ={
 
 export type UserListItem = BaseUser & {
   id: string
+  roles?: UserRole[]
   incomes?: Income[]
 }
 
@@ -56,7 +62,9 @@ export type UserType = UserCreate
 export type UserListTypes = UserListItem[]
 
 /* API RESPONSE MODELS */
-export type UserItemResponse = BaseResponseProps & UserUpdate
+export type UserItemResponse = BaseResponseProps & UserUpdate & {
+  roles?: UserRole[]
+}
 
 export type PaginatedUserListResponse<T> = BasePagination & {
   items: T[]

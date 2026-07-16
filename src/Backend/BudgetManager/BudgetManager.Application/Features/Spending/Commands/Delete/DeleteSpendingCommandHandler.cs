@@ -13,14 +13,6 @@ public class DeleteSpendingCommandHandler : IRequestHandler<DeleteSpendingComman
 
     public async Task<Unit> Handle(DeleteSpendingCommand request, CancellationToken cancellationToken)
     {
-        if (!_currentUserService.IsAuthenticated)
-            throw new ValidationException("Unauthorized");
-
-        if (!Guid.TryParse(_currentUserService.ApplicationUserId, out var currentUserId))
-        {
-            throw new ValidationException("User not found");
-        }
-
         var spending = await _context.Spendings
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
@@ -29,7 +21,8 @@ public class DeleteSpendingCommandHandler : IRequestHandler<DeleteSpendingComman
             throw new ValidationException($"Spending with ID {request.Id} not found");
         }
 
-        spending.Delete(currentUserId.ToString());
+        _currentUserService.EnsureEligibleForApplicationUser(spending.ApplicationUserId);
+        spending.Delete(_currentUserService.GetRequiredApplicationUserId().ToString());
 
         await _context.SaveChangesAsync(cancellationToken);
 

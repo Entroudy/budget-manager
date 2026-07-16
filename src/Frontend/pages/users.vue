@@ -69,6 +69,17 @@
                         <span class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email }}</span>
                       </div>
 
+                      <div v-if="(user.roles?.length || 0) > 0" class="flex flex-wrap gap-2 mb-2">
+                        <span
+                          v-for="role in user.roles"
+                          :key="role"
+                          class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
+                          :class="getUserRoleBadgeClass(role)"
+                        >
+                          {{ $t(getUserRoleLabelKey(role)) }}
+                        </span>
+                      </div>
+
                       <!-- Total Income -->
                       <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                         <i class="fas fa-coins text-green-500 text-xs"></i>
@@ -188,6 +199,7 @@ import UserCreateModal from '@/components/modals/users/UserCreateModal.vue'
 import UserEditModal from '@/components/modals/users/UserEditModal.vue'
 import UserDeleteModal from '@/components/modals/users/UserDeleteModal.vue'
 import type { UserListItem } from '~/models/UserModel'
+import { getUserRoleBadgeClass, getUserRoleLabelKey } from '~/core/userRoles'
 
 definePageMeta({
   middleware: 'auth',
@@ -216,13 +228,14 @@ export default defineComponent({
     const { $formatDatePickerValue } = useNuxtApp()
     onMounted(async () => {
       initializeStateFromQuery(route.query);
-      await refreshUsers()
+      await Promise.all([getRoles(), refreshUsers()])
       setActivePageTitle('users')
       firstLoad.value = false
     })
 
-    const { users } = storeToRefs(useUserStore())
-    const { getUsers } = useUserStore()
+    const userStore = useUserStore()
+    const { users } = storeToRefs(userStore)
+    const { getUsers, getRoles } = userStore
     const { $showNotification } = useNuxtApp()
 
     const router = useRouter()
@@ -388,6 +401,8 @@ export default defineComponent({
       handleDelete,
       calculateTotalIncome,
       formatCurrency,
+      getUserRoleBadgeClass,
+      getUserRoleLabelKey,
     }
 
   },

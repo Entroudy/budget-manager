@@ -25,11 +25,20 @@ public class UserAuthenticateCommandHandler : IRequestHandler<UserAuthenticateCo
         if (request.TokenExpiration > 2160)
             throw new ValidationException("The token's lifetime must be under 2160 hours!");
 
-        var claims = new Dictionary<string, object>
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Any())
         {
-            { "name", user.UserName },
-            { ClaimTypes.Sid, user.Id },
+            roles = new[] { AppRoles.User };
+        }
+
+        var claims = new List<Claim>
+        {
+            new("name", user.UserName ?? request.Email),
+            new(ClaimTypes.Sid, user.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var token = getToken(claims, request.TokenExpiration);
 
@@ -40,7 +49,7 @@ public class UserAuthenticateCommandHandler : IRequestHandler<UserAuthenticateCo
         };
     }
 
-    private JwtSecurityToken getToken(Dictionary<string, object> authClaims, int tokenExpiration)
+    private JwtSecurityToken getToken(IEnumerable<Claim> authClaims, int tokenExpiration)
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JWT_Secret));
 
@@ -48,7 +57,7 @@ public class UserAuthenticateCommandHandler : IRequestHandler<UserAuthenticateCo
         {
             Issuer = AppSettings.JWT_ValidIssuer,
             Audience = AppSettings.JWT_ValidAudience,
-            Claims = authClaims,
+            Subject = new ClaimsIdentity(authClaims),
             Expires = DateTime.UtcNow.AddHours(tokenExpiration),
             SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         };

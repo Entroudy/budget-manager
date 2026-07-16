@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
-import type { UserListTypes, UserType } from '~/models/UserModel'
+import type { UserCreate, UserListTypes, UserRole, UserUpdate } from '~/models/UserModel'
 import type { ParamsType } from '@/models'
 
 export const useUserStore = defineStore('user', {
   state: () => {
     return {
       users: [] as UserListTypes,
+      roles: [] as UserRole[],
     }
   },
   actions: {
@@ -46,7 +47,20 @@ export const useUserStore = defineStore('user', {
         return null
       }
     },
-    async createUser (userType: UserType) {
+    async getRoles () {
+      try {
+        const data = await this.api.user.getRoles()
+        if (Array.isArray(data)) {
+          this.roles = data
+          return data
+        }
+        return []
+      } catch (error) {
+        console.error('Error fetching roles:', error)
+        return []
+      }
+    },
+    async createUser (userType: UserCreate) {
       try {
        const data = await this.api.user.createUser(userType)
         return data
@@ -62,7 +76,7 @@ export const useUserStore = defineStore('user', {
         return null
       }
     },
-    async updateUser (applicationUserId: string, userType: UserType) {
+    async updateUser (applicationUserId: string, userType: UserUpdate) {
       try {
          const data = await this.api.user.updateUser(applicationUserId, userType)
         return data
@@ -80,6 +94,6 @@ export const useUserStore = defineStore('user', {
     },
     setUsers (data: UserListTypes) {
       this.users = data
-    }
+    },
   }
 })

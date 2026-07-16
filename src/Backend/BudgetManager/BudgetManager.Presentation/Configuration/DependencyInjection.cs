@@ -7,6 +7,7 @@ using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace BudgetManager.Presentation.Configuration;
 
@@ -45,6 +46,8 @@ public static class DependencyInjection
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = AppSettings.JWT_ValidIssuer,
                     ValidAudience = AppSettings.JWT_ValidAudience,
+                    NameClaimType = ClaimTypes.NameIdentifier,
+                    RoleClaimType = ClaimTypes.Role,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JWT_Secret))
                 };
             });

@@ -112,6 +112,21 @@
                 </span>
               </div>
             </div>
+
+            <div>
+              <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {{ $t('role') }}
+              </label>
+              <select
+                id="role"
+                v-model="user.role"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option v-for="option in roleOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
           </div>
 
           <!-- Security Section -->
@@ -215,8 +230,10 @@
 import { defineComponent } from 'vue'
 import { required, helpers, sameAs } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
+import { storeToRefs } from 'pinia'
 import type { UserCreate } from '~/models/UserModel'
 import { useUserStore } from '~/stores/UserStore'
+import { DEFAULT_USER_ROLE, USER_ROLES, getUserRoleLabelKey } from '~/core/userRoles'
 
 export default defineComponent({
   name: 'UserCreateModal',
@@ -229,6 +246,7 @@ export default defineComponent({
       email: '',
       password: '',
       confirmPassword: '',
+      role: DEFAULT_USER_ROLE,
     } as UserCreate)
 
     const { t } = useI18n();
@@ -237,7 +255,16 @@ export default defineComponent({
     const isLoading = ref(false)
     const showModal = ref(false)
 
-    const { createUser } = useUserStore()
+    const userStore = useUserStore()
+    const { createUser } = userStore
+    const { roles } = storeToRefs(userStore)
+
+    const roleOptions = computed(() =>
+      (roles.value.length > 0 ? roles.value : USER_ROLES).map(role => ({
+        value: role,
+        label: t(getUserRoleLabelKey(role)),
+      }))
+    )
 
     const rules = computed(() => {
       return {
@@ -280,6 +307,7 @@ export default defineComponent({
       user.email = ''
       user.password = ''
       user.confirmPassword = ''
+      user.role = DEFAULT_USER_ROLE
     }
 
     const submit = async (e: MouseEvent) => {
@@ -301,6 +329,7 @@ export default defineComponent({
       v$,
       rules,
       user,
+      roleOptions,
       showModal,
       passwordVisible,
       open,

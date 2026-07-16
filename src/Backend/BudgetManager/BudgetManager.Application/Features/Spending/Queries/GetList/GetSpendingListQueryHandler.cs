@@ -3,19 +3,33 @@ namespace BudgetManager.Application;
 public class GetSpendingListQueryHandler : IRequestHandler<GetSpendingListQuery, PaginatedResult<SpendingListResponse>>
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetSpendingListQueryHandler(AppDbContext context)
+    public GetSpendingListQueryHandler(AppDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public Task<PaginatedResult<SpendingListResponse>> Handle(GetSpendingListQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Spendings.AsQueryable();
 
-        if (request.FilterPostModel.ApplicationUserId.HasValue)
+        if (_currentUserService.HasAdminPrivileges)
         {
-            query = query.Where(x => x.ApplicationUserId == request.FilterPostModel.ApplicationUserId.Value);
+            if (request.FilterPostModel.ApplicationUserId.HasValue)
+            {
+                query = query.Where(x => x.ApplicationUserId == request.FilterPostModel.ApplicationUserId.Value);
+            }
+        }
+        else
+        {
+            var currentUserId = _currentUserService.GetRequiredApplicationUserId();
+
+            if (request.FilterPostModel.ApplicationUserId.HasValue && request.FilterPostModel.ApplicationUserId.Value != currentUserId)
+                throw new ForbiddenException("You can only access your own spendings");
+
+            query = query.Where(x => x.ApplicationUserId == currentUserId);
         }
 
         if (request.FilterPostModel.FromDate.HasValue)

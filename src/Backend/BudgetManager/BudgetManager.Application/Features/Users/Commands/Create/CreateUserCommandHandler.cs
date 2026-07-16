@@ -4,10 +4,15 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Unit>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly AppDbContext _context;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-    public CreateUserCommandHandler(UserManager<ApplicationUser> userManager, AppDbContext context)
+    public CreateUserCommandHandler(
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole<Guid>> roleManager,
+        AppDbContext context)
     {
         _userManager = userManager;
+        _roleManager = roleManager;
         _context = context;
     }
 
@@ -16,6 +21,12 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Unit>
         var userExists = await _userManager.FindByNameAsync(request.Email);
         if (userExists != null && userExists.Id != null)
             throw new ValidationException($"User with {request.Email} already exits");
+
+        var roleName = string.IsNullOrWhiteSpace(request.Role) ? AppRoles.User : request.Role;
+        if (!await _roleManager.RoleExistsAsync(roleName))
+            throw new ValidationException($"Role {roleName} does not exist");
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         var result = await _userManager.CreateAsync(new ApplicationUser()
         {
@@ -38,7 +49,16 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Unit>
         }
         else if (result.Succeeded)
         {
+            var createdUser = await _userManager.FindByEmailAsync(request.Email);
+            if (createdUser != null)
+            {
+                var roleResult = await _userManager.AddToRoleAsync(createdUser, roleName);
+                if (!roleResult.Succeeded)
+                    throw new ValidationException($"Unable to assign {roleName} role to {request.Email}");
+            }
+
             await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

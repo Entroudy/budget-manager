@@ -13,13 +13,6 @@ public class UpdateSpendingCommandHandler : IRequestHandler<UpdateSpendingComman
 
     public async Task<Unit> Handle(UpdateSpendingCommand request, CancellationToken cancellationToken)
     {
-        Guid applicationUserId = request.ApplicationUserId ?? Guid.Empty;
-
-        if (request.ApplicationUserId == null && Guid.TryParse(_currentUserService.ApplicationUserId, out var currentUserId))
-        {
-            applicationUserId = currentUserId;
-        }
-
         var spending = await _context.Spendings
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
@@ -28,6 +21,7 @@ public class UpdateSpendingCommandHandler : IRequestHandler<UpdateSpendingComman
             throw new ValidationException($"Spending with ID {request.Id} not found");
         }
 
+        var applicationUserId = _currentUserService.ResolveApplicationUserIdForUpdate(spending.ApplicationUserId, request.ApplicationUserId);
         spending.Update(applicationUserId, request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
 
         await _context.SaveChangesAsync(cancellationToken);

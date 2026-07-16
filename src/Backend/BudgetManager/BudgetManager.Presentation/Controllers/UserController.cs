@@ -12,7 +12,7 @@ public class UserController : ControllerBase
         _mediator = mediator;
     }
 
-    [JwtAuthorize()]
+    [JwtAuthorize(AppRoles.Admin)]
     [HttpGet("")]
     [SwaggerOperation("Get user list")]
     [SwaggerResponse(200, "Success", typeof(PaginatedResult<UserResponse>))]
@@ -24,7 +24,18 @@ public class UserController : ControllerBase
         return Ok(await _mediator.Send(new GetUserListQuery(paginationPostModel)));
     }
 
-    [JwtAuthorize()]
+    [JwtAuthorize(AppRoles.Admin)]
+    [HttpGet("roles")]
+    [SwaggerOperation("Get assignable roles")]
+    [SwaggerResponse(200, "Success", typeof(List<string>))]
+    [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
+    [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]
+    public async Task<IActionResult> GetRoles()
+    {
+        return Ok(await _mediator.Send(new GetRolesQuery()));
+    }
+
+    [JwtAuthorize(AppRoles.Admin)]
     [HttpGet("{applicationUserId}")]
     [SwaggerOperation("Get user by id")]
     [SwaggerResponse(200, "Success", typeof(UserResponse))]
@@ -36,7 +47,7 @@ public class UserController : ControllerBase
         return Ok(await _mediator.Send(new GetUserByIdQuery(applicationUserId)));
     }
 
-    [JwtAuthorize()]
+    [JwtAuthorize(AppRoles.Admin)]
     [HttpPost("")]
     [SwaggerOperation("Creates a new user")]
     [SwaggerResponse(200, "Success", typeof(UserResponse))]
@@ -48,7 +59,7 @@ public class UserController : ControllerBase
         return Ok(await _mediator.Send(new CreateUserCommand(request)));
     }
 
-    [JwtAuthorize()]
+    [JwtAuthorize(AppRoles.Admin)]
     [HttpDelete("{applicationUserId}")]
     [SwaggerOperation("Deletes a user")]
     [SwaggerResponse(200, "Success")]
@@ -60,7 +71,7 @@ public class UserController : ControllerBase
         return Ok(await _mediator.Send(new DeleteUserCommand(applicationUserId)));
     }
 
-    [JwtAuthorize()]
+    [JwtAuthorize(AppRoles.Admin)]
     [HttpPut("{applicationUserId}")]
     [SwaggerOperation("update the user")]
     [SwaggerResponse(200, "Success", typeof(UserResponse))]
@@ -72,7 +83,7 @@ public class UserController : ControllerBase
         return Ok(await _mediator.Send(new UpdateUserCommand(applicationUserId, request)));
     }
 
-    [JwtAuthorize()]
+    [JwtAuthorize(AppRoles.Admin)]
     [HttpPut("{applicationUserId}/change-password")]
     [SwaggerOperation("Change the user password")]
     [SwaggerResponse(200, "Success", typeof(UserResponse))]

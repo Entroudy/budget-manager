@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig } from 'axios'
 import { api } from '@/services/api/index'
-import type { UserType } from '@/models/UserModel'
+import type { UserCreate, UserUpdate } from '@/models/UserModel'
 import type { ParamsType } from '@/models'
 
 export default class UserAPI {
@@ -9,13 +9,19 @@ export default class UserAPI {
     return data || undefined
   }
 
-  async createUser (user: UserType) {
+  async getRoles () {
+    const { data } = (await api.get('applicationUsers/roles'))
+    return data || undefined
+  }
+
+  async createUser (user: UserCreate) {
     const { data } = (await api.post('applicationUsers', <AxiosRequestConfig['data']>{
       lastName: user.lastName,
       firstName: user.firstName,
       nickName: user.nickName,
       email: user.email,
       password: user.password,
+      role: user.role,
     }))
 
     return data || undefined
@@ -31,13 +37,13 @@ export default class UserAPI {
     return data || undefined
   }
 
-  async updateUser (applicationUserId: string, user: UserType) {
+  async updateUser (applicationUserId: string, user: UserUpdate) {
     const { data } = (await api.put(`applicationUsers/${applicationUserId}`, <AxiosRequestConfig['data']>{
       lastName: user.lastName,
       firstName: user.firstName,
       nickName: user.nickName,
       email: user.email,
-      password: user.password,
+      role: user.role,
     }))
 
     return data || undefined

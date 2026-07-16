@@ -7,4 +7,5 @@ public class CreateUserCommand(CreateUserRequest request) : IRequest<Unit>
     public string FirstName { get; set; } = request.FirstName;
     public string LastName { get; set; } = request.LastName;
     public string NickName { get; set; } = request.NickName;
+    public string? Role { get; set; } = request.Role;
 }

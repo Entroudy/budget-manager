@@ -13,12 +13,7 @@ public class CreateSpendingCommandHandler : IRequestHandler<CreateSpendingComman
 
     public async Task<Guid> Handle(CreateSpendingCommand request, CancellationToken cancellationToken)
     {
-        Guid applicationUserId = request.ApplicationUserId ?? Guid.Empty;
-
-        if (request.ApplicationUserId == null && Guid.TryParse(_currentUserService.ApplicationUserId, out var currentUserId))
-        {
-            applicationUserId = currentUserId;
-        }
+        var applicationUserId = _currentUserService.ResolveApplicationUserIdForCreate(request.ApplicationUserId);
 
         var spending = new Spending(applicationUserId, request.Item, request.Amount, request.PaymentMethod, request.Comment, request.Color, request.Date);
 

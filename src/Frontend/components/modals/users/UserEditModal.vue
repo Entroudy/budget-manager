@@ -112,6 +112,21 @@
                 </span>
               </div>
             </div>
+
+            <div>
+              <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {{ $t('role') }}
+              </label>
+              <select
+                id="role"
+                v-model="user.role"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option v-for="option in roleOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
           </div>
 
           <!-- Income Section -->
@@ -342,10 +357,12 @@
 import { defineComponent } from 'vue'
 import { required, helpers } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
+import { storeToRefs } from 'pinia'
 import type { UserUpdate, UserListItem, Income } from '~/models/UserModel'
 import { PaymentMethod } from '~/models/UserModel'
 import { useUserStore } from '~/stores/UserStore'
 import { useIncomeStore } from '~/stores/IncomeStore'
+import { DEFAULT_USER_ROLE, USER_ROLES, getUserRoleLabelKey } from '~/core/userRoles'
 
 export default defineComponent({
   name: 'UserEditModal',
@@ -359,6 +376,7 @@ export default defineComponent({
       email: '',
       password: '',
       confirmPassword: '',
+      role: DEFAULT_USER_ROLE,
       incomes: [] as Income[],
     } as UserUpdate)
 
@@ -372,8 +390,17 @@ export default defineComponent({
     const expandedIncomeIndex = ref<string | null>(null)
     const visibleIncomeYear = ref<number>(new Date().getFullYear())
 
-    const { updateUser } = useUserStore()
+    const userStore = useUserStore()
+    const { updateUser } = userStore
     const { getIncomesByUserId, createIncome, updateIncome, deleteIncome: deleteIncomeFromStore } = useIncomeStore()
+    const { roles } = storeToRefs(userStore)
+
+    const roleOptions = computed(() =>
+      (roles.value.length > 0 ? roles.value : USER_ROLES).map(role => ({
+        value: role,
+        label: t(getUserRoleLabelKey(role)),
+      }))
+    )
 
     const rules = computed(() => {
       return {
@@ -633,7 +660,10 @@ export default defineComponent({
       expandedIncomeIndex.value = null
       Object.assign(user, {
         ...userData,
-        incomes: userData.incomes ? [...userData.incomes] : []
+        incomes: userData.incomes ? [...userData.incomes] : [],
+        role: userData.roles?.[0] || DEFAULT_USER_ROLE,
+        password: '',
+        confirmPassword: ''
       });
       // Load incomes from API
       await loadIncomes()
@@ -650,6 +680,9 @@ export default defineComponent({
       user.firstName = ''
       user.nickName = ''
       user.email = ''
+      user.role = DEFAULT_USER_ROLE
+      user.password = ''
+      user.confirmPassword = ''
       user.incomes = []
       expandedIncomeIndex.value = null
       visibleIncomeYear.value = new Date().getFullYear()
@@ -674,6 +707,7 @@ export default defineComponent({
       v$,
       rules,
       user,
+      roleOptions,
       showModal,
       open,
       close,

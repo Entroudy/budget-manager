@@ -37,6 +37,7 @@
   "edit_user_information": "felhasználói adatok szerkesztése",
   "email": "e-mail",
   "english": "angol",
+  "administrator": "adminisztrátor",
   "email_field_required": "az e-mail mező megadása kötelező",
   "email_placeholder": "e-mail",
   "enter_amount": "összeg megadása",
@@ -108,6 +109,7 @@
   "save_income": "jövedelem mentése",
   "saved": "mentve",
   "searching": "keresés",
+  "standard_user": "normál felhasználó",
   "security": "biztonság",
   "selected": "kiválasztva",
   "settings": "beállítások",
@@ -137,6 +139,8 @@
   "yellow": "sárga",
   "wrong_email_format": "hibás e-mail formátum",
   "select_user": "felhasználó kiválasztása",
+  "role": "szerepkör",
+  "unknown_role": "ismeretlen szerepkör",
   "dark_blue": "sötétkék",
   "passwords_need_to_match": "a jelszavaknak egyezniük kell"
 }

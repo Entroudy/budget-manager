@@ -3,10 +3,12 @@ namespace BudgetManager.Application;
 public class UpdateIncomeCommandHandler : IRequestHandler<UpdateIncomeCommand, IncomeResponse>
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateIncomeCommandHandler(AppDbContext context)
+    public UpdateIncomeCommandHandler(AppDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<IncomeResponse> Handle(UpdateIncomeCommand request, CancellationToken cancellationToken)
@@ -15,7 +17,9 @@ public class UpdateIncomeCommandHandler : IRequestHandler<UpdateIncomeCommand, I
             .FirstOrDefaultAsync(x => x.Id == request.IncomeId, cancellationToken)
             ?? throw new NotFoundException("Income", request.IncomeId.ToString());
 
-        income.Update(request.ApplicationUserId, request.Amount, request.PaymentMethod, request.Comment, request.Date);
+        var applicationUserId = _currentUserService.ResolveApplicationUserIdForUpdate(income.ApplicationUserId, request.ApplicationUserId);
+
+        income.Update(applicationUserId, request.Amount, request.PaymentMethod, request.Comment, request.Date);
 
         await _context.SaveChangesAsync(cancellationToken);
 

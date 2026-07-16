@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using BudgetManager.Application.Exceptions;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BudgetManager.Authentication;
 
@@ -13,11 +14,15 @@ public class JwtAuthorizeAttribute : Attribute, IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var user = (string)context.HttpContext.Items["ApplicationUserId"];
-        if (user == null)
+        var principal = context.HttpContext.User;
+        if (principal?.Identity?.IsAuthenticated != true)
         {
-            // not logged in
             throw new UnauthorizedAccessException();
+        }
+
+        if (_allowedRoles.Length > 0 && !_allowedRoles.Any(principal.IsInRole))
+        {
+            throw new ForbiddenException("You do not have access to this resource");
         }
     }
 }
