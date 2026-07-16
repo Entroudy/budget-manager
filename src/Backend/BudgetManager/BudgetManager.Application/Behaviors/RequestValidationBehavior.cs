@@ -1,4 +1,6 @@
-﻿namespace BudgetManager.Application.Behaviors
+﻿using ValidationException = FluentValidation.ValidationException;
+
+namespace BudgetManager.Application.Behaviors
 {
     public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
        where TRequest : IRequest<TResponse>

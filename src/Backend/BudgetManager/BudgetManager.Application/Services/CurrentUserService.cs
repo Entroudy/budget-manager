@@ -1,5 +1,4 @@
-﻿using BudgetManager.Common;
-using System.Security.Claims;
+﻿using BudgetManager.Application.Exceptions;
 using Microsoft.AspNetCore.Http;
 
 namespace BudgetManager.Application;

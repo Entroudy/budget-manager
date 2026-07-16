@@ -1,3 +1,5 @@
+using BudgetManager.Application.Exceptions;
+
 namespace BudgetManager.Application;
 
 public class GetSpendingListQueryHandler : IRequestHandler<GetSpendingListQuery, PaginatedResult<SpendingListResponse>>
