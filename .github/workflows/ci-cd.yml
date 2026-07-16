@@ -123,8 +123,6 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-<<<<<<< Updated upstream
-=======
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -157,7 +155,6 @@ jobs:
             fi
           done
 
->>>>>>> Stashed changes
       - name: Ensure remote directory exists
         uses: appleboy/ssh-action@v1.0.3
         with:
