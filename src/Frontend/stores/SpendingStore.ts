@@ -24,12 +24,24 @@ export const useSpendingStore = defineStore('spending', {
           this.spendings = data.results
           return {
             currentPage: data.currentPage,
+            pageSize: data.pageSize,
             totalPages: data.totalPages,
             totalCount: data.totalCount
           }
         }
       } catch (error) {
         return null
+      }
+    },
+    async getAllSpendings (params: ParamsType) {
+      try {
+        const data = await this.api.spending.getSpendings(params)
+        if (data) {
+          return data.results
+        }
+        return []
+      } catch (error) {
+        return []
       }
     },
     async getSpending (id: string) {

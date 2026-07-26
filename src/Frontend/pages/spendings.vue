@@ -83,6 +83,53 @@
               </p>
             </div>
           </div>
+
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white/10 px-3 py-2">
+            <div class="flex items-center gap-2">
+              <label :for="`pageSize-${userId}`" class="text-xs font-medium !text-white" style="color: #fff;">
+                {{ $t('items_per_page') }}
+              </label>
+              <select
+                :id="`pageSize-${userId}`"
+                v-model.number="userPagination[userId].pageSize"
+                class="w-24 px-2 py-1 rounded-md border border-white/20 bg-white/90 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+                @change="changeUserPageSize(userId)"
+              >
+                <option v-for="size in pageSizeOptions" :key="size" :value="size">
+                  {{ size }}
+                </option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-2" v-if="getUserTotalPages(userSpendings, userPagination[userId].pageSize) > 1">
+              <button
+                type="button"
+                class="w-9 h-9 rounded-md border border-white/20 bg-white/90 text-gray-700 hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                :disabled="userPagination[userId].currentPage === 1"
+                @click="changeUserPage(userId, -1, userSpendings)"
+                :title="$t('previous')"
+              >
+                <i class="fas fa-chevron-left text-xs"></i>
+              </button>
+
+              <div class="min-w-[96px] px-3 py-1.5 rounded-md bg-white/15 text-white text-center">
+                <div class="text-[10px] uppercase opacity-80">{{ $t('page') }}</div>
+                <div class="text-sm font-semibold">
+                  {{ userPagination[userId].currentPage }} / {{ getUserTotalPages(userSpendings, userPagination[userId].pageSize) }}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="w-9 h-9 rounded-md border border-white/20 bg-white/90 text-gray-700 hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                :disabled="userPagination[userId].currentPage === getUserTotalPages(userSpendings, userPagination[userId].pageSize)"
+                @click="changeUserPage(userId, 1, userSpendings)"
+                :title="$t('next')"
+              >
+                <i class="fas fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Spendings Table -->
@@ -105,9 +152,9 @@
                   </button>
                 </th>
                 <th class="px-2 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">
-                  <button @click="toggleSort('payment')" class="flex items-center gap-1 hover:text-primary transition-colors mx-auto">
+                  <button @click="toggleSort('paymentMethod')" class="flex items-center gap-1 hover:text-primary transition-colors mx-auto">
                     {{ $t('payment') }}
-                    <i v-if="sortBy === 'payment'" :class="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'" class="text-xs"></i>
+                    <i v-if="sortBy === 'paymentMethod'" :class="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'" class="text-xs"></i>
                     <i v-else class="fas fa-sort text-xs opacity-30"></i>
                   </button>
                 </th>
@@ -123,7 +170,7 @@
             </thead>
             <tbody>
               <tr
-                v-for="spending in userSpendings"
+                v-for="spending in getPagedUserSpendings(userId, userSpendings)"
                 :key="spending.id"
                 class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
                 @click="openEditModal(spending)"
@@ -182,7 +229,7 @@
     </div>
 
     <!-- Overall Statistics -->
-    <div v-if="Object.keys(spendingsByUser).length > 0" class="mt-6 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-750 rounded-lg border border-gray-200 dark:border-gray-600 p-6">
+    <div v-if="totalSpendingsCount > 0" class="mt-6 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-750 rounded-lg border border-gray-200 dark:border-gray-600 p-6">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -247,8 +294,8 @@ export default defineComponent({
   setup() {
     const { t, locale } = useI18n()
     const { setActivePageTitle } = useGlobalStore()
-    const { spendings } = storeToRefs(useSpendingStore())
-    const { getSpendings } = useSpendingStore()
+    const spendingStore = useSpendingStore()
+    const { getAllSpendings } = spendingStore
     const { users } = storeToRefs(useUserStore())
     const { getUsers } = useUserStore()
     const { incomes } = storeToRefs(useIncomeStore())
@@ -284,9 +331,11 @@ export default defineComponent({
       fromDate: initialDates.fromDate,
       toDate: initialDates.toDate,
     })
-    const sortBy = ref<'item' | 'date' | 'payment' | 'amount'>('date')
+    const pageSizeOptions = [10, 50, 100]
+    const sortBy = ref<'createdAt' | 'item' | 'date' | 'paymentMethod' | 'amount'>('createdAt')
     const sortDirection = ref<'asc' | 'desc'>('desc')
-    const firstLoad = ref(true)
+    const userPagination = reactive<Record<string, { currentPage: number; pageSize: number }>>({})
+    const allSpendings = ref<SpendingItemResponse[]>([])
 
     onMounted(async () => {
       setActivePageTitle('spendings')
@@ -296,7 +345,6 @@ export default defineComponent({
       await loadAllIncomes()
       initializeStateFromQuery(route.query)
       await refreshSpendings()
-      firstLoad.value = false
     })
 
     const loadAllIncomes = async () => {
@@ -318,7 +366,7 @@ export default defineComponent({
         viewingYear.value = year
         viewingMonth.value = month - 1 // Convert to 0-indexed
       }
-      sortBy.value = query.sortBy || 'date'
+      sortBy.value = query.sortBy || 'createdAt'
       sortDirection.value = query.sortDirection || 'desc'
     }
 
@@ -363,7 +411,7 @@ export default defineComponent({
       const dates = getMonthDates(newYear, newMonth)
       filters.value.fromDate = dates.fromDate
       filters.value.toDate = dates.toDate
-
+      resetAllUserPagination()
       refreshSpendings()
     }
 
@@ -375,11 +423,11 @@ export default defineComponent({
       const dates = getMonthDates(viewingYear.value, viewingMonth.value)
       filters.value.fromDate = dates.fromDate
       filters.value.toDate = dates.toDate
-
+      resetAllUserPagination()
       refreshSpendings()
     }
 
-    const toggleSort = (column: 'item' | 'date' | 'payment' | 'amount') => {
+    const toggleSort = (column: 'item' | 'date' | 'paymentMethod' | 'amount' | 'createdAt') => {
       if (sortBy.value === column) {
         // Toggle direction if clicking same column
         sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
@@ -388,10 +436,11 @@ export default defineComponent({
         sortBy.value = column
         sortDirection.value = 'asc'
       }
-      updateQueryParams()
+      resetAllUserPagination()
+      refreshSpendings()
     }
 
-    const updateQueryParams = () => {
+    const updateQueryParams = async () => {
       const queryParams: any = {}
 
       if (filters.value.fromDate) queryParams.fromDate = filters.value.fromDate
@@ -399,7 +448,11 @@ export default defineComponent({
       queryParams.sortBy = sortBy.value
       queryParams.sortDirection = sortDirection.value
 
-      router.push({ query: queryParams })
+      try {
+        await router.replace({ query: queryParams })
+      } catch {
+        // Ignore duplicate navigation when the query already matches.
+      }
     }
 
 
@@ -407,7 +460,7 @@ export default defineComponent({
     const spendingsByUser = computed(() => {
       const grouped: Record<string, SpendingItemResponse[]> = {}
 
-      spendings.value.forEach(spending => {
+      allSpendings.value.forEach(spending => {
         const userId = spending.applicationUserId
         if (!grouped[userId]) {
           grouped[userId] = []
@@ -415,49 +468,60 @@ export default defineComponent({
         grouped[userId].push(spending)
       })
 
-      // Sort spendings within each user based on current sort settings
       Object.keys(grouped).forEach(userId => {
-        grouped[userId].sort((a, b) => {
-          let comparison = 0
-
-          switch (sortBy.value) {
-            case 'item':
-              comparison = a.item.localeCompare(b.item)
-              break
-            case 'date':
-              comparison = new Date(a.date).getTime() - new Date(b.date).getTime()
-              break
-            case 'payment':
-              comparison = a.paymentMethod - b.paymentMethod
-              break
-            case 'amount':
-              comparison = a.amount - b.amount
-              break
-          }
-
-          return sortDirection.value === 'asc' ? comparison : -comparison
-        })
+        ensureUserPagination(userId)
       })
 
       return grouped
     })
 
+    const ensureUserPagination = (userId: string) => {
+      if (!userPagination[userId]) {
+        userPagination[userId] = {
+          currentPage: 1,
+          pageSize: 50,
+        }
+      }
+
+      return userPagination[userId]
+    }
+
+    const resetAllUserPagination = () => {
+      Object.values(userPagination).forEach(pagination => {
+        pagination.currentPage = 1
+      })
+    }
+
+    const getUserTotalPages = (userSpendings: SpendingItemResponse[], pageSize: number) => {
+      return Math.max(1, Math.ceil(userSpendings.length / pageSize))
+    }
+
+    const getPagedUserSpendings = (userId: string, userSpendings: SpendingItemResponse[]) => {
+      const pagination = ensureUserPagination(userId)
+      const totalPages = getUserTotalPages(userSpendings, pagination.pageSize)
+      if (pagination.currentPage > totalPages) {
+        pagination.currentPage = totalPages
+      }
+      const startIndex = (pagination.currentPage - 1) * pagination.pageSize
+      return userSpendings.slice(startIndex, startIndex + pagination.pageSize)
+    }
+
     const totalSpendingsCount = computed(() => {
-      return spendings.value.length
+      return allSpendings.value.length
     })
 
     const grandTotal = computed(() => {
-      return spendings.value.reduce((sum, spending) => sum + spending.amount, 0)
+      return allSpendings.value.reduce((sum, spending) => sum + spending.amount, 0)
     })
 
     const cardSpendingsTotal = computed(() => {
-      return spendings.value
+      return allSpendings.value
         .filter(spending => spending.paymentMethod === PaymentMethod.Card)
         .reduce((sum, spending) => sum + spending.amount, 0)
     })
 
     const cashSpendingsTotal = computed(() => {
-      return spendings.value
+      return allSpendings.value
         .filter(spending => spending.paymentMethod === PaymentMethod.Cash)
         .reduce((sum, spending) => sum + spending.amount, 0)
     })
@@ -471,6 +535,23 @@ export default defineComponent({
     const grandRemaining = computed(() => {
       return grandIncome.value - grandTotal.value
     })
+
+    const changeUserPage = (userId: string, direction: number, userSpendings: SpendingItemResponse[]) => {
+      const pagination = ensureUserPagination(userId)
+      const totalPages = getUserTotalPages(userSpendings, pagination.pageSize)
+      const nextPage = pagination.currentPage + direction
+
+      if (nextPage < 1 || nextPage > totalPages) {
+        return
+      }
+
+      pagination.currentPage = nextPage
+    }
+
+    const changeUserPageSize = (userId: string) => {
+      const pagination = ensureUserPagination(userId)
+      pagination.currentPage = 1
+    }
 
     const getUserName = (userId: string) => {
       const user = users.value.find(u => u.id === userId)
@@ -514,18 +595,24 @@ export default defineComponent({
 
     const refreshSpendings = async () => {
       try {
-        updateQueryParams()
+        await updateQueryParams()
 
         const params: any = {
-          page_number: 1,
-          page_size: ALL_RECORDS_PAGE_SIZE,
+          pageNumber: 1,
+          pageSize: ALL_RECORDS_PAGE_SIZE,
+          sortBy: sortBy.value,
+          sortDescending: sortDirection.value === 'desc',
         }
 
         // Add filters to API params
         if (filters.value.fromDate) params.fromDate = filters.value.fromDate
         if (filters.value.toDate) params.toDate = filters.value.toDate
 
-        await getSpendings(params)
+        const allResult = await getAllSpendings(params)
+        allSpendings.value = allResult
+        Object.keys(spendingsByUser.value).forEach(userId => {
+          ensureUserPagination(userId)
+        })
       } catch (error) {
         console.error('Error fetching spendings:', error)
       }
@@ -588,9 +675,10 @@ export default defineComponent({
     }
 
     return {
-      spendings,
       users,
       filters,
+      pageSizeOptions,
+      userPagination,
       sortBy,
       sortDirection,
       currentMonthLabel,
@@ -609,6 +697,10 @@ export default defineComponent({
       getUserCardSpendings,
       getUserCashSpendings,
       getUserRemaining,
+      getUserTotalPages,
+      getPagedUserSpendings,
+      changeUserPage,
+      changeUserPageSize,
       toggleSort,
       navigateMonth,
       resetToCurrentMonth,

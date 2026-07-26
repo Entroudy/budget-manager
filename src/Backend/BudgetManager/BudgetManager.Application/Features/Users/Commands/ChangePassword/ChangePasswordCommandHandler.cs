@@ -13,7 +13,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
     {
         var user = await _userManager.FindByIdAsync(request.ApplicationUserId);
         if (user == null)
-            throw new NotFoundException($"User with {request.ApplicationUserId} dows not exits");
+            throw new NotFoundException($"User with {request.ApplicationUserId} does not exist");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, request.Password);
@@ -22,7 +22,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine($"Validation error occurred at password reset user: {user.Email}. Errors: ");
+            stringBuilder.AppendLine($"Validation error occurred while resetting password for user: {user.Email}. Errors:");
             result.Errors.ToList().ForEach(x => stringBuilder.AppendLine($"{x.Description} "));
 
             throw new FluentValidation.ValidationException(stringBuilder.ToString());
@@ -31,6 +31,6 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         if (result.Succeeded)
             return Unit.Value;
 
-        throw new Exception("Can't change applicationUsers password");
+        throw new Exception("Can't change user password");
     }
 }

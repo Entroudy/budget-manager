@@ -19,7 +19,11 @@ public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, Paginat
             .Search(request.PaginationPostModel, x => x.Email, x => x.LastName, x => x.FirstName, x => x.NickName)
             .ToPaginatedResultAsync(request.PaginationPostModel);
 
-        var responses = await Task.WhenAll(pagedUsers.Results.Select(user => user.ToUserResponseAsync(_userManager)));
+        var responses = new List<UserResponse>();
+        foreach (var user in pagedUsers.Results)
+        {
+            responses.Add(await user.ToUserResponseAsync(_userManager));
+        }
 
         return new PaginatedResult<UserResponse>(
             pagedUsers.TotalCount,

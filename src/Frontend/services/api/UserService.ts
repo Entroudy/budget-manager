@@ -50,7 +50,7 @@ export default class UserAPI {
   }
 
   async changePassword (applicationUserId: string, password: string) {
-    const { data } = (await api.patch(`applicationUsers/${applicationUserId}/change-password`, <AxiosRequestConfig['data']>{
+    const { data } = (await api.put(`applicationUsers/${applicationUserId}/change-password`, <AxiosRequestConfig['data']>{
       password: password,
     }))
 

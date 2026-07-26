@@ -49,7 +49,16 @@ public class GetSpendingListQueryHandler : IRequestHandler<GetSpendingListQuery,
             query = query.Where(x => x.Color == request.FilterPostModel.Color);
         }
 
-        query = query.Sort(request.FilterPostModel).Search(request.FilterPostModel, x => x.Item);
+        query = query.Search(request.FilterPostModel, x => x.Item);
+
+        if (string.IsNullOrWhiteSpace(request.FilterPostModel.SortBy))
+        {
+            query = query.OrderByDescending(x => x.CreatedAt);
+        }
+        else
+        {
+            query = query.Sort(request.FilterPostModel);
+        }
 
         return query.ToSpendingListResponse().ToPaginatedResultAsync(request.FilterPostModel);
     }

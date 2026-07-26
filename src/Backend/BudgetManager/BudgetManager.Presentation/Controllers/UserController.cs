@@ -80,7 +80,7 @@ public class UserController : ControllerBase
 
     [HttpPut("{applicationUserId}/change-password")]
     [SwaggerOperation("Change the user password")]
-    [SwaggerResponse(200, "Success", typeof(UserResponse))]
+    [SwaggerResponse(200, "Success")]
     [SwaggerResponse(400, "Bad request", typeof(ProblemDetails))]
     [SwaggerResponse(401, "Unauthorized", typeof(ProblemDetails))]
     [SwaggerResponse(500, "Internal Server Error", typeof(ProblemDetails))]

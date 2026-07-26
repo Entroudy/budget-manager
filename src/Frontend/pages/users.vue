@@ -104,13 +104,24 @@
 
               <!-- Quick Actions (visible on hover) -->
               <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <button
-                  @click="openEditModal(user)"
-                  class="text-sm text-primary hover:text-primary-dark font-medium flex items-center gap-2 transition-colors"
-                >
-                  <i class="fas fa-edit"></i>
-                  <span>{{ $t('edit') }}</span>
-                </button>
+                <div class="flex flex-wrap items-center gap-4">
+                  <button
+                    type="button"
+                    @click="openEditModal(user)"
+                    class="text-sm text-primary hover:text-primary-dark font-medium flex items-center gap-2 transition-colors"
+                  >
+                    <i class="fas fa-edit"></i>
+                    <span>{{ $t('edit') }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    @click="openChangePasswordModal(user)"
+                    class="text-sm text-gray-600 dark:text-gray-300 hover:text-primary font-medium flex items-center gap-2 transition-colors"
+                  >
+                    <i class="fas fa-key"></i>
+                    <span>{{ $t('change_password') }}</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -187,6 +198,7 @@
 
     <UserCreateModal ref="UserCreateModalRef" @item-created="refreshUsers" />
     <UserEditModal ref="UserEditModalRef" @item-edited="refreshUsers" />
+    <UserChangePasswordModal ref="UserChangePasswordModalRef" @item-edited="refreshUsers" />
     <UserDeleteModal ref="UserDeleteModalRef" @item-deleted="handleDelete" />
   </div>
 </template>
@@ -197,6 +209,7 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from '~/stores/UserStore'
 import UserCreateModal from '@/components/modals/users/UserCreateModal.vue'
 import UserEditModal from '@/components/modals/users/UserEditModal.vue'
+import UserChangePasswordModal from '@/components/modals/users/UserChangePasswordModal.vue'
 import UserDeleteModal from '@/components/modals/users/UserDeleteModal.vue'
 import type { UserListItem } from '~/models/UserModel'
 import { getUserRoleBadgeClass, getUserRoleLabelKey } from '~/core/userRoles'
@@ -207,7 +220,7 @@ definePageMeta({
 
 export default defineComponent({
   name: 'UserPage',
-  components: { UserCreateModal, UserEditModal, UserDeleteModal },
+  components: { UserCreateModal, UserEditModal, UserChangePasswordModal, UserDeleteModal },
   setup(props, ctx) {
 
     const firstLoad = ref(true)
@@ -338,6 +351,13 @@ export default defineComponent({
       }
     }
 
+    const UserChangePasswordModalRef = ref<InstanceType<typeof UserChangePasswordModal> | null>(null)
+    const openChangePasswordModal = (user: UserListItem) => {
+      if (UserChangePasswordModalRef.value) {
+        UserChangePasswordModalRef.value.open(user)
+      }
+    }
+
     const UserDeleteModalRef = ref<InstanceType<typeof UserDeleteModal> | null>(null);
     const openDeleteModal = () => {
       if (UserDeleteModalRef.value) {
@@ -396,6 +416,8 @@ export default defineComponent({
       openCreateModal,
       UserEditModalRef,
       openEditModal,
+      UserChangePasswordModalRef,
+      openChangePasswordModal,
       UserDeleteModalRef,
       openDeleteModal,
       handleDelete,

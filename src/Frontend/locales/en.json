@@ -89,6 +89,7 @@
   "open_sidebar": "Open sidebar",
   "optional": "Optional",
   "page": "Page",
+  "items_per_page": "Items per page",
   "password": "Password",
   "password_field_required": "The password field is required",
   "password_placeholder": "Password",
