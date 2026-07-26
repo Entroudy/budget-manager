@@ -1,16 +1,7 @@
-import { readFile } from 'node:fs/promises';
+import enMessages from './locales/en.json'
+import huMessages from './locales/hu.json'
 
-async function loadJsonLocale(path) {
-  const content = await readFile(new URL(path, import.meta.url), 'utf8');
-  return JSON.parse(content);
-}
-
-export default defineI18nConfig(async () => {
-  const [enMessages, huMessages] = await Promise.all([
-    loadJsonLocale('./locales/en.json'),
-    loadJsonLocale('./locales/hu.json')
-  ]);
-
+export default defineI18nConfig(() => {
   return {
     legacy: false,
     locale: 'en',
@@ -19,5 +10,5 @@ export default defineI18nConfig(async () => {
       en: enMessages,
       hu: huMessages
     }
-  };
-});
+  }
+})

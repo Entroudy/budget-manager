@@ -1,6 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { fileURLToPath } from 'node:url'
+
 export default defineNuxtConfig({
   ssr: false,
+
+  experimental: {
+    viteEnvironmentApi: true
+  },
 
   runtimeConfig: {
     public: {
@@ -47,9 +53,9 @@ export default defineNuxtConfig({
     locales: [
       'hu',
       'en'
-     ],
+    ],
     defaultLocale: 'en',
-    vueI18n: './i18n.config.mjs'
+    vueI18n: fileURLToPath(new URL('./i18n.config.mjs', import.meta.url))
   },
 
   postcss: {

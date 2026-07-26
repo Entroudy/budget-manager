@@ -44,6 +44,12 @@ If you want the easiest local setup, start MySQL with Docker:
 docker compose up -d mysql
 ```
 
+The local Docker setup reads its values from a root `.env` file. A template is available at:
+
+- `.env.example`
+
+Copy it to `.env` and adjust the passwords if you want to override the defaults.
+
 ### 2. Configure the backend
 
 The backend uses a connection string and JWT-related environment variables.
@@ -53,7 +59,7 @@ An example file is available at:
 
 Typical local values:
 
-- `DB_CONNECTION=server=localhost;port=13006;user=admin;password=change-me;database=bm_db`
+- `DB_CONNECTION=server=localhost;port=13006;user=admin;password=bm-db-password;database=bm_db`
 - `DEFAULT_ADMIN_EMAIL=change-me-admin-email`
 - `DEFAULT_ADMIN_PASSWORD=change-me-admin-password`
 
@@ -93,6 +99,7 @@ The repository also includes `docker-compose.yml`, which starts:
 - `phpmyadmin` on port `19107`
 
 If you use the Docker compose setup, make sure the backend container environment variables match your build and deployment setup.
+The root `docker-compose.yml` now uses `.env`-driven defaults for the database and JWT settings, so local secrets no longer need to be hardcoded into the compose file.
 
 ## Production Deployment
 
