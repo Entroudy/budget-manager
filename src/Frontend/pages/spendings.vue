@@ -232,6 +232,7 @@ import { useUserStore } from '~/stores/UserStore'
 import { useIncomeStore } from '~/stores/IncomeStore'
 import { useGlobalStore } from '~/stores/global'
 import { PaymentMethod, type SpendingItemResponse } from '~/models/SpendingModel'
+import { ALL_RECORDS_PAGE_SIZE } from '~/core/pagination'
 import SpendingCreateModal from '@/components/modals/spending/SpendingCreateModal.vue'
 import SpendingEditModal from '@/components/modals/spending/SpendingEditModal.vue'
 import SpendingDeleteModal from '@/components/modals/spending/SpendingDeleteModal.vue'
@@ -290,7 +291,7 @@ export default defineComponent({
     onMounted(async () => {
       setActivePageTitle('spendings')
       // Load users first
-      await getUsers({ page_number: 1, page_size: 999 })
+      await getUsers({ page_number: 1, page_size: ALL_RECORDS_PAGE_SIZE })
       // Load incomes for all users
       await loadAllIncomes()
       initializeStateFromQuery(route.query)
@@ -517,7 +518,7 @@ export default defineComponent({
 
         const params: any = {
           page_number: 1,
-          page_size: 9999, // Get all spendings
+          page_size: ALL_RECORDS_PAGE_SIZE,
         }
 
         // Add filters to API params
@@ -562,7 +563,7 @@ export default defineComponent({
     const SpendingCreateModalRef = ref<InstanceType<typeof SpendingCreateModal> | null>(null)
     const openCreateModal = async () => {
       // Refresh users before opening modal to ensure latest data
-      await getUsers({ page_number: 1, page_size: 999 })
+      await getUsers({ page_number: 1, page_size: ALL_RECORDS_PAGE_SIZE })
       if (SpendingCreateModalRef.value) {
         SpendingCreateModalRef.value.open()
       }

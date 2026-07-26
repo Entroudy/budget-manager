@@ -1,16 +1,31 @@
 export default defineNuxtPlugin((nuxtApp) => {
   const wrapperClass = '.multiselect__content-wrapper'
+  const syncPosition = (el) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        calculateBase(el)
+        calculateWrapperPosition(el)
+      })
+    })
+  }
 
   const calculateBase = (el) => {
     const wrapperElement = el.querySelector(wrapperClass)
+    if (!wrapperElement) {
+      return
+    }
 
     wrapperElement.style.width = `${el.clientWidth}px`
     wrapperElement.style.position = 'fixed'
     wrapperElement.style.bottom = 'auto'
   }
   const calculateWrapperPosition = (el) => {
-    const { top, left, height } = el.getBoundingClientRect()
     const wrapperElement = el.querySelector(wrapperClass)
+    if (!wrapperElement) {
+      return
+    }
+
+    const { top, left, height } = el.getBoundingClientRect()
     const wrapperHeight = wrapperElement.getBoundingClientRect().height
     const isAbove = el.classList.contains('multiselect--above')
 
@@ -28,12 +43,24 @@ export default defineNuxtPlugin((nuxtApp) => {
     beforeMount(el, binding) {
       const parentElement = document.querySelector(binding.value)
 
-      const calculatePositionCallback = () => calculateWrapperPosition(el)
+      const calculatePositionCallback = () => {
+        if (!el?.classList?.contains('multiselect--active')) {
+          return
+        }
 
-      calculatePositionCallback()
+        syncPosition(el)
+      }
 
       // Store the callback function on the element itself.
       el._calculatePositionCallback = calculatePositionCallback
+
+      const classObserver = new MutationObserver(() => {
+        if (el.classList.contains('multiselect--active')) {
+          syncPosition(el)
+        }
+      })
+      classObserver.observe(el, { attributes: true, attributeFilter: ['class'] })
+      el._classObserver = classObserver
 
       if (parentElement) {
         parentElement.addEventListener('scroll', calculatePositionCallback)
@@ -57,19 +84,24 @@ export default defineNuxtPlugin((nuxtApp) => {
         return
       }
 
-      el?._calculatePositionCallback()
+      syncPosition(el)
     },
     beforeUnmount(el, binding) {
       const parentElement = document.querySelector(binding.value)
 
       // Disconnect the MutationObserver.
       el._observer?.disconnect()
+      el._classObserver?.disconnect()
 
       parentElement?.removeEventListener('scroll', el._calculatePositionCallback)
       document.removeEventListener('scroll', el._calculatePositionCallback)
 
       // clean up styles on unmount
       const wrapperElement = el.querySelector(wrapperClass)
+      if (!wrapperElement) {
+        return
+      }
+
       wrapperElement.style.width = ''
       wrapperElement.style.position = ''
       wrapperElement.style.top = ''

@@ -138,6 +138,7 @@ import { PaymentMethod } from '~/models/SpendingModel'
 import { useSpendingStore } from '~/stores/SpendingStore'
 import { useAuthStore } from '~/stores/AuthStore'
 import { useUserStore } from '~/stores/UserStore'
+import { ALL_RECORDS_PAGE_SIZE } from '~/core/pagination'
 import { storeToRefs } from 'pinia'
 
 export default defineComponent({
@@ -233,7 +234,7 @@ export default defineComponent({
     )
 
     const open = async () => {
-      await getUsers({ page_number: 1, page_size: 999 })
+      await getUsers({ page_number: 1, page_size: ALL_RECORDS_PAGE_SIZE })
       spending.applicationUserId = users.value.find(user => user.email === account.value.email)?.id || ''
       spending.paymentMethod = PaymentMethod.Card
       showCashWarning.value = false

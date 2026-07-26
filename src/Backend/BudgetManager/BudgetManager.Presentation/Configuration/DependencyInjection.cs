@@ -4,6 +4,7 @@ using BudgetManager.Common.Exceptions;
 using BudgetManager.Domain.Entities;
 using BudgetManager.Infrastructure;
 using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -25,17 +26,30 @@ public static class DependencyInjection
         services.AddEndpointsApiExplorer();
         services.AddProblemDetails();
         services.AddAuthentication();
+        services.AddAuthorization(options =>
+        {
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+        });
 
         return services;
     }
 
     private static IServiceCollection AddAuthentication(this IServiceCollection services)
     {
-        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+        services.AddIdentityCore<ApplicationUser>()
+            .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(opt =>
             {
                 opt.TokenValidationParameters = new()
@@ -49,6 +63,62 @@ public static class DependencyInjection
                     NameClaimType = ClaimTypes.NameIdentifier,
                     RoleClaimType = ClaimTypes.Role,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.JWT_Secret))
+                };
+
+                opt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("JwtBearer");
+
+                        var hasAuthHeader = context.Request.Headers.TryGetValue("Authorization", out var authorizationHeader);
+                        logger.LogInformation(
+                            "JWT message received for {Path}. AuthHeaderPresent={HasAuthHeader}. AuthHeader={AuthHeader}",
+                            context.HttpContext.Request.Path,
+                            hasAuthHeader,
+                            hasAuthHeader ? authorizationHeader.ToString() : "<missing>");
+
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("JwtBearer");
+
+                        logger.LogWarning(context.Exception, "JWT authentication failed.");
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("JwtBearer");
+
+                        logger.LogWarning("JWT challenge issued for path {Path}.", context.Request.Path);
+                        return Task.CompletedTask;
+                    },
+                    OnForbidden = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("JwtBearer");
+
+                        logger.LogWarning("JWT forbidden for path {Path}.", context.Request.Path);
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("JwtBearer");
+
+                        var subject = context.Principal?.Identity?.Name ?? "<no-name>";
+                        logger.LogInformation("JWT validated for path {Path}. Subject={Subject}", context.HttpContext.Request.Path, subject);
+                        return Task.CompletedTask;
+                    }
                 };
             });
 

@@ -1,6 +1,7 @@
 namespace BudgetManager.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("incomes")]
 public class IncomeController : ControllerBase
 {
@@ -13,7 +14,6 @@ public class IncomeController : ControllerBase
         _mediator = mediator;
     }
 
-    [JwtAuthorize()]
     [HttpGet("user/{applicationUserId}")]
     [SwaggerOperation("Get incomes by user id")]
     [SwaggerResponse(200, "Success", typeof(List<IncomeResponse>))]
@@ -24,7 +24,6 @@ public class IncomeController : ControllerBase
         return Ok(await _mediator.Send(new GetIncomesByUserIdQuery(applicationUserId)));
     }
 
-    [JwtAuthorize()]
     [HttpPost("")]
     [SwaggerOperation("Creates a new income")]
     [SwaggerResponse(200, "Success", typeof(IncomeResponse))]
@@ -36,7 +35,6 @@ public class IncomeController : ControllerBase
         return Ok(await _mediator.Send(new CreateIncomeCommand(request)));
     }
 
-    [JwtAuthorize()]
     [HttpPut("{id}")]
     [SwaggerOperation("Updates an income")]
     [SwaggerResponse(200, "Success", typeof(IncomeResponse))]
@@ -49,7 +47,6 @@ public class IncomeController : ControllerBase
         return Ok(await _mediator.Send(new UpdateIncomeCommand(id, request)));
     }
 
-    [JwtAuthorize()]
     [HttpDelete("{id}")]
     [SwaggerOperation("Deletes an income")]
     [SwaggerResponse(200, "Success")]

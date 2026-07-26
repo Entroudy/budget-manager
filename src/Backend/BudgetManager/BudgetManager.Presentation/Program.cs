@@ -38,16 +38,16 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "Authorization header using JWT token. Example: \"{token}\"",
+        Description = "Paste the raw JWT token only. Swagger adds the Bearer prefix automatically.",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
+        Scheme = "bearer",
         BearerFormat = "JWT"
     });
-    options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecuritySchemeReference("Bearer", null, null),
+            new OpenApiSecuritySchemeReference("Bearer", document),
             new List<string>()
         }
     });
@@ -64,7 +64,6 @@ var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Applicati
 DefaultRoleInitializer.Seed(roleManager);
 DefaultUserInitializer.Seed(userManager, db, AppSettings.DefaultAdminEmail, AppSettings.DefaultAdminPassword);
 
-app.UseMiddleware<JwtMiddleware>();
 var httpsPorts = Environment.GetEnvironmentVariable("ASPNETCORE_HTTPS_PORTS");
 if (!string.IsNullOrWhiteSpace(httpsPorts))
 {
@@ -72,10 +71,29 @@ if (!string.IsNullOrWhiteSpace(httpsPorts))
 }
 app.UseProblemDetails();
 app.UseCors(CorsAllowSpecificOrigins);
-app.UseAuthentication();
-app.UseAuthorization();
+if (!string.Equals(AppSettings.AppEnv, "production", StringComparison.OrdinalIgnoreCase))
+{
+    app.Use(async (context, next) =>
+    {
+        var logger = context.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("RequestTrace");
+
+        var hasAuthHeader = context.Request.Headers.TryGetValue("Authorization", out var authorizationHeader);
+        logger.LogInformation(
+            "Incoming request {Method} {Path}. AuthHeaderPresent={HasAuthHeader}. AuthHeader={AuthHeader}",
+            context.Request.Method,
+            context.Request.Path,
+            hasAuthHeader,
+            hasAuthHeader ? authorizationHeader.ToString() : "<missing>");
+
+        await next();
+    });
+}
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

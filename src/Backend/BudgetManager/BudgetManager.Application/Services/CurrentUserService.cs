@@ -9,8 +9,7 @@ public class CurrentUserService : ICurrentUserService
     public CurrentUserService(IHttpContextAccessor httpContextAccessor) => _httpContextAccessor = httpContextAccessor;
     public string? ApplicationUserId =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Sid)
-        ?? _httpContextAccessor.HttpContext?.Items["ApplicationUserId"]?.ToString();
+        ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Sid);
     public bool IsAuthenticated =>
         _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
     public bool IsInRole(string role) =>

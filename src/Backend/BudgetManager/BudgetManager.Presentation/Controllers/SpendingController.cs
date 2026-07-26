@@ -1,6 +1,7 @@
 namespace BudgetManager.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("spendings")]
 public class SpendingController : ControllerBase
 {
@@ -13,7 +14,6 @@ public class SpendingController : ControllerBase
         _mediator = mediator;
     }
 
-    [JwtAuthorize()]
     [HttpGet("")]
     [SwaggerOperation("Get spending list")]
     [SwaggerResponse(200, "Success", typeof(PaginatedResult<SpendingListResponse>))]
@@ -25,7 +25,6 @@ public class SpendingController : ControllerBase
         return Ok(await _mediator.Send(new GetSpendingListQuery(filterPostModel)));
     }
 
-    [JwtAuthorize()]
     [HttpGet("{id}")]
     [SwaggerOperation("Get spending by id")]
     [SwaggerResponse(200, "Success", typeof(SpendingResponse))]
@@ -37,7 +36,6 @@ public class SpendingController : ControllerBase
         return Ok(await _mediator.Send(new GetSpendingByIdQuery(id)));
     }
 
-    [JwtAuthorize()]
     [HttpPost("")]
     [SwaggerOperation("Creates a new spending")]
     [SwaggerResponse(200, "Success", typeof(int))]
@@ -50,7 +48,6 @@ public class SpendingController : ControllerBase
         return Ok(id);
     }
 
-    [JwtAuthorize()]
     [HttpPut("{id}")]
     [SwaggerOperation("Updates a spending")]
     [SwaggerResponse(200, "Success")]
@@ -67,7 +64,6 @@ public class SpendingController : ControllerBase
         return Ok(await _mediator.Send(command));
     }
 
-    [JwtAuthorize()]
     [HttpDelete("{id}")]
     [SwaggerOperation("Deletes a spending")]
     [SwaggerResponse(200, "Success")]

@@ -1,6 +1,5 @@
 global using BudgetManager.Application;
 global using BudgetManager.Application.Models;
-global using BudgetManager.Authentication;
 global using BudgetManager.Common;
 global using MediatR;
 global using Microsoft.AspNetCore.Authorization;

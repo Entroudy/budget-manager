@@ -1,14 +1,17 @@
-import { getUser } from '~/services/api/JwtService'
+import { useAuthStore } from '@/stores/AuthStore'
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  try {
-    const user = getUser()
-    if (!user) {
-      return navigateTo('/login')
+export default defineNuxtRouteMiddleware(async () => {
+  const authStore = useAuthStore()
+
+  if (process.client && !authStore.account.token) {
+    try {
+      await authStore.getUser()
+    } catch {
+      // Fall through to the login redirect below.
     }
-  } catch (error) {
-    if (error) {
-      return navigateTo('/login')
-    }
+  }
+
+  if (!authStore.account.token) {
+    return navigateTo('/login')
   }
 })

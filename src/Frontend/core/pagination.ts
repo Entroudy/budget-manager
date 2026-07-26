@@ -1,0 +1,1 @@
+export const ALL_RECORDS_PAGE_SIZE = 2147483647

@@ -7,7 +7,7 @@
             <i class="fas fa-user-edit text-primary text-lg"></i>
           </div>
           <div>
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $t('update') }} {{ $t('users') }}</h2>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $t('edit_user') }}</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('edit_user_information') }}</p>
           </div>
         </div>
@@ -117,15 +117,20 @@
               <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {{ $t('role') }}
               </label>
-              <select
+              <Multiselect
                 id="role"
-                v-model="user.role"
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              >
-                <option v-for="option in roleOptions" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
+                v-model="selectedRoleOption"
+                v-floating-select="'body'"
+                :options="roleOptions"
+                :searchable="false"
+                :allow-empty="false"
+                :show-labels="false"
+                :close-on-select="true"
+                track-by="value"
+                label="label"
+                placeholder="role"
+                class="w-full role-multiselect"
+              />
             </div>
           </div>
 
@@ -358,6 +363,7 @@ import { defineComponent } from 'vue'
 import { required, helpers } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import { storeToRefs } from 'pinia'
+import Multiselect from 'vue-multiselect'
 import type { UserUpdate, UserListItem, Income } from '~/models/UserModel'
 import { PaymentMethod } from '~/models/UserModel'
 import { useUserStore } from '~/stores/UserStore'
@@ -366,6 +372,9 @@ import { DEFAULT_USER_ROLE, USER_ROLES, getUserRoleLabelKey } from '~/core/userR
 
 export default defineComponent({
   name: 'UserEditModal',
+  components: {
+    Multiselect
+  },
   emits: ['item-edited'],
   setup(props, context) {
     const user = reactive({
@@ -401,6 +410,12 @@ export default defineComponent({
         label: t(getUserRoleLabelKey(role)),
       }))
     )
+    const selectedRoleOption = computed({
+      get: () => roleOptions.value.find(option => option.value === user.role) ?? roleOptions.value[0] ?? null,
+      set: (option: { value: string } | null) => {
+        user.role = option?.value || DEFAULT_USER_ROLE
+      }
+    })
 
     const rules = computed(() => {
       return {
@@ -708,6 +723,7 @@ export default defineComponent({
       rules,
       user,
       roleOptions,
+      selectedRoleOption,
       showModal,
       open,
       close,

@@ -60,26 +60,23 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     getUser () {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          try {
-            const user = JSON.parse(getUser() as any)
-            if (user !== null) {
-              this.account = {
-                email: user.email ?? '',
-                token: user.token ?? '',
-                locale: normalizeLocale(user.locale ?? getInitialLocale())
-              }
-              persistLocalePreference(this.account.locale)
-              resolve(user)
-            } else {
-              reject('Item with key \'user\' not found in localStorage.')
-            }
-          } catch (error: any) {
-            reject(error.message)
-          }
-        }, 50)
-      })
+      try {
+        const storedUser = getUser()
+        if (!storedUser) {
+          return Promise.reject(new Error("Item with key 'user' not found in localStorage."))
+        }
+
+        const user = JSON.parse(storedUser)
+        this.account = {
+          email: user.email ?? '',
+          token: user.token ?? '',
+          locale: normalizeLocale(user.locale ?? getInitialLocale())
+        }
+        persistLocalePreference(this.account.locale)
+        return Promise.resolve(user)
+      } catch (error: any) {
+        return Promise.reject(error)
+      }
     }
   }
 })

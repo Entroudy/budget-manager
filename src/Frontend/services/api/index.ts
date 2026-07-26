@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { useNuxtApp, type NuxtApp } from '#app'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/AuthStore'
+import { ALL_RECORDS_PAGE_SIZE } from '~/core/pagination'
 import AuthAPI from '@/services/api/AuthService'
 import UserAPI from '@/services/api/UserService'
 import SpendingAPI from '~/services/api/SpendingService'
@@ -33,8 +34,22 @@ class APIService {
     // Add a request interceptor
     api.interceptors.request.use(
       function (config) {
-        // Do something before request is sent
-        config.headers.Authorization = `Bearer ${account.value?.token}`
+        const storedUser = process.client ? window.localStorage.getItem('user') : null
+        const storedToken = storedUser ? (() => {
+          try {
+            return JSON.parse(storedUser)?.token as string | undefined
+          } catch {
+            return undefined
+          }
+        })() : undefined
+        const token = account.value?.token || storedToken
+
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        } else if (config.headers) {
+          delete config.headers.Authorization
+        }
+
         return config
       },
       function (error) {
@@ -95,9 +110,9 @@ class APIService {
    */
   getAll(resource: string, params: AxiosRequestConfig = <AxiosRequestConfig>{}): Promise<AxiosResponse> {
     if (params.params) {
-      params.params.pageSize = 999999999
+      params.params.pageSize = ALL_RECORDS_PAGE_SIZE
     } else {
-      params.params = { pageSize: 999999999 }
+      params.params = { pageSize: ALL_RECORDS_PAGE_SIZE }
     }
     return this.query(resource, params)
   }

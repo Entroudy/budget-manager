@@ -433,6 +433,39 @@ label.required:after {
 .multiselect__placeholder {
   color: #374151 !important;
 }
+
+.role-multiselect.multiselect,
+.role-multiselect .multiselect__content-wrapper,
+.role-multiselect .multiselect__tags,
+.role-multiselect .multiselect__single,
+.role-multiselect .multiselect__input,
+.role-multiselect .multiselect__placeholder,
+.role-multiselect .multiselect__option {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+
+.role-multiselect .multiselect__tags {
+  min-height: 40px !important;
+  padding: 3px 40px 0 12px !important;
+}
+
+.role-multiselect .multiselect__single,
+.role-multiselect .multiselect__placeholder {
+  padding-top: 4px !important;
+  margin-bottom: 0 !important;
+}
+
+.role-multiselect .multiselect__option {
+  padding: 0.5rem 0.75rem !important;
+}
+
+.role-multiselect .multiselect__option span,
+.role-multiselect .multiselect__option strong {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+
 .bg-main-light-gray{
   background-color: #F1F5F9;
 }

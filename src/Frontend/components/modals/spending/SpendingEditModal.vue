@@ -104,6 +104,7 @@ import type { SpendingUpdate, SpendingItemResponse } from '~/models/SpendingMode
 import { PaymentMethod } from '~/models/SpendingModel'
 import { useSpendingStore } from '~/stores/SpendingStore'
 import { useUserStore } from '~/stores/UserStore'
+import { ALL_RECORDS_PAGE_SIZE } from '~/core/pagination'
 import { storeToRefs } from 'pinia'
 
 export default defineComponent({
@@ -162,7 +163,7 @@ export default defineComponent({
     const v$ = useVuelidate(rules, spending)
 
     const open = async (spendingData: SpendingItemResponse) => {
-      await getUsers({ page_number: 1, page_size: 999 })
+      await getUsers({ page_number: 1, page_size: ALL_RECORDS_PAGE_SIZE })
       spending.id = spendingData.id
       spending.applicationUserId = spendingData.applicationUserId
       spending.item = spendingData.item
