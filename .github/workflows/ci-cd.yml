@@ -45,6 +45,9 @@ jobs:
       - name: Build backend
         run: dotnet build src/Backend/BudgetManager/BudgetManager.sln --configuration Release --no-restore
 
+      - name: Run backend tests
+        run: dotnet test src/Backend/BudgetManager/BudgetManager.sln --configuration Release --no-build
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

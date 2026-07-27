@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetManager.Domain", "Bud
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetManager.Infrastructure", "BudgetManager.Infrastructure\BudgetManager.Infrastructure.csproj", "{94A62A22-47BA-AB80-BF45-5B6671D312C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetManager.Tests", "BudgetManager.Tests\BudgetManager.Tests.csproj", "{3A2F5B2B-6C5B-45A7-9A2D-3C7D2B2F1B77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{94A62A22-47BA-AB80-BF45-5B6671D312C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94A62A22-47BA-AB80-BF45-5B6671D312C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94A62A22-47BA-AB80-BF45-5B6671D312C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A2F5B2B-6C5B-45A7-9A2D-3C7D2B2F1B77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A2F5B2B-6C5B-45A7-9A2D-3C7D2B2F1B77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A2F5B2B-6C5B-45A7-9A2D-3C7D2B2F1B77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A2F5B2B-6C5B-45A7-9A2D-3C7D2B2F1B77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

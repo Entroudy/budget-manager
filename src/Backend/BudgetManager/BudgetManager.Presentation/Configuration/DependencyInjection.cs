@@ -73,12 +73,7 @@ public static class DependencyInjection
                             .GetRequiredService<ILoggerFactory>()
                             .CreateLogger("JwtBearer");
 
-                        var hasAuthHeader = context.Request.Headers.TryGetValue("Authorization", out var authorizationHeader);
-                        logger.LogInformation(
-                            "JWT message received for {Path}. AuthHeaderPresent={HasAuthHeader}. AuthHeader={AuthHeader}",
-                            context.HttpContext.Request.Path,
-                            hasAuthHeader,
-                            hasAuthHeader ? authorizationHeader.ToString() : "<missing>");
+                        logger.LogInformation("JWT message received for path {Path}.", context.HttpContext.Request.Path);
 
                         return Task.CompletedTask;
                     },

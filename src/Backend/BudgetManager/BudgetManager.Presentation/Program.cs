@@ -71,25 +71,6 @@ if (!string.IsNullOrWhiteSpace(httpsPorts))
 }
 app.UseProblemDetails();
 app.UseCors(CorsAllowSpecificOrigins);
-if (!string.Equals(AppSettings.AppEnv, "production", StringComparison.OrdinalIgnoreCase))
-{
-    app.Use(async (context, next) =>
-    {
-        var logger = context.RequestServices
-            .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("RequestTrace");
-
-        var hasAuthHeader = context.Request.Headers.TryGetValue("Authorization", out var authorizationHeader);
-        logger.LogInformation(
-            "Incoming request {Method} {Path}. AuthHeaderPresent={HasAuthHeader}. AuthHeader={AuthHeader}",
-            context.Request.Method,
-            context.Request.Path,
-            hasAuthHeader,
-            hasAuthHeader ? authorizationHeader.ToString() : "<missing>");
-
-        await next();
-    });
-}
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();

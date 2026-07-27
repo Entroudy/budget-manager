@@ -1,5 +1,7 @@
 # Budget Manager
 
+[![CI/CD](https://github.com/Entroudy/budget-manager/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Entroudy/budget-manager/actions/workflows/ci-cd.yml)
+
 Budget Manager is a full-stack personal finance application for tracking incomes, spendings, and users. The repository contains:
 
 - A `.NET 10` backend API
@@ -165,3 +167,7 @@ The repository does not include a committed default admin credential pair. Set `
 - The frontend uses Nuxt and Pinia, so most UI state lives in `src/Frontend/stores`
 - Swagger is available in the backend for API exploration during development
 - The backend targets `.NET 10`, but the EF Core and Identity packages are kept on `9.x` because the current Pomelo MySQL provider is built against EF Core 9
+
+## Development Notes
+
+- I used AI assistance while implementing parts of the frontend and while validating some architectural decisions. The final implementation, review, and integration choices were still made and owned by me.
