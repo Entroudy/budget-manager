@@ -1,0 +1,1 @@
+start cmd /c "docker image build -f src/Backend/BudgetManager/BudgetManager.Presentation/Dockerfile -t budget-manager:latest ."

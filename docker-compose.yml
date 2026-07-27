@@ -1,0 +1,61 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: bm_mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-bm-root-password}
+      MYSQL_USER: ${MYSQL_USER:-admin}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bm_db}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-bm-db-password}
+    ports: 
+      - "13006:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -uroot -p\"$$MYSQL_ROOT_PASSWORD\""
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  budget-manager:
+    build:
+      context: .
+      dockerfile: src/Backend/BudgetManager/BudgetManager.Presentation/Dockerfile
+    image: budget-manager:latest
+    ports:
+      - 4000:80
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "always"
+    environment:
+      APP_ENV: 'local'
+      HOST: 'localhost'
+      PORT: '80'
+      JWT_VALID_AUDIENCE: ${JWT_VALID_AUDIENCE:-Api}
+      JWT_VALID_ISSUER: ${JWT_VALID_ISSUER:-http://localhost:8080}
+      JWT_SECRET: ${JWT_SECRET:-bm-jwt-secret}
+      ASPNETCORE_HTTP_PORTS: '80'
+      DB_CONNECTION: server=mysql;port=3306;user=${MYSQL_USER:-admin};password=${MYSQL_PASSWORD:-bm-db-password};database=${MYSQL_DATABASE:-bm_db}
+  
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: bm_phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${MYSQL_USER:-admin}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-bm-db-password}
+    ports:
+      - 19107:80
+    depends_on:
+      - mysql
+    volumes:
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+
+volumes:
+  mysql_data:
