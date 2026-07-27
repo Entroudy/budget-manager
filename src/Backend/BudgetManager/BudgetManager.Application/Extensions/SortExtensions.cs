@@ -15,7 +15,7 @@ namespace BudgetManager.Application.Extensions
         public static IQueryable<TBase> Sort<TBase>(this IQueryable<TBase> source, PaginationPostModel request) where TBase : class
         {
             if (!string.IsNullOrWhiteSpace(request.SortBy))
-                return source.Sort(request.SortBy, request.SortDescending);
+                return source.Sort(request.SortBy, request.SortDescending == true);
 
             return source;
         }
@@ -28,7 +28,7 @@ namespace BudgetManager.Application.Extensions
         /// <param name="propertyName"></param>
         /// <param name="ascending"></param>
         /// <returns></returns>
-        private static IQueryable<T> Sort<T>(this IQueryable<T> source, string propertyName, bool? ascending = true) where T : class
+        private static IQueryable<T> Sort<T>(this IQueryable<T> source, string propertyName, bool descending = false) where T : class
         {
             var bindingFlags = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
@@ -43,10 +43,10 @@ namespace BudgetManager.Application.Extensions
                     return source;
             }
 
-            if (ascending.Value)
-                return source.OrderByMember($"{propertyName}");
-            else
+            if (descending)
                 return source.OrderByMemberDescending($"{propertyName}");
+            else
+                return source.OrderByMember($"{propertyName}");
         }
 
         /// <summary>
