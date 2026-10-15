@@ -14,6 +14,7 @@ module.exports = {
   theme: {
     fontFamily: {
       maven: ['"Maven Pro"', ...defaultTheme.fontFamily.sans],
+      display: ['Georgia', '"Times New Roman"', ...defaultTheme.fontFamily.serif],
     },
     extend: {
       spacing: {
@@ -54,33 +55,34 @@ module.exports = {
         '208px': '208px',
       },
       colors: {
-        primary: '#52343A',
-        secondary: '#6B4E3D',
+        primary: '#24513F',
+        'primary-dark': '#17382D',
+        secondary: '#365B49',
         brand: {
           darkBrown: {
-            DEFAULT: '#52343A',
-            700: '#352415',
-            500: '#2A1D11',
+            DEFAULT: '#17382D',
+            700: '#10291F',
+            500: '#214638',
           },
           lightBrown: {
-            DEFAULT: '#8B6F47',
+            DEFAULT: '#A47755',
           },
           lightGreen: {
-            DEFAULT: '#DFF8D5',
+            DEFAULT: '#E5EBDD',
           },
           darkGreen: {
-            DEFAULT: '#1e2e39',
+            DEFAULT: '#244B3B',
           },
         },
-        success: '#56c45d',
-        error: '#ee4444',
-        warning: '#C8D414',
-        info: '#625ae3',
+        success: '#557E58',
+        error: '#B85C4C',
+        warning: '#D39A51',
+        info: '#6F8871',
         dark: {
-          DEFAULT: '#52343A',
+          DEFAULT: '#17382D',
           text: '#FFFFFF',
         },
-        body: '#f1f5f9'
+        body: '#F6F3E9'
       },
     },
     variants: {

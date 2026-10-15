@@ -81,6 +81,7 @@ export const useUserStore = defineStore('user', {
          const data = await this.api.user.updateUser(applicationUserId, userType)
         return data
       } catch (error) {
+        console.error('Error updating user:', error)
         return null
       }
     },

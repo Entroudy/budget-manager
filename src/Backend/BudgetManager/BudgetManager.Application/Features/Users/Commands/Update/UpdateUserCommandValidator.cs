@@ -12,5 +12,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.Role)
             .Must(role => string.IsNullOrWhiteSpace(role) || AppRoles.All.Contains(role))
             .WithMessage("Invalid role selected");
+        RuleFor(x => x.ProfileImage)
+            .MaximumLength(250_000);
     }
 }

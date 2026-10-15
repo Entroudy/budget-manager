@@ -1,206 +1,73 @@
 <template>
-  <div class="rounded-lg bg-white dark:bg-gray-800 shadow-xl dark:text-white px-4 py-4 md:px-8 md:py-6">
-    <!-- Top Bar -->
-    <div class="flex items-center justify-between gap-4 mb-6">
-      <!-- Left: Page Size -->
-
-      <div class="flex items-center gap-2">
-        <button
-          class="btn btn-md bg-primary text-white capitalize-block px-6 py-2 hover:bg-primary-dark transition-colors"
-          @click="openCreateModal"
-        >
-          {{ $t('create') }}
-        </button>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <input
-          id="search"
-          v-model="searchValue"
-          type="text"
-          :placeholder="$t('searching')"
-          class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm w-64"
-        >
-      </div>
-    </div>
-
-    <!-- Users Grid -->
-    <div class="mt-6">
-      <div v-if="users.length > 0" class="space-y-6">
-        <!-- User Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div
-            v-for="user in users"
-            :key="user.id"
-            class="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-750 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
-          >
-            <!-- Card Background Accent -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-300"></div>
-
-            <!-- Card Content -->
-            <div class="relative p-6">
-              <div class="flex items-start justify-between gap-4">
-                <!-- User Info -->
-                <div
-                  class="flex-1 cursor-pointer"
-                  @click="openEditModal(user)"
-                >
-                  <!-- Avatar -->
-                  <div class="flex items-start gap-4">
-                    <div class="w-14 h-14 rounded-full bg-primary to-primary-dark flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
-                      {{ user.lastName?.charAt(0) }}{{ user.firstName?.charAt(0) }}
-                    </div>
-
-                    <div class="flex-1 min-w-0">
-                      <!-- Name -->
-                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate group-hover:text-primary transition-colors">
-                        {{ user.lastName }} {{ user.firstName }}
-                      </h3>
-
-                      <!-- Nickname -->
-                      <div class="flex items-center gap-2 mb-2">
-                        <i class="fas fa-user text-gray-400 text-xs"></i>
-                        <span class="text-sm text-gray-600 dark:text-gray-300 font-medium">{{ user.nickName }}</span>
-                      </div>
-
-                      <!-- Email -->
-                      <div class="flex items-center gap-2 mb-2">
-                        <i class="fas fa-envelope text-gray-400 text-xs"></i>
-                        <span class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email }}</span>
-                      </div>
-
-                      <div v-if="(user.roles?.length || 0) > 0" class="flex flex-wrap gap-2 mb-2">
-                        <span
-                          v-for="role in user.roles"
-                          :key="role"
-                          class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
-                          :class="getUserRoleBadgeClass(role)"
-                        >
-                          {{ $t(getUserRoleLabelKey(role)) }}
-                        </span>
-                      </div>
-
-                      <!-- Total Income -->
-                      <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-                        <i class="fas fa-coins text-green-500 text-xs"></i>
-                        <span class="text-sm font-semibold text-green-600 dark:text-green-400">
-                          {{ $t('income') }}: {{ formatCurrency(calculateTotalIncome(user)) }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Checkbox -->
-                <div class="flex-shrink-0">
-                  <input
-                    type="checkbox"
-                    :checked="selectedIds.includes(user.id)"
-                    @click.stop="toggleSelection(user.id)"
-                    class="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-500 text-primary focus:ring-2 focus:ring-primary focus:ring-offset-0 cursor-pointer transition-all hover:border-primary dark:hover:border-primary"
-                  >
-                </div>
-              </div>
-
-              <!-- Quick Actions (visible on hover) -->
-              <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <div class="flex flex-wrap items-center gap-4">
-                  <button
-                    type="button"
-                    @click="openEditModal(user)"
-                    class="text-sm text-primary hover:text-primary-dark font-medium flex items-center gap-2 transition-colors"
-                  >
-                    <i class="fas fa-edit"></i>
-                    <span>{{ $t('edit') }}</span>
-                  </button>
-                  <button
-                    type="button"
-                    @click="openChangePasswordModal(user)"
-                    class="text-sm text-gray-600 dark:text-gray-300 hover:text-primary font-medium flex items-center gap-2 transition-colors"
-                  >
-                    <i class="fas fa-key"></i>
-                    <span>{{ $t('change_password') }}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+  <section class="overflow-hidden rounded-2xl border border-[#e8e9e2] bg-white text-[#263a30] shadow-sm">
+    <header class="border-b border-[#ecece6] px-5 py-6 sm:px-8">
+      <div class="flex flex-wrap items-end justify-between gap-5">
+        <div>
+          <h2 class="mt-1 font-display text-2xl font-semibold text-[#20392d]">{{ $t('users') }}</h2>
         </div>
-
-        <!-- Stats and Bulk Actions Bar -->
-        <div class="bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-750 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
-          <div class="flex items-center justify-between flex-wrap gap-4">
-            <!-- Stats -->
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <i class="fas fa-users text-primary text-sm"></i>
-              </div>
-              <span class="text-sm text-gray-700 dark:text-gray-300">
-                <span class="font-semibold">{{ users.length }}</span> {{ $t('of') }} <span class="font-semibold">{{ pagination.totalCount }}</span> {{ $t('users') }}
-              </span>
-            </div>
-
-            <!-- Bulk Actions -->
-            <div v-if="selectedIds.length > 0" class="flex items-center gap-3">
-              <div class="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-lg">
-                <i class="fas fa-check-circle text-primary text-sm"></i>
-                <span class="text-sm font-medium text-primary">{{ selectedIds.length }} {{ $t('selected') }}</span>
-              </div>
-              <button
-                @click="openDeleteModal"
-                class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
-              >
-                <i class="fas fa-trash text-sm"></i>
-                <span class="text-sm font-medium">{{ $t('delete') }}</span>
-              </button>
-            </div>
-          </div>
+        <button class="rounded-lg bg-[#315d45] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#264b38]" @click="openCreateModal">{{ $t('create') }}</button>
+      </div>
+      <div class="mt-6 grid grid-cols-1 gap-4 rounded-xl bg-[#f3f5f0] p-4 sm:grid-cols-3 sm:p-5">
+        <div><p class="text-2xl font-semibold text-[#253d32]">{{ pagination.totalCount }}</p><p class="mt-1 text-sm text-[#727e73]">{{ $t('users') }}</p></div>
+        <div class="sm:border-l sm:border-[#dfe4da] sm:pl-6"><p class="text-2xl font-semibold text-[#253d32]">{{ selectedIds.length }}</p><p class="mt-1 text-sm text-[#727e73]">{{ $t('selected') }}</p></div>
+        <div class="flex items-center justify-between gap-3 sm:border-l sm:border-[#dfe4da] sm:pl-6">
+          <input id="search" v-model="searchValue" type="text" :placeholder="$t('searching')" class="w-full rounded-full border border-[#d9ddd5] bg-white px-4 py-2 text-sm text-[#263a30] placeholder:text-[#92998f] focus:border-[#6b8b70] focus:outline-none focus:ring-2 focus:ring-[#6b8b70]/20">
+          <button v-if="selectedIds.length" class="shrink-0 rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700" @click="openDeleteModal"><i class="fas fa-trash mr-2" />{{ $t('delete') }}</button>
         </div>
       </div>
+    </header>
 
-      <!-- Empty State -->
-      <div v-else class="text-center py-16">
-        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-          <i class="fas fa-users text-4xl text-gray-400"></i>
-        </div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ $t('no_users_found') }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('get_started_by_creating_user') }}</p>
-      </div>
+    <div v-if="users.length" class="overflow-x-auto">
+      <table class="w-full min-w-[760px] text-left text-sm">
+        <thead class="text-xs font-semibold uppercase tracking-wide text-[#818a80]">
+          <tr class="border-b border-[#ecece6]">
+            <th class="w-12 px-5 py-4"><span class="sr-only">{{ $t('selected') }}</span></th>
+            <th class="px-4 py-4">{{ $t('user') }}</th>
+            <th class="px-4 py-4">{{ $t('roles') }}</th>
+            <th class="px-4 py-4">{{ $t('income') }}</th>
+            <th class="px-5 py-4 text-right">{{ $t('actions') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id" class="border-b border-[#f0f1ec] transition hover:bg-[#fafbf8]">
+            <td class="px-5 py-4"><input type="checkbox" :checked="selectedIds.includes(user.id)" class="h-4 w-4 rounded border-[#cbd2c8] accent-[#315d45]" @change="toggleSelection(user.id)"></td>
+            <td class="px-4 py-4">
+              <div class="flex min-w-0 items-center gap-3">
+                <button type="button" class="group relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full bg-[#e8eee5]" :title="$t('change_profile_picture')" @click.stop="openProfilePicturePicker(user.id)">
+                  <img :src="getProfilePicture(user)" :alt="user.lastName + ' ' + user.firstName" class="h-full w-full object-cover">
+                  <span class="absolute inset-0 flex items-center justify-center bg-black/45 text-white opacity-0 transition group-hover:opacity-100"><i class="fas fa-camera text-xs" /></span>
+                </button>
+                <input :id="`profile-picture-${user.id}`" class="sr-only" type="file" accept="image/*" @change="changeProfilePicture($event, user)">
+                <button class="min-w-0 text-left" @click="openEditModal(user)">
+                  <span class="block truncate font-semibold text-[#293b30]">{{ user.lastName }} {{ user.firstName }}</span>
+                  <span class="block truncate text-xs text-[#828a80]">{{ user.email }}<template v-if="user.nickName"> · {{ user.nickName }}</template></span>
+                </button>
+              </div>
+            </td>
+            <td class="px-4 py-4"><div class="flex flex-wrap gap-1.5"><span v-for="role in user.roles || []" :key="role" class="rounded-full bg-[#eef2eb] px-2.5 py-1 text-xs font-medium text-[#526d55]">{{ $t(getUserRoleLabelKey(role)) }}</span><span v-if="!user.roles?.length" class="text-[#92998f]">—</span></div></td>
+            <td class="px-4 py-4 font-medium text-[#3f6b4d]">{{ formatCurrency(calculateTotalIncome(user)) }}</td>
+            <td class="px-5 py-4"><div class="flex justify-end gap-2"><button class="rounded-md px-3 py-2 text-xs font-semibold text-[#42644b] hover:bg-[#edf2ea]" @click="openEditModal(user)">{{ $t('edit') }}</button><button class="rounded-md px-3 py-2 text-xs font-semibold text-[#647067] hover:bg-[#f1f2ed]" @click="openChangePasswordModal(user)">{{ $t('change_password') }}</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-else class="px-6 py-16 text-center">
+      <i class="fas fa-users text-3xl text-[#aab2a8]" />
+      <h3 class="mt-3 font-semibold text-[#33483a]">{{ $t('no_users_found') }}</h3>
+      <p class="mt-1 text-sm text-[#828a80]">{{ $t('get_started_by_creating_user') }}</p>
     </div>
 
-    <!-- Pagination -->
-    <div v-if="pagination.totalPages > 1" class="mt-6 flex items-center justify-between bg-white dark:bg-gray-750 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
-      <button
-        @click="changePage(-1)"
-        :disabled="pagination.currentPage === 1"
-        class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
-      >
-        <i class="fas fa-chevron-left text-sm"></i>
-        <span class="text-sm font-medium">{{ $t('previous') }}</span>
-      </button>
-
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('page') }}</span>
-        <span class="px-3 py-1 bg-primary text-white rounded-lg text-sm font-semibold">{{ pagination.currentPage }}</span>
-        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('of') }}</span>
-        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm font-semibold">{{ pagination.totalPages }}</span>
-      </div>
-
-      <button
-        @click="changePage(1)"
-        :disabled="pagination.currentPage === pagination.totalPages"
-        class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
-      >
-        <span class="text-sm font-medium">{{ $t('next') }}</span>
-        <i class="fas fa-chevron-right text-sm"></i>
-      </button>
-    </div>
+    <footer v-if="pagination.totalPages > 1" class="flex items-center justify-between border-t border-[#ecece6] px-5 py-4 sm:px-8">
+      <button @click="changePage(-1)" :disabled="pagination.currentPage === 1" class="rounded-lg border border-[#dfe2dc] px-4 py-2 text-sm text-[#536157] hover:bg-[#f7f8f5] disabled:opacity-40">{{ $t('previous') }}</button>
+      <span class="text-sm text-[#727e73]">{{ $t('page') }} {{ pagination.currentPage }} {{ $t('of') }} {{ pagination.totalPages }}</span>
+      <button @click="changePage(1)" :disabled="pagination.currentPage === pagination.totalPages" class="rounded-lg border border-[#dfe2dc] px-4 py-2 text-sm text-[#536157] hover:bg-[#f7f8f5] disabled:opacity-40">{{ $t('next') }}</button>
+    </footer>
 
     <UserCreateModal ref="UserCreateModalRef" @item-created="refreshUsers" />
     <UserEditModal ref="UserEditModalRef" @item-edited="refreshUsers" />
     <UserChangePasswordModal ref="UserChangePasswordModalRef" @item-edited="refreshUsers" />
     <UserDeleteModal ref="UserDeleteModalRef" @item-deleted="handleDelete" />
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -213,6 +80,7 @@ import UserChangePasswordModal from '@/components/modals/users/UserChangePasswor
 import UserDeleteModal from '@/components/modals/users/UserDeleteModal.vue'
 import type { UserListItem } from '~/models/UserModel'
 import { getUserRoleBadgeClass, getUserRoleLabelKey } from '~/core/userRoles'
+import { getStoredProfileImage, storeProfileImage } from '~/utils/profileImages'
 
 definePageMeta({
   middleware: 'auth',
@@ -250,6 +118,56 @@ export default defineComponent({
     const { users } = storeToRefs(userStore)
     const { getUsers, getRoles } = userStore
     const { $showNotification } = useNuxtApp()
+
+    const getProfilePicture = (user: UserListItem) => user.profileImage || getStoredProfileImage(user.id) || '/images/budget-manager-logo.png'
+
+    const openProfilePicturePicker = (userId: string) => {
+      document.getElementById(`profile-picture-${userId}`)?.click()
+    }
+
+    const resizeProfilePicture = async (file: File) => {
+      const image = await createImageBitmap(file)
+      const maxSize = 256
+      const scale = Math.min(1, maxSize / Math.max(image.width, image.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.max(1, Math.round(image.width * scale))
+      canvas.height = Math.max(1, Math.round(image.height * scale))
+      const context = canvas.getContext('2d')
+      if (!context) throw new Error('Could not process image')
+      context.drawImage(image, 0, 0, canvas.width, canvas.height)
+      image.close()
+      return canvas.toDataURL('image/jpeg', 0.82)
+    }
+
+    const changeProfilePicture = async (event: Event, user: UserListItem) => {
+      const input = event.target as HTMLInputElement
+      const file = input.files?.[0]
+      input.value = ''
+      if (!file) return
+      if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+        $showNotification('error', t('profile_picture_upload_failed'))
+        return
+      }
+
+      try {
+        const profileImage = await resizeProfilePicture(file)
+        const updated = await userStore.updateUser(user.id, {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          nickName: user.nickName,
+          email: user.email,
+          profileImage,
+        })
+        if (!updated) throw new Error('Could not save profile picture')
+        user.profileImage = profileImage
+        storeProfileImage(user.id, profileImage)
+        $showNotification('success', t('profile_picture_updated'))
+      } catch (error) {
+        console.error('Could not update profile picture:', error)
+        $showNotification('error', t('profile_picture_upload_failed'))
+      }
+    }
 
     const router = useRouter()
     const route = useRoute()
@@ -423,6 +341,9 @@ export default defineComponent({
       handleDelete,
       calculateTotalIncome,
       formatCurrency,
+      getProfilePicture,
+      openProfilePicturePicker,
+      changeProfilePicture,
       getUserRoleBadgeClass,
       getUserRoleLabelKey,
     }

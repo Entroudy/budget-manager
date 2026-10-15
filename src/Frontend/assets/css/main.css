@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
 @import url(https://pro.fontawesome.com/releases/v5.10.0/css/all.css);
 
 @tailwind base;
@@ -7,7 +8,21 @@
 
 body {
   @apply font-maven bg-body dark:bg-gray-900;
+  color: #253d32;
+  background-color: #f6f3e9;
+  background-image: radial-gradient(ellipse at 88% 6%, rgba(185, 196, 164, .17), transparent 33%), radial-gradient(ellipse at 8% 78%, rgba(221, 202, 166, .14), transparent 30%);
 }
+
+:root {
+  --pine: #24513f;
+  --pine-deep: #17382d;
+  --sage: #8b9b7b;
+  --cream: #f6f3e9;
+  --paper: #fffdf6;
+  --clay: #a47755;
+}
+
+h1, h2, h3, .font-display { font-family: 'Playfair Display', Georgia, serif; }
 
 /* Webkit (Safari/Chrome) */
 ::-webkit-scrollbar {
@@ -16,14 +31,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #52343A;
+  background-color: #8b9b7b;
   border-radius: 5px;
 }
 
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #52343A transparent;
+  scrollbar-color: #8b9b7b transparent;
 }
 
 /* Print helper */
@@ -189,7 +204,61 @@ button:disabled {
 }
 
 input:not(input[type="checkbox"]):not(.floating-input), textarea, select {
-  @apply bg-gray-200 border-0 px-3 py-1.5 text-gray-700 h-9 shadow-sm sm:text-sm sm:leading-6 rounded-lg;
+  @apply border px-3 py-2 text-gray-700 h-10 shadow-sm sm:text-sm sm:leading-6 rounded-xl;
+  color: #26382e;
+  background-color: #f5f3e9;
+  border-color: #c9cebf;
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+input:not(input[type="checkbox"]):not(.floating-input):focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #55765d;
+  box-shadow: 0 0 0 3px rgba(85, 118, 93, .18);
+  background-color: #fffdf6;
+}
+
+input:not(input[type="checkbox"]):not(.floating-input)::placeholder, textarea::placeholder {
+  color: #788579;
+  opacity: 1;
+}
+
+select option { color: #26382e; background: #fffdf6; }
+
+/* Warm paper surfaces across the existing pages and dialogs. */
+.bg-white { background-color: #fffdf6; }
+.bg-gray-50 { background-color: #f8f6ee; }
+.bg-gray-100 { background-color: #efeee3; }
+.bg-gray-200 { background-color: #e6e6d9; }
+.bg-green-50 { background-color: #edf2e8; }
+.bg-blue-50 { background-color: #edf1ed; }
+.bg-amber-50 { background-color: #f5efe0; }
+.text-green-600 { color: #4d7654; }
+.text-blue-600 { color: #55766b; }
+.text-amber-600 { color: #987044; }
+.border-green-200, .border-blue-200, .border-amber-200 { border-color: #d9e1d0; }
+.border-gray-100, .border-gray-200 { border-color: #e5e3d7; }
+.border-gray-300 { border-color: #d8d8ca; }
+.text-gray-900 { color: #243c31; }
+.text-gray-800 { color: #344b3d; }
+.text-gray-700 { color: #3e5849; }
+.text-gray-600 { color: #68766b; }
+.text-gray-500 { color: #7b887c; }
+.text-gray-400 { color: #8d998e; }
+.bg-red-50 { background-color: #fbefec; }
+.from-white { --tw-gradient-from: #fffdf6 var(--tw-gradient-from-position); --tw-gradient-to: rgb(255 253 246 / 0) var(--tw-gradient-to-position); }
+.to-gray-50 { --tw-gradient-to: #f8f6ee var(--tw-gradient-to-position); }
+.bg-white\/70 { background-color: rgba(255, 255, 255, .7); }
+.bg-white\/90 { background-color: rgba(255, 253, 246, .94); color: #243c31; }
+
+.btn, button { transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease; }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(23, 56, 45, .12); }
+
+.cottage-panel {
+  background: rgba(255, 253, 246, .94);
+  border: 1px solid rgba(80, 104, 79, .14);
+  box-shadow: 0 16px 44px rgba(54, 66, 48, .08);
+  border-radius: 1.25rem;
 }
 
 input[type="checkbox"] {

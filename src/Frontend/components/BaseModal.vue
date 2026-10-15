@@ -1,17 +1,17 @@
 <template>
   <div v-if="showing" class="fixed inset-0 z-50 h-full">
     <div
-      class="fixed inset-0 z-50 flex h-full items-center justify-center bg-black bg-opacity-75 md:fixed md:h-auto md:p-6"
+      class="fixed inset-0 z-50 flex h-full items-center justify-center bg-[#17382d]/55 backdrop-blur-sm md:fixed md:h-auto md:p-6"
       @click.self="preventOutsideClick">
       <div
-        class="flex h-full max-h-full w-full flex-col bg-white dark:bg-brand-darkGray shadow md:h-auto md:max-h-[90vh] md:rounded-xl"
+        class="flex h-full max-h-full w-full flex-col bg-white dark:bg-brand-darkGray shadow-2xl md:h-auto md:max-h-[92vh] md:rounded-3xl"
         :class="[maxWidth, textColor]">
         <!-- Header - Fixed -->
         <div class="flex-shrink-0 p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-between space-x-3">
             <div class="flex items-center space-x-3">
               <slot v-if="$slots.icon" name="icon" />
-              <h3 v-if="$slots.title" class="text-lg font-bold uppercase text-gray-800 dark:text-white flex">
+              <h3 v-if="$slots.title" class="font-display text-xl font-semibold text-[#234434] dark:text-white flex">
                 <slot name="title" />
               </h3>
             </div>
@@ -59,7 +59,7 @@ export default defineComponent({
     },
     maxWidth: {
       type: String,
-      default: 'md:max-w-lg'
+      default: 'md:max-w-4xl'
     },
     textColor: {
       type: String,

@@ -24,7 +24,7 @@
               <span v-if="v$.applicationUserId.$error" class="text-xs text-red-600">{{ v$.applicationUserId.$silentErrors[0].$message }}</span>
             </div>
 
-            <div class="sm:col-span-full">
+            <div class="sm:col-span-3">
               <label for="item" class="required capitalize-block">{{ $t('item') }}</label>
               <input id="item" v-model="spending.item" type="text" class="w-full" :class="{
                 '!border-red-600 !focus-visible:border-red-600': v$.item.$error,
@@ -65,21 +65,21 @@
 
             <div class="sm:col-span-3">
               <label for="color" class="capitalize-block">{{ $t('color') }}</label>
-              <div class="flex gap-2">
+              <div class="flex h-10 items-center gap-2">
                 <button
                   v-for="colorOption in colorOptions"
                   :key="colorOption.value"
                   type="button"
                   @click="spending.color = colorOption.value"
-                  class="w-12 h-10 rounded border-2 transition-all"
-                  :class="spending.color === colorOption.value ? 'border-gray-900 dark:border-white scale-110' : 'border-gray-300 dark:border-gray-600 hover:scale-105'"
+                  class="h-6 w-6 rounded-full border-2 transition-all"
+                  :class="spending.color === colorOption.value ? 'border-gray-900 scale-110' : 'border-white shadow hover:scale-105'"
                   :style="{ backgroundColor: colorOption.value }"
                   :title="colorOption.label"
                 ></button>
               </div>
             </div>
 
-            <div class="sm:col-span-full">
+            <div class="sm:col-span-3">
               <label for="comment" class="capitalize-block">{{ $t('comment') }}</label>
               <textarea id="comment" v-model="spending.comment" rows="3" class="w-full"></textarea>
             </div>

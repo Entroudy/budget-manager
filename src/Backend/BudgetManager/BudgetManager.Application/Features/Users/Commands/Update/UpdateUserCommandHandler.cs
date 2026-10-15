@@ -25,6 +25,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Unit>
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         user.Update(request.FirstName, request.LastName, request.NickName, request.Email);
+        if (request.ProfileImage is not null)
+            user.ProfileImage = request.ProfileImage;
 
         if (!string.IsNullOrWhiteSpace(request.Role))
         {
