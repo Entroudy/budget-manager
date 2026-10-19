@@ -1,6 +1,6 @@
 <template>
   <Transition name="modal">
-    <BaseModal v-if="showModal" :show-close="true" :showing="showModal" @close="close" :preventBackgroundClose="true">
+    <BaseModal v-if="showModal" :show-close="true" :showing="showModal" @close="close" :preventBackgroundClose="true" max-width="md:max-w-7xl">
       <template #title>
         <span class="break-normal">
           {{ $t('edit') }}
@@ -24,7 +24,7 @@
               <span v-if="v$.applicationUserId.$error" class="text-xs text-red-600">{{ v$.applicationUserId.$silentErrors[0].$message }}</span>
             </div>
 
-            <div class="sm:col-span-3">
+            <div class="sm:col-span-2">
               <label for="item" class="required capitalize-block">{{ $t('item') }}</label>
               <input id="item" v-model="spending.item" type="text" class="w-full" :class="{
                 '!border-red-600 !focus-visible:border-red-600': v$.item.$error,
@@ -33,7 +33,7 @@
               <span v-if="v$.item.$error" class="text-xs text-red-600">{{ v$.item.$silentErrors[0].$message }}</span>
             </div>
 
-            <div class="sm:col-span-3">
+            <div class="sm:col-span-2">
               <label for="amount" class="required capitalize-block">{{ $t('amount') }}</label>
               <input id="amount" v-model.number="spending.amount" type="number" step="0.01" class="w-full" :class="{
                 '!border-red-600 !focus-visible:border-red-600': v$.amount.$error,
@@ -42,7 +42,17 @@
               <span v-if="v$.amount.$error" class="text-xs text-red-600">{{ v$.amount.$silentErrors[0].$message }}</span>
             </div>
 
-            <div class="sm:col-span-3">
+            <div class="sm:col-span-2">
+              <label for="currency" class="required capitalize-block">{{ $t('currency') }}</label>
+              <select id="currency" :value="amountCurrency" class="w-full" @change="changeCurrency">
+                <option value="HUF">HUF</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+              <p v-if="amountCurrency !== 'HUF'" class="mt-1 text-[10px] text-gray-500">1 {{ amountCurrency }} = {{ amountCurrency === 'EUR' ? eurRate : usdRate }} HUF</p>
+            </div>
+
+            <div class="sm:col-span-2">
               <label for="date" class="required capitalize-block">{{ $t('date') }}</label>
               <input id="date" v-model="spending.date" type="date" class="w-full" :class="{
                 '!border-red-600 !focus-visible:border-red-600': v$.date.$error,
@@ -51,7 +61,7 @@
               <span v-if="v$.date.$error" class="text-xs text-red-600">{{ v$.date.$silentErrors[0].$message }}</span>
             </div>
 
-            <div class="sm:col-span-3">
+            <div class="sm:col-span-2">
               <label for="paymentMethod" class="required capitalize-block">{{ $t('payment_method') }}</label>
               <select id="paymentMethod" v-model.number="spending.paymentMethod" class="w-full" :class="{
                 '!border-red-600 !focus-visible:border-red-600': v$.paymentMethod.$error,
@@ -63,7 +73,7 @@
               <span v-if="v$.paymentMethod.$error" class="text-xs text-red-600">{{ v$.paymentMethod.$silentErrors[0].$message }}</span>
             </div>
 
-            <div class="sm:col-span-3">
+            <div class="sm:col-span-2">
               <label for="color" class="capitalize-block">{{ $t('color') }}</label>
               <div class="flex h-10 items-center gap-2">
                 <button
@@ -79,7 +89,7 @@
               </div>
             </div>
 
-            <div class="sm:col-span-3">
+            <div class="sm:col-span-full">
               <label for="comment" class="capitalize-block">{{ $t('comment') }}</label>
               <textarea id="comment" v-model="spending.comment" rows="3" class="w-full"></textarea>
             </div>
@@ -135,6 +145,9 @@ export default defineComponent({
     ])
     const isLoading = ref(false)
     const showModal = ref(false)
+    const amountCurrency = ref('HUF')
+    const eurRate = ref(400)
+    const usdRate = ref(370)
 
     const { editSpending } = useSpendingStore()
     const { $showNotification } = useNuxtApp()
@@ -162,8 +175,27 @@ export default defineComponent({
 
     const v$ = useVuelidate(rules, spending)
 
+    const loadCurrencyRates = () => {
+      if (typeof localStorage === 'undefined') return
+      try {
+        const rates = JSON.parse(localStorage.getItem('budget-manager-currency-rates') || '{}')
+        eurRate.value = Number(rates.eur) || 400
+        usdRate.value = Number(rates.usd) || 370
+      } catch { /* use default rates */ }
+    }
+
+    const currencyRate = (currency: string) => currency === 'EUR' ? eurRate.value : currency === 'USD' ? usdRate.value : 1
+    const changeCurrency = (event: Event) => {
+      const nextCurrency = (event.target as HTMLSelectElement).value
+      const amountInHuf = spending.amount * currencyRate(amountCurrency.value)
+      spending.amount = amountInHuf / currencyRate(nextCurrency)
+      amountCurrency.value = nextCurrency
+    }
+
     const open = async (spendingData: SpendingItemResponse) => {
       await getUsers({ page_number: 1, page_size: ALL_RECORDS_PAGE_SIZE })
+      loadCurrencyRates()
+      amountCurrency.value = 'HUF'
       spending.id = spendingData.id
       spending.applicationUserId = spendingData.applicationUserId
       spending.item = spendingData.item
@@ -187,7 +219,7 @@ export default defineComponent({
 
       isLoading.value = true
       try {
-        const response = await editSpending(spending)
+        const response = await editSpending({ ...spending, amount: Math.round(spending.amount * currencyRate(amountCurrency.value)) })
         if (response !== null) {
           $showNotification('success', t('spending_updated_successfully'))
           context.emit('item-edited')
@@ -207,6 +239,10 @@ export default defineComponent({
       v$,
       isLoading,
       showModal,
+      amountCurrency,
+      eurRate,
+      usdRate,
+      changeCurrency,
       PaymentMethod,
       open,
       close,
