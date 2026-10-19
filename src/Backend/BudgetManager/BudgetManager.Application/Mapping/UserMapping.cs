@@ -15,6 +15,7 @@ public static class UserMapping
             LastName = entity.LastName,
             FirstName = entity.FirstName,
             NickName = entity.NickName,
+            ProfileImage = entity.ProfileImage,
             Roles = roles.ToList(),
             Incomes = entity.Incomes
                 .OrderByDescending(i => i.Date)

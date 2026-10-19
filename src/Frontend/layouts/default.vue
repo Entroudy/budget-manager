@@ -1,47 +1,20 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <div class="min-h-screen bg-[#f6f3e9] text-[#253d32] dark:bg-gray-900">
     <TheFloatingMenu />
 
-    <main id="main-content" class="relative">
-      <!-- Modern Header Section -->
-      <div class="print:hidden bg-gradient-to-r from-primary via-primary-dark to-primary overflow-hidden pb-24 md:pb-8">
-        <!-- Decorative Background Elements -->
-        <div class="absolute">
-          <div class="absolute -top-10 -right-10 w-48 h-48 md:w-64 md:h-64 bg-white/10 rounded-full blur-2xl"></div>
-          <div class="absolute top-1/2 -left-10 w-48 h-48 md:w-64 md:h-64 bg-white/10 rounded-full blur-2xl"></div>
-        </div>
-
-        <!-- Header Content -->
-        <div class="relative px-6 md:px-12 py-12 md:py-16">
-          <div class="max-w-7xl mx-auto">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <i class="fas fa-layer-group text-white text-xl"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-white/80 text-sm font-medium uppercase tracking-wider">{{ $t('dashboard') }}</p>
-                <h1 class="text-white font-bold text-3xl md:text-4xl capitalize">
-                  {{ activePageTitle }}
-                </h1>
-              </div>
-              <div class="shrink-0">
-                <LanguageSwitcher />
-              </div>
-            </div>
-
-            <!-- Breadcrumb -->
-            <div class="flex items-center gap-2 text-white/70 text-sm mt-4">
-              <i class="fas fa-home text-xs"></i>
-              <span>/</span>
-              <span class="capitalize">{{ activePageTitle }}</span>
-            </div>
+    <main id="main-content" class="min-h-screen pt-16 lg:pl-72 lg:pt-0">
+      <header class="print:hidden flex items-center justify-between gap-4 border-b border-[#e2e1d4] bg-[#fffdf6]/85 px-5 py-5 backdrop-blur md:px-10 md:py-7">
+        <div class="flex items-center gap-3">
+          <PoppyMark class="h-11 w-11" />
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-[.2em] text-[#84917f]">{{ $t('dashboard') }}</p>
+            <h1 class="font-display text-2xl font-semibold capitalize text-[#17382d] md:text-3xl">{{ activePageTitle }}</h1>
           </div>
         </div>
-      </div>
-
-      <!-- Main Content Area -->
-      <div class="screen:px-4 screen:py-6 screen:md:px-24 screen:md:py-12 screen:-mt-16 screen:md:-mt-24">
-        <div class="w-full mx-auto">
+        <LanguageSwitcher variant="light" />
+      </header>
+      <div class="px-3 py-5 md:px-8 md:py-8 xl:px-10">
+        <div class="mx-auto w-full max-w-[2000px]">
           <slot />
         </div>
       </div>

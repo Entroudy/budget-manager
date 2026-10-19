@@ -1,6 +1,6 @@
 <template>
   <Transition name="modal">
-    <BaseModal v-if="showModal" :show-close="true" :showing="showModal" @close="close" :preventBackgroundClose="true">
+    <BaseModal v-if="showModal" :show-close="true" :showing="showModal" @close="close" :preventBackgroundClose="true" max-width="md:max-w-7xl">
       <template #title>
         <span class="break-normal">
           {{ $t('create') }}
@@ -9,7 +9,6 @@
       <template #body>
         <form v-enter-submit="submit">
           <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
             <div class="sm:col-span-full">
               <label for="user" class="required capitalize-block">{{ $t('user') }}</label>
               <select id="user" v-model="spending.applicationUserId" class="w-full" :class="{
@@ -24,31 +23,21 @@
               <span v-if="v$.applicationUserId.$error" class="text-xs text-red-600">{{ v$.applicationUserId.$silentErrors[0].$message }}</span>
             </div>
 
-            <div class="sm:col-span-full">
-              <label for="item" class="required capitalize-block">{{ $t('item') }}</label>
-              <input id="item" v-model="spending.item" type="text" class="w-full" :class="{
-                '!border-red-600 !focus-visible:border-red-600': v$.item.$error,
-                '!border-green-500': !v$.item.$invalid,
-              }" @change="v$.item.$touch">
-              <span v-if="v$.item.$error" class="text-xs text-red-600">{{ v$.item.$silentErrors[0].$message }}</span>
+            <div class="sm:col-span-full border-b border-[#e8e8e1] pb-3">
+              <div>
+                <h3 class="font-display text-lg font-semibold text-[#244536]">{{ $t('spendings') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ $t('spending_entry_hint') }}</p>
+              </div>
             </div>
-
-            <div class="sm:col-span-3">
-              <label for="amount" class="required capitalize-block">{{ $t('amount') }}</label>
-              <input id="amount" v-model.number="spending.amount" type="number" step="0.01" class="w-full" :class="{
-                '!border-red-600 !focus-visible:border-red-600': v$.amount.$error,
-                '!border-green-500': !v$.amount.$invalid,
-              }" @change="v$.amount.$touch">
-              <span v-if="v$.amount.$error" class="text-xs text-red-600">{{ v$.amount.$silentErrors[0].$message }}</span>
-            </div>
-
-            <div class="sm:col-span-3">
-              <label for="date" class="required capitalize-block">{{ $t('date') }}</label>
-              <input id="date" v-model="spending.date" type="date" class="w-full" :class="{
-                '!border-red-600 !focus-visible:border-red-600': v$.date.$error,
-                '!border-green-500': !v$.date.$invalid,
-              }" @change="v$.date.$touch">
-              <span v-if="v$.date.$error" class="text-xs text-red-600">{{ v$.date.$silentErrors[0].$message }}</span>
+            <div v-for="(entry, index) in bulkItems" :key="index" class="sm:col-span-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-12 gap-3 items-end border-b border-gray-100 py-4">
+                <div class="sm:col-span-2 xl:col-span-3"><label>{{ $t('item') }}</label><input v-model="entry.item" class="w-full" type="text"></div>
+                <div class="xl:col-span-2"><label>{{ $t('amount') }}</label><div class="flex gap-2"><input v-model.number="entry.amount" class="w-full min-w-0" type="number" min="0.01" step="0.01"><button type="button" class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#315f49] text-white transition hover:bg-[#244536]" :aria-label="$t('add_another')" :title="$t('add_another')" @click="addBulkItem"><i class="fas fa-plus" /></button></div></div>
+                <div class="xl:col-span-2"><label>{{ $t('currency') }}</label><select v-model="entry.currency" class="w-full"><option value="HUF">HUF</option><option value="EUR">EUR</option><option value="USD">USD</option></select><p v-if="entry.currency !== 'HUF'" class="mt-1 text-[10px] text-gray-500">1 {{ entry.currency }} = {{ entry.currency === 'EUR' ? eurRate : usdRate }} HUF</p></div>
+                <div class="xl:col-span-2"><label>{{ $t('date') }}</label><input v-model="entry.date" class="w-full" type="date"></div>
+                <div class="sm:col-span-1 xl:col-span-2"><label>{{ $t('color') }}</label><div class="flex items-center gap-2 h-9">
+                  <button v-for="option in colorOptions" :key="option.value" type="button" class="w-6 h-6 rounded-full border-2" :class="entry.color === option.value ? 'border-gray-900 scale-110' : 'border-white shadow'" :style="{ backgroundColor: option.value }" :aria-label="option.label" @click="entry.color = option.value" />
+                </div></div>
+                <button v-if="bulkItems.length > 1" type="button" class="xl:col-span-1 h-9 text-red-700 hover:bg-red-50 rounded-lg" :aria-label="$t('remove')" @click="bulkItems.splice(index, 1)"><i class="fas fa-trash" /></button>
             </div>
 
             <div class="sm:col-span-3">
@@ -97,22 +86,6 @@
             </div>
 
             <div class="sm:col-span-3">
-              <label for="color" class="capitalize-block">{{ $t('color') }}</label>
-              <div class="flex gap-2">
-                <button
-                  v-for="colorOption in colorOptions"
-                  :key="colorOption.value"
-                  type="button"
-                  @click="spending.color = colorOption.value"
-                  class="w-12 h-10 rounded border-2 transition-all"
-                  :class="spending.color === colorOption.value ? 'border-gray-900 dark:border-white scale-110' : 'border-gray-300 dark:border-gray-600 hover:scale-105'"
-                  :style="{ backgroundColor: colorOption.value }"
-                  :title="colorOption.label"
-                ></button>
-              </div>
-            </div>
-
-            <div class="sm:col-span-full">
               <label for="comment" class="capitalize-block">{{ $t('comment') }}</label>
               <textarea id="comment" v-model="spending.comment" rows="3" class="w-full"></textarea>
             </div>
@@ -131,7 +104,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { required, helpers, minValue } from '@vuelidate/validators'
+import { required, helpers } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import type { SpendingCreate } from '~/models/SpendingModel'
 import { PaymentMethod } from '~/models/SpendingModel'
@@ -140,6 +113,7 @@ import { useAuthStore } from '~/stores/AuthStore'
 import { useUserStore } from '~/stores/UserStore'
 import { ALL_RECORDS_PAGE_SIZE } from '~/core/pagination'
 import { storeToRefs } from 'pinia'
+import { loadSystemPreferences } from '~/utils/appPreferences'
 
 export default defineComponent({
   name: 'SpendingCreateModal',
@@ -170,6 +144,11 @@ export default defineComponent({
     const isLoading = ref(false)
     const showModal = ref(false)
     const showCashWarning = ref(false)
+    const eurRate = ref(400)
+    const usdRate = ref(370)
+    const createBulkItem = () => ({ item: '', amount: 0, currency: 'HUF', date: new Date().toISOString().split('T')[0], color: '#6B7280' })
+    const bulkItems = ref([createBulkItem()])
+    const addBulkItem = () => bulkItems.value.push(createBulkItem())
     const bypassCashWarning = ref(false)
 
     const getMonthValue = (dateString: string) => dateString.slice(0, 7)
@@ -186,10 +165,10 @@ export default defineComponent({
         return false
       }
 
-      const spendingMonth = getMonthValue(spending.date || getCurrentMonthValue())
-      return selectedUser.incomes.some((income) =>
-        getMonthValue(income.date || '') === spendingMonth && income.paymentMethod === PaymentMethod.Cash
-      )
+      const spendingMonths = bulkItems.value.map(item => getMonthValue(item.date || getCurrentMonthValue()))
+      return spendingMonths.every(month => selectedUser.incomes!.some((income) =>
+        getMonthValue(income.date || '') === month && income.paymentMethod === PaymentMethod.Cash
+      ))
     })
 
     const shouldShowCashWarning = computed(() => {
@@ -236,7 +215,14 @@ export default defineComponent({
     const open = async () => {
       await getUsers({ page_number: 1, page_size: ALL_RECORDS_PAGE_SIZE })
       spending.applicationUserId = users.value.find(user => user.email === account.value.email)?.id || ''
-      spending.paymentMethod = PaymentMethod.Card
+      if (typeof localStorage !== 'undefined') {
+        try {
+          const rates = JSON.parse(localStorage.getItem('budget-manager-currency-rates') || '{}')
+          eurRate.value = Number(rates.eur) || 400
+          usdRate.value = Number(rates.usd) || 370
+        } catch { /* use defaults */ }
+      }
+      spending.paymentMethod = loadSystemPreferences().defaultPaymentMethod
       showCashWarning.value = false
       bypassCashWarning.value = false
       showModal.value = true
@@ -251,6 +237,7 @@ export default defineComponent({
       spending.applicationUserId = ''
       spending.item = ''
       spending.amount = 0
+      bulkItems.value = [createBulkItem()]
       spending.paymentMethod = PaymentMethod.Card
       spending.comment = ''
       spending.color = '#6B7280'
@@ -272,13 +259,23 @@ export default defineComponent({
     }
 
     const performSubmit = async () => {
-      const isFormCorrect = await v$.value.$validate()
-      if (!isFormCorrect) return
+      if (!spending.applicationUserId || bulkItems.value.length === 0) return
 
       isLoading.value = true
       try {
-        const response = await createSpending(spending)
-        if (response) {
+        const entries = bulkItems.value
+        const toHuf = (amount: number, selectedCurrency: string) => Math.round(amount * (selectedCurrency === 'EUR' ? eurRate.value : selectedCurrency === 'USD' ? usdRate.value : 1))
+        for (const entry of entries) {
+          if (!entry.item.trim() || !Number.isFinite(entry.amount) || entry.amount <= 0 || !entry.date) {
+            $showNotification('error', t('bulk_items_required'))
+            return
+          }
+        }
+        for (const entry of entries) {
+          const response = await createSpending({ ...spending, item: entry.item.trim(), date: entry.date, color: entry.color, amount: toHuf(entry.amount, entry.currency) })
+          if (!response) throw new Error('Spending creation failed')
+        }
+        if (entries.length) {
           $showNotification('success', t('spending_created_successfully'))
           context.emit('item-created')
           close()
@@ -306,6 +303,7 @@ export default defineComponent({
       users,
       spending,
       colorOptions,
+      eurRate, usdRate, bulkItems, createBulkItem, addBulkItem,
       v$,
       isLoading,
       showModal,

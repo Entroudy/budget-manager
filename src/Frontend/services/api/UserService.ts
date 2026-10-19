@@ -44,6 +44,7 @@ export default class UserAPI {
       nickName: user.nickName,
       email: user.email,
       role: user.role,
+      ...(user.profileImage !== undefined ? { profileImage: user.profileImage } : {}),
     }))
 
     return data || undefined

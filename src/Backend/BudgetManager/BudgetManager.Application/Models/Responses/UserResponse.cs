@@ -7,6 +7,7 @@ public class UserResponse
     public string LastName { get; set; }
     public string FirstName { get; set; }
     public string NickName { get; set; }
+    public string? ProfileImage { get; set; }
     public List<string> Roles { get; set; } = new();
     public List<IncomeResponse> Incomes { get; set; } = new();
 }

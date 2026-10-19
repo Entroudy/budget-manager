@@ -19,8 +19,15 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Budget Manager',
-      link: []
+      title: 'Budget Manager – A te pénzügyi kerted',
+      meta: [
+        { name: 'description', content: 'Közös családi költségvetés, átláthatóan. Kövesd a kiadásokat és bevételeket egy helyen.' },
+        { property: 'og:description', content: 'Közös családi költségvetés, átláthatóan. Kövesd a kiadásokat és bevételeket egy helyen.' },
+        { name: 'twitter:description', content: 'Közös családi költségvetés, átláthatóan. Kövesd a kiadásokat és bevételeket egy helyen.' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+      ]
     }
   },
 

@@ -43,6 +43,7 @@ export type UserUpdate ={
   nickName: string
   email: string
   role?: UserRole
+  profileImage?: string | null
   incomes?: Income[]
 }
 
@@ -54,6 +55,7 @@ export type ChangePassword ={
 
 export type UserListItem = BaseUser & {
   id: string
+  profileImage?: string | null
   roles?: UserRole[]
   incomes?: Income[]
 }

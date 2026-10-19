@@ -8,4 +8,5 @@ public class UpdateUserCommand(string id, UpdateUserRequest request) : IRequest<
     public string LastName { get; set; } = request.LastName;
     public string NickName { get; set; } = request.NickName;
     public string? Role { get; set; } = request.Role;
+    public string? ProfileImage { get; set; } = request.ProfileImage;
 }

@@ -5,7 +5,8 @@
         <input
           id="email"
           v-model="form.email"
-          type="text"
+          type="email"
+          autocomplete="username"
           :placeholder="$t('email_placeholder')"
           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors"
           :class="{
@@ -21,6 +22,7 @@
           <input
             id="password"
             v-model="form.password"
+            autocomplete="current-password"
             :type="passwordVisible ? 'text' : 'password'"
             :placeholder="$t('password_placeholder')"
             class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors"
@@ -41,23 +43,24 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-2 mt-6">
+    <div class="mt-6 flex items-center justify-between gap-3">
+      <label for="remember-me" class="!mb-0 !inline-flex !items-center !gap-2 cursor-pointer text-xs font-medium !leading-none text-[#d5dfd0]">
+        <input
+          id="remember-me"
+          v-model="form.rememberMe"
+          type="checkbox"
+          class="!m-0 !block !h-4 !w-4 shrink-0 rounded border-white/30 !bg-[#8b9b7b]"
+        >
+        {{ $t('remember_me') }}
+      </label>
       <button
-        class="flex-[9] px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        class="flex min-w-36 items-center justify-center gap-2 rounded-xl bg-[#dce6d3] px-5 py-3 font-semibold text-[#17382d] shadow-lg hover:bg-white disabled:opacity-50"
         @click="loginUser"
         :disabled="isLoading"
       >
         <span>{{ $t('sign_in') }}</span>
         <i v-show="isLoading" class="fas fa-spinner fa-spin ml-2"></i>
       </button>
-      <div class="flex-[1] flex items-center justify-center">
-        <input
-          id="remember-me"
-          v-model="form.rememberMe"
-          type="checkbox"
-          class="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-0 focus:ring-offset-0 cursor-pointer"
-        >
-      </div>
     </div>
   </div>
 </template>
@@ -99,13 +102,13 @@ export default defineComponent({
     const { login } = useAuthStore()
 
     const loginUser = async (e: MouseEvent) => {
-      isLoading.value = true;
       e.preventDefault()
-      v$.value.$validate()
-      if(v$.value.$error) isLoading.value = false
-      if (!v$.value.$error) {
-        isLoading.value = false;
+      if (!(await v$.value.$validate())) return
+      isLoading.value = true
+      try {
         await login(form)
+      } finally {
+        isLoading.value = false
       }
     }
     return {
