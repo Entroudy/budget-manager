@@ -8,6 +8,9 @@
 
       <div class="flex flex-wrap items-center justify-end gap-3">
         <div class="flex flex-wrap items-center justify-end gap-2">
+          <select v-if="users.length > 1" v-model="selectedUserId" class="h-10 min-w-48 rounded-lg border border-[#d9ddd5] bg-white px-3 text-sm text-[#263a30] focus:border-[#6b8b70] focus:outline-none focus:ring-2 focus:ring-[#6b8b70]/20" :aria-label="$t('user')" @change="resetAllUserPagination">
+            <option v-for="user in users" :key="user.id" :value="user.id">{{ getUserLabel(user) }}</option>
+          </select>
           <div class="inline-flex rounded-lg border border-[#dfe2d8] bg-[#f5f6f2] p-1" :aria-label="$t('items_per_page')">
             <button v-for="size in pageSizeOptions" :key="size" type="button" class="min-w-9 rounded-md px-2 py-2 text-xs font-semibold transition" :class="selectedPageSize === size ? 'bg-white text-[#315d45] shadow-sm' : 'text-[#899187] hover:text-[#315d45]'" :aria-label="`${size} ${$t('items_per_page')}`" :aria-pressed="selectedPageSize === size" @click="changePageSize(size)">{{ size }}</button>
           </div>
@@ -56,182 +59,41 @@
       </div>
     </div>
 
-    <!-- User Cards Grid -->
-    <div v-if="Object.keys(spendingsByUser).length > 0" class="min-h-0 flex-1 overflow-y-auto pr-1">
-      <div class="grid grid-cols-1 content-start gap-4" :class="viewMode === 'list' ? 'lg:grid-cols-2' : 'lg:grid-cols-1'">
-      <div
-        v-for="(userSpendings, userId) in spendingsByUser"
-        :key="userId"
-        class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-750 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm overflow-hidden"
-      >
-        <!-- User Header -->
-        <div class="bg-primary to-primary-dark p-4">
-          <div class="flex items-center gap-3 mb-3">
-            <img :src="getUserProfileImage(userId)" :alt="getUserName(userId)" class="h-10 w-10 rounded-full bg-white object-cover ring-2 ring-white/25">
-            <div class="flex-1">
-              <h3 class="text-white font-semibold text-base">{{ getUserName(userId) }}</h3>
-              <p class="text-white/80 text-xs">{{ userSpendings.length }} {{ $t('spendings') }}</p>
-            </div>
-          </div>
-
-          <!-- Financial Summary -->
-          <div class="grid grid-cols-2 lg:grid-cols-6 gap-2 pt-3 border-t border-white/20">
-            <div class="text-center">
-              <p class="text-white/60 text-xs mb-1">{{ $t('income') }}</p>
-              <p class="font-display text-sm font-bold text-white">{{ formatCurrency(getUserIncome(userId)) }}</p>
-            </div>
-            <div class="text-center">
-              <p class="text-white/60 text-xs mb-1">{{ $t('card') }} {{ $t('spendings') }}</p>
-              <p class="font-display text-sm font-bold text-white">{{ formatCurrency(getUserCardSpendings(userSpendings)) }}</p>
-            </div>
-            <div class="text-center">
-              <p class="text-white/60 text-xs mb-1">{{ $t('cash') }} {{ $t('spendings') }}</p>
-              <p class="font-display text-sm font-bold text-white">{{ formatCurrency(getUserCashSpendings(userSpendings)) }}</p>
-            </div>
-            <div class="text-center">
-              <p class="text-white/60 text-xs mb-1">{{ $t('spent') }}</p>
-              <p class="font-display text-sm font-bold text-white">{{ formatCurrency(getUserTotal(userSpendings)) }}</p>
-            </div>
-            <div class="text-center">
-              <p class="text-white/60 text-xs mb-1">{{ $t('cash') }} {{ $t('remaining') }}</p>
-              <p class="font-display text-sm font-bold text-white" :class="getUserCashRemaining(userId, userSpendings) < 0 ? 'text-red-300' : 'text-green-300'">{{ formatCurrency(getUserCashRemaining(userId, userSpendings)) }}</p>
-            </div>
-            <div class="text-center">
-              <p class="text-white/60 text-xs mb-1">{{ $t('card') }} {{ $t('remaining') }}</p>
-              <p class="font-display text-sm font-bold text-white" :class="getUserCardRemaining(userId, userSpendings) < 0 ? 'text-red-300' : 'text-green-300'">{{ formatCurrency(getUserCardRemaining(userId, userSpendings)) }}</p>
-            </div>
-          </div>
-
-          <div v-if="getUserTotalPages(getFilteredUserSpendings(userSpendings), userPagination[userId].pageSize) > 1" class="mt-4 flex flex-wrap items-center justify-end gap-3 rounded-lg bg-white/10 px-3 py-3">
-            <div class="flex items-center justify-end gap-2">
-              <button
-                type="button"
-                class="w-9 h-9 rounded-md border border-white/20 bg-white/90 text-gray-700 hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                :disabled="userPagination[userId].currentPage === 1"
-                @click="changeUserPage(userId, -1, userSpendings)"
-                :title="$t('previous')"
-              >
-                <i class="fas fa-chevron-left text-xs"></i>
-              </button>
-
-              <div class="min-w-[96px] px-3 py-1.5 rounded-md bg-white/15 text-white text-center">
-                <div class="text-[10px] uppercase opacity-80">{{ $t('page') }}</div>
-                <div class="text-sm font-semibold">
-                  {{ userPagination[userId].currentPage }} / {{ getUserTotalPages(getFilteredUserSpendings(userSpendings), userPagination[userId].pageSize) }}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                class="w-9 h-9 rounded-md border border-white/20 bg-white/90 text-gray-700 hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                :disabled="userPagination[userId].currentPage === getUserTotalPages(getFilteredUserSpendings(userSpendings), userPagination[userId].pageSize)"
-                @click="changeUserPage(userId, 1, userSpendings)"
-                :title="$t('next')"
-              >
-                <i class="fas fa-chevron-right text-xs"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Spendings Table -->
-        <div v-if="viewMode === 'list'" class="max-h-[calc(100dvh-29rem)] min-h-[12rem] overflow-y-auto">
-          <table class="w-full font-maven text-sm">
-            <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0">
-              <tr class="border-b border-gray-200 dark:border-gray-600">
-                <th class="px-2 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
-                  <button @click="toggleSort('item')" class="flex items-center gap-1 hover:text-primary transition-colors">
-                    {{ $t('item') }}
-                    <i v-if="sortBy === 'item'" :class="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'" class="text-xs"></i>
-                    <i v-else class="fas fa-sort text-xs opacity-30"></i>
-                  </button>
-                </th>
-                <th class="px-2 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
-                  <button @click="toggleSort('date')" class="flex items-center gap-1 hover:text-primary transition-colors">
-                    {{ $t('date') }}
-                    <i v-if="sortBy === 'date'" :class="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'" class="text-xs"></i>
-                    <i v-else class="fas fa-sort text-xs opacity-30"></i>
-                  </button>
-                </th>
-                <th class="px-2 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">
-                  <button @click="toggleSort('paymentMethod')" class="flex items-center gap-1 hover:text-primary transition-colors mx-auto">
-                    {{ $t('payment') }}
-                    <i v-if="sortBy === 'paymentMethod'" :class="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'" class="text-xs"></i>
-                    <i v-else class="fas fa-sort text-xs opacity-30"></i>
-                  </button>
-                </th>
-                <th class="px-2 py-2 text-right font-semibold text-gray-700 dark:text-gray-300">
-                  <button @click="toggleSort('amount')" class="flex items-center gap-1 hover:text-primary transition-colors ml-auto">
-                    {{ $t('amount') }}
-                    <i v-if="sortBy === 'amount'" :class="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'" class="text-xs"></i>
-                    <i v-else class="fas fa-sort text-xs opacity-30"></i>
-                  </button>
-                </th>
-                <th class="px-2 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">{{ $t('actions') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="spending in getPagedUserSpendings(userId, userSpendings)"
-                :key="spending.id"
-                class="border-b border-gray-100 dark:border-gray-700 hover:brightness-95 dark:hover:brightness-110 transition-colors cursor-pointer"
-                :style="spending.color ? { backgroundColor: `${spending.color}26` } : undefined"
-                @click="openEditModal(spending)"
-              >
-                <td class="px-2 py-2">
-                  <div class="flex items-center gap-2">
-                    <div class="flex-1 min-w-0">
-                      <p class="font-medium text-gray-900 dark:text-white truncate">{{ spending.item }}</p>
-                      <p v-if="spending.comment" class="text-gray-500 dark:text-gray-400 truncate text-xs">{{ spending.comment }}</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-2 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                  {{ formatDateShort(spending.date) }}
-                </td>
-                <td class="px-2 py-2 text-center">
-                  <i :class="getPaymentMethodIcon(spending.paymentMethod)" class="text-[#557b63]" :title="getPaymentMethodText(spending.paymentMethod)" aria-hidden="true" />
-                </td>
-                <td class="px-2 py-2 text-right font-display font-semibold text-gray-900 dark:text-white whitespace-nowrap">
-                  {{ formatCurrency(spending.amount) }}
-                </td>
-                <td class="px-2 py-2">
-                  <div class="flex items-center justify-center">
-                    <button
-                      @click.stop="openDeleteModal(spending.id)"
-                      class="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                      :title="$t('delete')"
-                    >
-                      <i class="fas fa-trash-alt" aria-hidden="true" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div v-else class="max-h-[calc(100dvh-29rem)] min-h-[12rem] overflow-y-auto p-2">
-          <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-4">
-            <article v-for="spending in getPagedUserSpendings(userId, userSpendings)" :key="spending.id" class="cursor-pointer rounded-lg border border-[#e8eae3] border-l-4 bg-white p-2.5 transition hover:-translate-y-0.5 hover:shadow-md" :style="spending.color ? { borderLeftColor: spending.color, backgroundColor: `${spending.color}14` } : undefined" @click="openEditModal(spending)">
-              <div class="flex items-start justify-between gap-2">
-                <div class="min-w-0">
-                  <p class="truncate font-semibold text-[#2b4033]">{{ spending.item }}</p>
-                  <p class="mt-0.5 text-xs text-[#849087]">{{ formatDateShort(spending.date) }}</p>
-                </div>
-                <p class="shrink-0 text-right font-display text-base font-semibold text-[#294634]">{{ formatCurrency(spending.amount) }}</p>
-              </div>
-              <p v-if="spending.comment" class="mt-1 line-clamp-1 text-xs text-[#768076]">{{ spending.comment }}</p>
-              <div class="mt-2 flex items-center justify-between border-t border-[#e9ebe5] pt-1.5">
-                <span class="flex items-center gap-2 text-xs text-[#768076]">
-                  <i :class="getPaymentMethodIcon(spending.paymentMethod)" class="text-[#557b63]" aria-hidden="true" />
-                  {{ getPaymentMethodText(spending.paymentMethod) }}
-                </span>
-                <button type="button" class="rounded-md p-1 text-red-600 transition hover:bg-red-50" :title="$t('delete')" @click.stop="openDeleteModal(spending.id)"><i class="fas fa-trash-alt" aria-hidden="true" /></button>
-              </div>
-            </article>
-          </div>
-        </div>
+    <!-- Selected user's expenses -->
+    <div v-if="pagedSpendings.length > 0" class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-[#e8eae3] bg-white">
+      <div v-if="viewMode === 'list'" class="overflow-x-auto">
+        <table class="w-full font-maven text-sm">
+          <thead class="sticky top-0 z-10 bg-[#f5f6f2]">
+            <tr class="border-b border-[#e4e7df] text-[#788176]">
+              <th class="px-4 py-3 text-left font-semibold"><button class="flex items-center gap-1 hover:text-primary" @click="toggleSort('item')">{{ $t('item') }}<i :class="sortBy === 'item' ? (sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down') : 'fas fa-sort opacity-30'" /></button></th>
+              <th class="px-4 py-3 text-left font-semibold"><button class="flex items-center gap-1 hover:text-primary" @click="toggleSort('date')">{{ $t('date') }}<i :class="sortBy === 'date' ? (sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down') : 'fas fa-sort opacity-30'" /></button></th>
+              <th class="px-4 py-3 text-center font-semibold">{{ $t('payment') }}</th>
+              <th class="px-4 py-3 text-right font-semibold"><button class="ml-auto flex items-center gap-1 hover:text-primary" @click="toggleSort('amount')">{{ $t('amount') }}<i :class="sortBy === 'amount' ? (sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down') : 'fas fa-sort opacity-30'" /></button></th>
+              <th class="px-4 py-3 text-center font-semibold">{{ $t('actions') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="spending in pagedSpendings" :key="spending.id" class="cursor-pointer border-b border-[#f0f1ed] transition hover:bg-[#fafbf8]" :style="spending.color ? { backgroundColor: `${spending.color}12` } : undefined" @click="openEditModal(spending)">
+              <td class="px-4 py-3"><p class="truncate font-medium text-[#263a30]">{{ spending.item }}</p><p v-if="spending.comment" class="mt-0.5 truncate text-xs text-[#8a9288]">{{ spending.comment }}</p></td>
+              <td class="whitespace-nowrap px-4 py-3 text-[#6f786e]">{{ formatDateShort(spending.date) }}</td>
+              <td class="px-4 py-3 text-center"><i :class="getPaymentMethodIcon(spending.paymentMethod)" class="text-[#557b63]" :title="getPaymentMethodText(spending.paymentMethod)" aria-hidden="true" /></td>
+              <td class="whitespace-nowrap px-4 py-3 text-right font-display font-semibold text-[#263a30]">{{ formatCurrency(spending.amount) }}</td>
+              <td class="px-4 py-3 text-center"><button class="rounded p-1.5 text-red-600 transition hover:bg-red-50" :title="$t('delete')" @click.stop="openDeleteModal(spending.id)"><i class="fas fa-trash-alt" aria-hidden="true" /></button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <div v-else class="grid grid-cols-1 content-start gap-2 p-3 sm:grid-cols-2 2xl:grid-cols-4">
+        <article v-for="spending in pagedSpendings" :key="spending.id" class="cursor-pointer rounded-lg border border-[#e8eae3] border-l-4 bg-white p-2.5 transition hover:shadow-md" :style="spending.color ? { borderLeftColor: spending.color, backgroundColor: `${spending.color}14` } : undefined" @click="openEditModal(spending)">
+          <div class="flex items-start justify-between gap-2"><div class="min-w-0"><p class="truncate font-semibold text-[#2b4033]">{{ spending.item }}</p><p class="mt-0.5 text-xs text-[#849087]">{{ formatDateShort(spending.date) }}</p></div><p class="shrink-0 text-right font-display font-semibold text-[#294634]">{{ formatCurrency(spending.amount) }}</p></div>
+          <p v-if="spending.comment" class="mt-1 line-clamp-1 text-xs text-[#768076]">{{ spending.comment }}</p>
+          <div class="mt-2 flex items-center justify-between border-t border-[#e9ebe5] pt-1.5"><span class="flex items-center gap-2 text-xs text-[#768076]"><i :class="getPaymentMethodIcon(spending.paymentMethod)" class="text-[#557b63]" aria-hidden="true" />{{ getPaymentMethodText(spending.paymentMethod) }}</span><button type="button" class="rounded-md p-1 text-red-600 transition hover:bg-red-50" :title="$t('delete')" @click.stop="openDeleteModal(spending.id)"><i class="fas fa-trash-alt" aria-hidden="true" /></button></div>
+        </article>
+      </div>
+      <div v-if="filteredSpendings.length > selectedPageSize" class="flex items-center justify-end gap-3 border-t border-[#eceee8] px-4 py-3 text-sm text-[#778075]">
+        <span>{{ (currentPage - 1) * selectedPageSize + 1 }}–{{ Math.min(currentPage * selectedPageSize, filteredSpendings.length) }} / {{ filteredSpendings.length }}</span>
+        <button type="button" class="flex h-8 w-8 items-center justify-center rounded-md border border-[#dfe2d8] disabled:opacity-40" :disabled="currentPage <= 1" :title="$t('previous')" @click="changeSelectedPage(-1)"><i class="fas fa-chevron-left text-xs" /></button>
+        <button type="button" class="flex h-8 w-8 items-center justify-center rounded-md border border-[#dfe2d8] disabled:opacity-40" :disabled="currentPage >= totalPages" :title="$t('next')" @click="changeSelectedPage(1)"><i class="fas fa-chevron-right text-xs" /></button>
       </div>
     </div>
 
@@ -343,6 +205,8 @@ export default defineComponent({
     })
     const pageSizeOptions = [10, 25, 50, 100]
     const selectedPageSize = ref(50)
+    const selectedUserId = ref('')
+    const currentPage = ref(1)
     const viewMode = ref<'list' | 'grid'>('list')
     const spendingSearch = ref('')
     const paymentFilter = ref<'all' | 'card' | 'cash'>('all')
@@ -358,6 +222,7 @@ export default defineComponent({
       viewMode.value = preferences.spendingViewMode
       // Load users first
       await getUsers({ page_number: 1, page_size: ALL_RECORDS_PAGE_SIZE })
+      selectedUserId.value = users.value[0]?.id || ''
       // Load incomes for all users
       await loadAllIncomes()
       initializeStateFromQuery(route.query)
@@ -504,6 +369,7 @@ export default defineComponent({
     }
 
     const resetAllUserPagination = () => {
+      currentPage.value = 1
       Object.values(userPagination).forEach(pagination => {
         pagination.currentPage = 1
       })
@@ -525,6 +391,18 @@ export default defineComponent({
       })
     }
 
+    const selectedSpendings = computed(() => allSpendings.value.filter(spending => spending.applicationUserId === selectedUserId.value))
+    const filteredSpendings = computed(() => getFilteredUserSpendings(selectedSpendings.value))
+    const totalPages = computed(() => Math.max(1, Math.ceil(filteredSpendings.value.length / selectedPageSize.value)))
+    const pagedSpendings = computed(() => {
+      if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+      const start = (currentPage.value - 1) * selectedPageSize.value
+      return filteredSpendings.value.slice(start, start + selectedPageSize.value)
+    })
+    const changeSelectedPage = (direction: number) => {
+      currentPage.value = Math.max(1, Math.min(totalPages.value, currentPage.value + direction))
+    }
+
     const setPaymentFilter = (filter: 'all' | 'card' | 'cash') => {
       paymentFilter.value = filter
       resetAllUserPagination()
@@ -542,28 +420,28 @@ export default defineComponent({
     }
 
     const totalSpendingsCount = computed(() => {
-      return allSpendings.value.length
+      return selectedSpendings.value.length
     })
 
     const grandTotal = computed(() => {
-      return allSpendings.value.reduce((sum, spending) => sum + spending.amount, 0)
+      return selectedSpendings.value.reduce((sum, spending) => sum + spending.amount, 0)
     })
 
     const cardSpendingsTotal = computed(() => {
-      return allSpendings.value
+      return selectedSpendings.value
         .filter(spending => spending.paymentMethod === PaymentMethod.Card)
         .reduce((sum, spending) => sum + spending.amount, 0)
     })
 
     const cashSpendingsTotal = computed(() => {
-      return allSpendings.value
+      return selectedSpendings.value
         .filter(spending => spending.paymentMethod === PaymentMethod.Cash)
         .reduce((sum, spending) => sum + spending.amount, 0)
     })
 
     const grandIncome = computed(() => {
       return incomes.value
-        .filter(income => income.date && isIncomeInViewMonth(income.date))
+        .filter(income => income.applicationUserId === selectedUserId.value && income.date && isIncomeInViewMonth(income.date))
         .reduce((sum, income) => sum + (income.amount || 0), 0)
     })
 
@@ -590,15 +468,21 @@ export default defineComponent({
 
     const changePageSize = (pageSize: number) => {
       selectedPageSize.value = pageSize
+      currentPage.value = 1
       Object.values(userPagination).forEach(pagination => {
         pagination.pageSize = pageSize
         pagination.currentPage = 1
       })
     }
 
+    const getUserLabel = (user: { nickName?: string | null; firstName?: string | null; lastName?: string | null }) => {
+      const nickName = user.nickName?.trim()
+      return nickName || [user.firstName?.trim(), user.lastName?.trim()].filter(Boolean).join(' ') || t('unknown_user')
+    }
+
     const getUserName = (userId: string) => {
       const user = users.value.find(u => u.id === userId)
-      return user ? `${user.lastName} ${user.firstName}` : t('unknown_user')
+      return user ? getUserLabel(user) : t('unknown_user')
     }
 
     const getUserProfileImage = (userId: string) => {
@@ -731,9 +615,16 @@ export default defineComponent({
 
     return {
       users,
+      selectedUserId,
+      getUserLabel,
       filters,
       pageSizeOptions,
       selectedPageSize,
+      currentPage,
+      totalPages,
+      filteredSpendings,
+      pagedSpendings,
+      changeSelectedPage,
       viewMode,
       spendingSearch,
       paymentFilter,
